@@ -8,17 +8,13 @@ gemspec
 gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"
 
-group :development do
-  gem "solargraph", require: false
-end
-
 group :test do
-  gem "simplecov"
+  gem "simplecov", "~> 0.21.2"
 end
 
 group :development, :test do
-  gem "rubocop", require: false
-  gem "rubocop-performance", require: false
-  gem "rubocop-rake", require: false
-  gem "rubocop-rspec", require: false
+  gem "rubocop", "~> 1.38.0", require: false
+  gem "rubocop-performance", "~> 1.15.0", require: false
+  gem "rubocop-rake", "~> 0.6.0", require: false
+  gem "rubocop-rspec", "~> 2.14.2", require: false
 end
