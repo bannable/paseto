@@ -4,6 +4,33 @@ detectors:
   IrresponsibleModule:
     enabled: false
   UncommunicativeModuleName:
-    enabled: false
+    exclude:
+      - "Paseto::Versions::V1"
+      - "Paseto::Versions::V2"
+      - "Paseto::Versions::V3"
+      - "Paseto::Versions::V4"
+      - "Paseto::V4"
   UncommunicativeMethodName:
-    enabled: false
+    exclude:
+      - "Paseto#self.decode64"
+      - "Paseto#self.encode64"
+      - "Paseto#self.le64"
+  UncommunicativeVariableName:
+    exclude:
+      - "Paseto::Key::BasicKey#encrypt"
+  ControlParameter:
+    exclude:
+      - "Paseto::Key::BasicKey#valid_for?"
+  TooManyStatements:
+    exclude:
+      - "Paseto::Key::BasicKey#encrypt"
+      - "RbNaCl::Stream::Base#encrypt"
+  UtilityFunction:
+    exclude:
+      - "RbNaCl::Stream::Base#data_len"
+  InstanceVariableAssumption:
+    exclude:
+      - "RbNaCl::Stream::XChaCha20Xor"
+  NilCheck:
+    exclude:
+      - "RbNaCl::Stream::Base#data_len"
