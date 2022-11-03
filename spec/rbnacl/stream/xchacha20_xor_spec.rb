@@ -17,32 +17,78 @@ RSpec.describe RbNaCl::Stream::XChaCha20Xor do
       [ "aface41a64a9a40cbc604d42bd363523bd762eb717f3e08fe2e0b4611eb4dcf3", "6906e0383b895ab9f1cf3803f42f27c79ad47b681c552c63", "a5fa7c0190792ee17675d52ad7570f1fb0892239c76d6e802c26b5b3544d13151e67513b8aaa1ac5af2d7fd0d5e4216964324838" ],
       [ "9d23bd4149cb979ccf3c5c94dd217e9808cb0e50cd0f67812235eaaf601d6232", "c047548266b7c370d33566a2425cbf30d82d1eaf5294109e", "a21209096594de8c5667b1d13ad93f744106d054df210e4782cd396fec692d3515a20bf351eec011a92c367888bc464c32f0807acd6c203a247e0db854148468e9f96bee4cf718d68d5f637cbd5a376457788e6fae90fc31097cfc" ],
     ]
-    context "test vectors" do
-      # With the provided `key` and `nonce`, an array of 0's sized to match
-      # the output should encrypt to `out` and then back to 0's for each vector
-      TEST_VECTORS.each_with_index do |vector, idx|
-        it "passes vector #{idx}" do
-          key, nonce, out = vector.map { |v| Paseto.decode_hex(v) }
-          
-          stream = described_class.new(key)
 
-          out_len = out.bytesize
-          zeroes = RbNaCl::Util.zeros(out_len)
-          out2 = RbNaCl::Util.zeros(out_len)
+    let(:key) { Paseto.decode_hex(TEST_VECTORS[0][0]) }
+    let(:nonce) { Paseto.decode_hex(TEST_VECTORS[0][1]) }
+    let(:ciphertext) { Paseto.decode_hex(TEST_VECTORS[0][2]) }
+    let(:message) { RbNaCl::Util.zeros(ciphertext.bytesize) }
+    let(:corrupt_ciphertext) { ciphertext.succ }
+    let(:trunc_ciphertext) { ciphertext.byteslice(0, 10) }
+    let(:nonce_short) { nonce.byteslice(0, nonce.bytesize / 2) }
+    let(:nonce_long) { nonce + nonce }
+    let(:nonce_error_regex) { /Nonce.*(Expected #{stream.nonce_bytes})/ }
+    
+    let(:stream) { described_class.new(key) }
 
-          stream.encrypt(nonce, out2)
-          expect(out).to eq(out)
-          stream.encrypt(nonce, out2)
-          expect(out2).to eq(zeroes)
-        end
+    # https://github.com/RubyCrypto/rbnacl/blob/ebbd271a291e174ad55421f14397ebeceb009840/spec/shared/aead.rb#L15
+    context ".new" do
+      it "accepts strings" do
+        expect { described_class.new(key) }.to_not raise_error
+      end
+  
+      it "raises on a nil key" do
+        expect { described_class.new(nil) }.to raise_error(TypeError)
+      end
+  
+      it "raises on a short key" do
+        expect { described_class.new("hello") }.to raise_error RbNaCl::LengthError
+      end
+  
+      it "raises on a long key" do
+        expect { described_class.new("hello" + key) }.to raise_error RbNaCl::LengthError
       end
     end
 
-    # https://github.com/RubyCrypto/rbnacl/blob/ebbd271a291e174ad55421f14397ebeceb009840/spec/shared/aead.rb#L15
-    context "new"
+    context "#encrypt" do
+      context "test vectors" do
+        # With the provided `key` and `nonce`, an array of 0's sized to match
+        # the output should encrypt to `out` and then back to 0's for each vector
+        TEST_VECTORS.each_with_index do |vector, idx|
+          context "vector #{idx}" do
+            let(:key) { Paseto.decode_hex(vector[0]) }
+            let(:nonce) { Paseto.decode_hex(vector[1]) }
+            let(:out) { Paseto.decode_hex(vector[2]) }
+            it "passes" do
+              out_len = out.bytesize
+              zeroes = RbNaCl::Util.zeros(out_len)
+              out2 = RbNaCl::Util.zeros(out_len)
 
-    context "encrypt"
+              stream.encrypt(nonce, out2)
+              expect(out).to eq(out)
+              stream.encrypt(nonce, out2)
+              expect(out2).to eq(zeroes)
+            end
+          end
+        end
+      end
 
-    context "decrypt"
+      it "raises on a short nonce" do
+        expect do
+          stream.encrypt(nonce_short, message)
+        end.to raise_error(RbNaCl::LengthError, nonce_error_regex)
+      end
+
+      it "raises on a long nonce" do
+        expect do
+          stream.encrypt(nonce_long, message)
+        end.to raise_error(RbNaCl::LengthError, nonce_error_regex)
+      end
+
+      it "works with an empty message" do
+        expect do
+          stream.encrypt(nonce, nil)
+        end.to_not raise_error
+      end
+    end
   end
 end
