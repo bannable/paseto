@@ -11,6 +11,8 @@ module RbNaCl
       # Number of bytes in a valid nonce
       NONCEBYTES = 0
 
+      MESSAGEBYTES_MAX = 0
+
       attr_reader :key
       private :key
 
@@ -39,12 +41,16 @@ module RbNaCl
         ciphertext
       end
 
+      def self.primitive
+        raise NotImplementedError
+      end
+
       def primitive
         self.class.primitive
       end
 
       def self.nonce_bytes
-        self::NONCEBYTES
+        self.const_get(:NONCEBYTES)
       end
 
       def nonce_bytes
@@ -52,7 +58,7 @@ module RbNaCl
       end
 
       def self.key_bytes
-        self::KEYBYTES
+        self.const_get(:KEYBYTES)
       end
 
       def key_bytes
