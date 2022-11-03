@@ -1,3 +1,4 @@
+# encoding: binary
 # frozen_string_literal: true
 
 RSpec.describe Paseto do
@@ -30,6 +31,46 @@ RSpec.describe Paseto do
 
     it "recognizes - in place of +" do
       expect(described_class.decode64("PGh1ZmY-")).to eq("<huff>")
+    end
+  end
+
+  describe '.le64' do
+    it 'encodes 0 as an unsigned long long' do
+      expect(described_class.le64(0)).to eq("\x00\x00\x00\x00\x00\x00\x00\x00")
+    end
+
+    it 'encodes a length as an unsigned long long' do
+      expect(described_class.le64(10)).to eq("\x0A\x00\x00\x00\x00\x00\x00\x00")
+    end
+
+    it 'encodes larger lengths' do
+      expect(described_class.le64(65534)).to eq("\xFE\xFF\x00\x00\x00\x00\x00\x00")
+    end
+  end
+
+  describe '.pre_auth_encode' do
+    it 'encodes zero parts correctly' do
+      expect(described_class.pre_auth_encode).to eq(
+        "\x00\x00\x00\x00\x00\x00\x00\x00"
+      )
+    end
+
+    it 'encodes an empty string correctly' do
+      expect(described_class.pre_auth_encode('')).to eq(
+        "\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      )
+    end
+
+    it 'encodes an arbitrary string correctly' do
+      expect(described_class.pre_auth_encode('some str')).to eq(
+        "\x01\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00some str"
+      )
+    end
+
+    it 'encodes multiple parts correctly' do
+      expect(described_class.pre_auth_encode('some', 'str')).to eq(
+        "\x02\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00some\x03\x00\x00\x00\x00\x00\x00\x00str"
+      )
     end
   end
 end

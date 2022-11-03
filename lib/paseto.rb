@@ -30,4 +30,14 @@ module Paseto
   def self.decode_hex(str)
     [str].pack('H*')
   end
+
+  def self.le64(num)
+    [num].pack('Q<')
+  end
+
+  def self.pre_auth_encode(*parts)
+    parts.inject(le64(parts.size)) do |memo, part|
+      memo + le64(part.bytesize) + part
+    end
+  end
 end
