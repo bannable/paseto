@@ -1,4 +1,7 @@
 module Paseto
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+  
+  def self.encode64: (String str) -> String
+
+  def self.decode64: (String str) -> String
 end
