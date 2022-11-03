@@ -1,0 +1,14 @@
+module Paseto
+  class Token
+    attr_reader version: String
+    attr_reader purpose: String
+    attr_reader payload: String
+    attr_reader footer: String
+    
+    def self.parse: (String str) -> Token
+
+    def initialize: (payload: String, purpose: String, version: String, ?footer: String) -> void
+
+    def to_s: () -> String
+  end
+end
