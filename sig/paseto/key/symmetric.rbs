@@ -1,0 +1,11 @@
+module Paseto
+  module Key
+    class Symmetric
+      attr_reader material: String
+      attr_reader version: Paseto::Versions::BaseVersion
+
+      def initialize: (ikm: String, version: Paseto::Versions::BaseVersion) -> void
+      def valid_for?: (version: Paseto::Versions::BaseVersion, purpose: 'local') -> (false | true)
+    end
+  end
+end
