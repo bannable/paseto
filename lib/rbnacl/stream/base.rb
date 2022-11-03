@@ -39,18 +39,6 @@ module RbNaCl
         ciphertext
       end
 
-      def decrypt(nonce, ciphertext)
-        Util.check_length(nonce, nonce_bytes, "Nonce")
-
-        message_len = Util.zeros(1)
-        message = Util.zeros(data_len(ciphertext))
-
-        success = do_decrypt(message, message_len, nonce, ciphertext)
-        raise CryptoError, "Decryption failed. Ciphertext failed verification." unless success
-
-        message
-      end
-
       def primitive
         self.class.primitive
       end
@@ -80,10 +68,6 @@ module RbNaCl
       end
 
       def do_encrypt(_ciphertext, _nonce, _message)
-        raise NotImplementedError
-      end
-
-      def do_decrypt(_message, _nonce, _ciphertext)
         raise NotImplementedError
       end
     end

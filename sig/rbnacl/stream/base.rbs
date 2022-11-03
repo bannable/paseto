@@ -1,0 +1,24 @@
+module RbNaCl
+  module Stream
+    class Base
+      KEYBYTES: Integer
+      NONCEBYTES: Integer
+
+      private
+      attr_reader key: String
+
+      public
+      def initialize: (String key) -> void
+      def encrypt: (String nonce, String message) -> String
+      def primitive: -> Symbol
+      def self.nonce_bytes: -> Integer
+      def nonce_bytes: -> Integer
+      def self.key_bytes: -> Integer
+      def key_bytes: -> Integer
+
+      private
+      def data_len: (String data) -> Integer
+      def do_encrypt: (String, String, String) -> void
+    end
+  end
+end

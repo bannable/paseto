@@ -22,10 +22,6 @@ module RbNaCl
         def do_encrypt(ciphertext, nonce, message)
           self.class.stream_xchacha20_xor(ciphertext, message, data_len(message), nonce, @key)
         end
-
-        def do_decrypt(message, nonce, ciphertext)
-          self.class.stream_xchacha20_xor(message, ciphertext, data_len(ciphertext), nonce, @key)
-        end
       end
     end
   end

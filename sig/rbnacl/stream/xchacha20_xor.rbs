@@ -1,0 +1,10 @@
+module RbNaCl
+  module Stream
+    class XChaCha20Xor < RbNaCl::Stream::Base
+      extend Sodium
+
+      private
+      def do_encrypt: (String ciphertext, String nonce, String message) -> String
+    end
+  end
+end
