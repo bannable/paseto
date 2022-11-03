@@ -34,4 +34,8 @@ target :paseto do
   check "lib"
 
   library "base64"
+
+  configure_code_diagnostics do |h|
+    h[Steep::Diagnostic::Ruby::UnknownConstant] = :information
+  end
 end
