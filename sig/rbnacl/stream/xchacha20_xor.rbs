@@ -26,6 +26,8 @@ module RbNaCl
       KEYBYTES: Integer
 
       NONCEBYTES: Integer
+
+      MESSAGEBYTES_MAX: Integer
     end
   end
 end

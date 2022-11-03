@@ -12,6 +12,7 @@ module RbNaCl
 
         sodium_constant :KEYBYTES
         sodium_constant :NONCEBYTES
+        sodium_constant :MESSAGEBYTES_MAX
 
         sodium_function :stream_xchacha20_xor,
                         :crypto_stream_xchacha20_xor,
