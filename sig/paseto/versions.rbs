@@ -1,19 +1,8 @@
 module Paseto
   module Versions
-    class BaseVersion
-      def to_s: () -> String
-    end
-
-    class V1 < BaseVersion
-    end
-
-    class V2 < BaseVersion
-    end
-
-    class V3 < BaseVersion
-    end
-
-    class V4 < BaseVersion
-    end
+    V1: 'v1'
+    V2: 'v2'
+    V3: 'v3'
+    V4: 'v4'
   end
 end

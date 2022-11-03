@@ -1,0 +1,5 @@
+module Paseto
+  module Version
+    VERSION: String
+  end
+end

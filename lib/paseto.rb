@@ -16,6 +16,8 @@ require_relative "paseto/key/asymmetric_secret"
 require_relative "paseto/v4"
 
 module Paseto
+  include Version
+
   def self.encode64(str)
     Base64.urlsafe_encode64(str).tr("=", "")
   end
