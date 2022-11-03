@@ -9,7 +9,7 @@ gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"
 
 group :development do
-  gem "rbs", require: false
+  gem "typeprof", require: false
 end
 
 group :test do
@@ -19,10 +19,11 @@ end
 group :development, :test do
   gem "flay", require: false
   gem "flog", require: false
+  gem "rbs", require: false
   gem "reek", require: false
-  gem "steep", require: false
   gem "rubocop", "~> 1.38.0", require: false
   gem "rubocop-performance", "~> 1.15.0", require: false
   gem "rubocop-rake", "~> 0.6.0", require: false
   gem "rubocop-rspec", "~> 2.14.2", require: false
+  gem "steep", require: false
 end
