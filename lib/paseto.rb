@@ -10,6 +10,7 @@ require_relative "./rbnacl/stream/xchacha20_xor"
 require_relative "paseto/version"
 require_relative "paseto/errors"
 require_relative "paseto/versions"
+require_relative "paseto/key/basic_key"
 require_relative "paseto/token"
 require_relative "paseto/v4"
 

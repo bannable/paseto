@@ -1,0 +1,21 @@
+module Paseto
+  module Key
+    class BasicKey
+      HEADER: 'invalid'
+
+      @material: String
+      @version: String
+
+      def self.header: -> untyped
+      def header: -> String
+
+      def initialize: (ikm: String, version: String) -> void
+
+      def valid_for?: (version: String, purpose: String) -> bool
+
+      def valid_purpose: -> void
+
+      def encrypt: (payload: String, ?footer: String, ?implicit_assertion: String) -> Paseto::Token
+    end
+  end
+end
