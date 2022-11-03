@@ -3,6 +3,9 @@
 require "base64"
 require "rbnacl"
 
+require_relative "./rbnacl/stream/base"
+require_relative "./rbnacl/stream/xchacha20_xor"
+
 require_relative "paseto/version"
 require_relative "paseto/errors"
 require_relative "paseto/versions"
@@ -18,5 +21,13 @@ module Paseto
 
   def self.decode64(str)
     Base64.urlsafe_decode64(str)
+  end
+
+  def self.encode_hex(str)
+    str.unpack1('H*')
+  end
+
+  def self.decode_hex(str)
+    [str].pack('H*')
   end
 end
