@@ -58,15 +58,14 @@ RSpec.describe RbNaCl::Stream::XChaCha20Xor do
             let(:key) { Paseto.decode_hex(vector[0]) }
             let(:nonce) { Paseto.decode_hex(vector[1]) }
             let(:out) { Paseto.decode_hex(vector[2]) }
+            
             it "passes" do
-              out_len = out.bytesize
-              zeroes = RbNaCl::Util.zeros(out_len)
-              out2 = RbNaCl::Util.zeros(out_len)
+              zeroes = RbNaCl::Util.zeros(out.bytesize)
 
-              stream.encrypt(nonce, out2)
-              expect(out).to eq(out)
-              stream.encrypt(nonce, out2)
-              expect(out2).to eq(zeroes)
+              result = stream.encrypt(nonce, out)
+              expect(result).to eq(zeroes)
+              result = stream.encrypt(nonce, result)
+              expect(result).to eq(out)
             end
           end
         end
