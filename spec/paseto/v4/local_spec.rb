@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Paseto::V4::Local do
-  let(:key_material) { "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f" }
-
+  let(:key_material) { Paseto::Util.decode_hex("707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f") }
   let(:key) { described_class.new(ikm: key_material) }
 
   describe '#encrypt' do
@@ -15,6 +14,15 @@ RSpec.describe Paseto::V4::Local do
   end
 
   describe '#decrypt' do
+    let(:message) { 'asdf' }
+    let(:payload) { '9-aTBffMmDkgyBu8GcATCYCxHuqZoBFwfOMLL6tIXN42TFjR0oCCarn2XqAwimKez1oe3vFHjvrTr4YRSOlpXMR7mpk' }
+    let(:footer) { '' }
+    let(:implicit_assertion) { '' }
+    subject { key.decrypt(payload: payload, footer: footer, implicit_assertion: implicit_assertion) }
+
+    it 'does not error' do
+      expect { subject }.not_to raise_error
+    end
   end
 
   describe '#version' do
@@ -31,25 +39,5 @@ RSpec.describe Paseto::V4::Local do
 
   describe '#secret?' do
     it { expect(key.secret?).to be true }
-  end
-
-  describe "#valid_for?" do
-    context "with a v4.local key" do
-      it "is true for version v4 and purpose local" do
-        expect(key.valid_for?(version: 'v4', purpose: "local")).to be(true)
-      end
-
-      it "is false for version v3" do
-        expect(key.valid_for?(version: 'v3', purpose: "local")).to be(false)
-      end
-
-      it "is false for version V4" do
-        expect(key.valid_for?(version: 'V3', purpose: "local")).to be(false)
-      end
-
-      it "is false for purpose public" do
-        expect(key.valid_for?(version: 'v4', purpose: "public")).to be(false)
-      end
-    end
   end
 end

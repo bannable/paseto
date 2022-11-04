@@ -7,11 +7,11 @@ module Paseto
     attr_reader version: String
     attr_reader purpose: String
 
+    def self.keysize: -> Integer
+
     def header: -> String
 
     def secret?: -> bool
-
-    def valid_for?: (version: String, purpose: String) -> bool
 
     private
 

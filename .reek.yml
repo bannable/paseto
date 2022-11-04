@@ -7,18 +7,16 @@ detectors:
     enabled: false
   UncommunicativeMethodName:
     exclude:
-      - "Paseto#self.decode64"
-      - "Paseto#self.encode64"
-      - "Paseto#self.le64"
+      - "Paseto::Util"
   UncommunicativeVariableName:
+    enabled: false
+  UncommunicativeParameterName:
     enabled: false
   ControlParameter:
     exclude:
-      - "Paseto::Key::Base#valid_for?"
+      - "Paseto::Key#valid_for?"
   TooManyStatements:
-    exclude:
-      - "RbNaCl::Stream::Base#encrypt"
-      - "Paseto::V4::Local#encrypt"
+    enabled: false
   UtilityFunction:
     exclude:
       - "RbNaCl::Stream::Base#data_len"
@@ -28,3 +26,6 @@ detectors:
   NilCheck:
     exclude:
       - "RbNaCl::Stream::Base#data_len"
+  DuplicateMethodCall:
+    exclude:
+      - "Paseto::Util.constant_compare"

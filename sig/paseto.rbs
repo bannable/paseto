@@ -1,15 +1,3 @@
 module Paseto
   VERSION: String
-  
-  def self.encode64: (String str) -> String
-
-  def self.decode64: (String str) -> String
-
-  def self.encode_hex: (String str) -> (Integer | Float | String | nil)
-
-  def self.decode_hex: (String str) -> String
-
-  def self.le64: (Integer num) -> String
-
-  def self.pre_auth_encode: (*String parts) -> String
 end

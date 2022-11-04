@@ -18,9 +18,9 @@ RSpec.describe RbNaCl::Stream::XChaCha20Xor do
       [ "9d23bd4149cb979ccf3c5c94dd217e9808cb0e50cd0f67812235eaaf601d6232", "c047548266b7c370d33566a2425cbf30d82d1eaf5294109e", "a21209096594de8c5667b1d13ad93f744106d054df210e4782cd396fec692d3515a20bf351eec011a92c367888bc464c32f0807acd6c203a247e0db854148468e9f96bee4cf718d68d5f637cbd5a376457788e6fae90fc31097cfc" ],
     ]
 
-    let(:key) { Paseto.decode_hex(TEST_VECTORS[0][0]) }
-    let(:nonce) { Paseto.decode_hex(TEST_VECTORS[0][1]) }
-    let(:ciphertext) { Paseto.decode_hex(TEST_VECTORS[0][2]) }
+    let(:key) { Paseto::Util.decode_hex(TEST_VECTORS[0][0]) }
+    let(:nonce) { Paseto::Util.decode_hex(TEST_VECTORS[0][1]) }
+    let(:ciphertext) { Paseto::Util.decode_hex(TEST_VECTORS[0][2]) }
     let(:message) { RbNaCl::Util.zeros(ciphertext.bytesize) }
     let(:corrupt_ciphertext) { ciphertext.succ }
     let(:trunc_ciphertext) { ciphertext.byteslice(0, 10) }
@@ -55,9 +55,9 @@ RSpec.describe RbNaCl::Stream::XChaCha20Xor do
         # the output should encrypt to `out` and then back to 0's for each vector
         TEST_VECTORS.each_with_index do |vector, idx|
           context "vector #{idx}" do
-            let(:key) { Paseto.decode_hex(vector[0]) }
-            let(:nonce) { Paseto.decode_hex(vector[1]) }
-            let(:out) { Paseto.decode_hex(vector[2]) }
+            let(:key) { Paseto::Util.decode_hex(vector[0]) }
+            let(:nonce) { Paseto::Util.decode_hex(vector[1]) }
+            let(:out) { Paseto::Util.decode_hex(vector[2]) }
             
             it "passes" do
               zeroes = RbNaCl::Util.zeros(out.bytesize)

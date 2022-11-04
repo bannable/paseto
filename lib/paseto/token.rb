@@ -13,8 +13,8 @@ module Paseto
 
       raise ParseError, "not a valid token" unless version && purpose
 
-      payload = Paseto.decode64(payload || '')
-      footer = Paseto.decode64(footer || '')
+      payload = Util.decode64(payload || '')
+      footer = Util.decode64(footer || '')
       
       new(version: version,
           purpose: purpose,
@@ -30,8 +30,8 @@ module Paseto
     end
 
     def to_s
-      parts = [version, purpose, Paseto.encode64(payload)]
-      parts << Paseto.encode64(footer) unless footer.empty?
+      parts = [version, purpose, Util.encode64(payload)]
+      parts << Util.encode64(footer) unless footer.empty?
       parts.join('.')
     end
   end

@@ -3,6 +3,10 @@
 
 module Paseto
   class Key
+    def self.keysize
+      raise NotImplementedError
+    end
+
     def initialize(version:, purpose:, ikm:)
       @version = version
       @purpose = purpose
@@ -24,10 +28,6 @@ module Paseto
     
     def secret?
       @secret
-    end
-
-    def valid_for?(version:, purpose:)
-      version == @version && purpose == @purpose
     end
 
     private
