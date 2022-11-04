@@ -3,7 +3,7 @@
 
 module Paseto
   module V4
-    class Local < Paseto::Key::Base
+    class Local < Paseto::Key
       def initialize(ikm:)
         super(version: 'v4', purpose: 'local', ikm: ikm)
       end

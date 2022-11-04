@@ -1,0 +1,22 @@
+module Paseto
+  class Key
+    @secret: bool
+
+    public
+
+    attr_reader version: String
+    attr_reader purpose: String
+
+    def header: -> String
+
+    def secret?: -> bool
+
+    def valid_for?: (version: String, purpose: String) -> bool
+
+    private
+
+    attr_reader key: String
+
+    def initialize: (version: String, purpose: String, ikm: String) -> void
+  end
+end
