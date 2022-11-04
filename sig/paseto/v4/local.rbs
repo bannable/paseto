@@ -1,0 +1,16 @@
+module Paseto
+  module V4
+    class Local
+      # Technically incorrect, but RBS chokes if this inherits instead?
+      include Paseto::Key::Base
+      
+      public
+
+      def encrypt: (message: String, ?footer: String, ?implicit_assertion: String) -> Token
+
+      private
+      
+      def initialize: (ikm: String) -> void
+    end
+  end
+end

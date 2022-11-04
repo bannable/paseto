@@ -13,9 +13,6 @@ module RbNaCl
 
       MESSAGEBYTES_MAX = 0
 
-      attr_reader :key
-      private :key
-
       # Create a new Stream.
       #
       # Sets up Stream with a secret key for encrypting and decrypting messages.
@@ -66,6 +63,10 @@ module RbNaCl
       end
 
       private
+      
+      def key
+        @key
+      end
 
       def data_len(data)
         return 0 if data.nil?

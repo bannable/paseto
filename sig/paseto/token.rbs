@@ -9,6 +9,6 @@ module Paseto
 
     def initialize: (payload: String, purpose: String, version: String, ?footer: String) -> void
 
-    def to_s: () -> String
+    def to_s: -> String
   end
 end

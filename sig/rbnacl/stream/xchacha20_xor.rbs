@@ -3,21 +3,7 @@ module RbNaCl
     class XChaCha20Xor < RbNaCl::Stream::Base
       extend Sodium
 
-      def self.crypto_stream_xchacha20_keybytes: -> Integer
-
-      def self.crypto_stream_xchacha20_noncebytes: -> Integer
-
-      def self.crypto_stream_xchacha20_xor: (String c, String m, Integer mlen, String n, String key) -> Integer
-
       def self.stream_xchacha20_xor: (String c, String m, Integer mlen, String n, String key) -> bool
-
-      public
-
-      def crypto_stream_xchacha20_keybytes: (*untyped) -> untyped
-
-      def crypto_stream_xchacha20_noncebytes: (*untyped) -> untyped
-
-      def crypto_stream_xchacha20_xor: (*untyped) -> untyped
 
       private
 

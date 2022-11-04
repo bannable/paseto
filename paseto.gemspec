@@ -4,7 +4,7 @@ require_relative "lib/paseto/version"
 
 Gem::Specification.new do |spec|
   spec.name = "paseto"
-  spec.version = Paseto::VERSION
+  spec.version = Paseto::Version::VERSION
   spec.authors = ["Joe Truba"]
   spec.email = ["joe@bannable.net"]
 

@@ -9,7 +9,7 @@ module Paseto
 
   def self.decode_hex: (String str) -> String
 
-  def self.le64: (Numeric num) -> String
+  def self.le64: (Integer num) -> String
 
   def self.pre_auth_encode: (*String parts) -> String
 end

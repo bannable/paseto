@@ -5,8 +5,7 @@ module RbNaCl
       NONCEBYTES: Integer
       MESSAGEBYTES_MAX: Integer
 
-      private
-      attr_reader key: String
+      @key: String
 
       public
       def initialize: (String key) -> void
@@ -19,8 +18,9 @@ module RbNaCl
       def key_bytes: -> Integer
 
       private
+      def key: -> String
       def data_len: (String data) -> Integer
-      def do_encrypt: (String _ciphertext, String _nonce, String _message) -> void
+      def do_encrypt: (String _ciphertext, String _nonce, String _message) -> bool
     end
   end
 end
