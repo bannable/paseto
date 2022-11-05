@@ -26,6 +26,9 @@ detectors:
   NilCheck:
     exclude:
       - "RbNaCl::Stream::Base#data_len"
+  FeatureEnvy:
+    exclude:
+      - "Paseto::V4::Local#decrypt"
   DuplicateMethodCall:
     exclude:
       - "Paseto::Util.constant_compare"

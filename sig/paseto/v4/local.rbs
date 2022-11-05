@@ -3,6 +3,8 @@ module Paseto
     class Local < Paseto::Key
       def encrypt: (message: String, ?footer: String, ?implicit_assertion: String) -> Token
 
+      def decrypt: (payload: String, ?footer: String, ?implicit_assertion: String) -> String
+
       private
       
       def initialize: (ikm: String) -> void

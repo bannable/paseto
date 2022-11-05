@@ -4,4 +4,7 @@ module Paseto
 
   class ParseError < Error
   end
+
+  class DecryptError < Error
+  end
 end
