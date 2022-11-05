@@ -42,6 +42,16 @@ RSpec.describe Paseto::Util do
     it 'encodes larger lengths' do
       expect(described_class.le64(65534)).to eq("\xFE\xFF\x00\x00\x00\x00\x00\x00")
     end
+
+    it 'raises when the input is larger than ULLONG_MAX' do
+      expect { described_class.le64(0xFFFFFFFFFFFFFFFF + 1) }
+        .to raise_error(ArgumentError, "num too large")
+    end
+
+    it 'raises on negative inputs' do
+      expect { described_class.le64(-1) }
+        .to raise_error(ArgumentError, "num must not be negative")
+    end
   end
 
   describe '.pre_auth_encode' do

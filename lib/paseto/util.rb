@@ -20,6 +20,9 @@ module Paseto
     end
 
     def self.le64(num)
+      raise ArgumentError, "num too large" if num.bit_length > 64
+      raise ArgumentError, "num must not be negative" unless num == num.abs
+
       [num].pack('Q<')
     end
 
@@ -31,6 +34,7 @@ module Paseto
 
     def self.constant_compare(a, b)
       return false unless a.bytesize == b.bytesize
+
       b_bytes = b.bytes
       res = 0
       a.each_byte { |byte| res |= byte ^ b_bytes.shift.to_i }
