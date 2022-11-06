@@ -12,4 +12,7 @@ module Paseto
 
   class InvalidAuthenticator < CryptoError
   end
+
+  class InvalidSignature < CryptoError
+  end
 end

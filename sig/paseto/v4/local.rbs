@@ -6,6 +6,8 @@ module Paseto
       def decrypt: (payload: String, ?footer: String, ?implicit_assertion: String) -> String
 
       private
+
+      attr_reader key: String
       
       def initialize: (ikm: String) -> void
     end

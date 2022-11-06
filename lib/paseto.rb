@@ -30,6 +30,9 @@ module Paseto
 
   # An authenticator was forged or otherwise corrupt
   class InvalidAuthenticator < CryptoError; end
+
+  # A signature was forged or otherwise corrupt
+  class InvalidSignature < CryptoError; end
   
   include Version
 end

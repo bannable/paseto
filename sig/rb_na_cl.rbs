@@ -28,9 +28,36 @@ module RbNaCl
   class CryptoError < StandardError
   end
 
+  class BadSignatureError < CryptoError
+  end
+
+  class LengthError < CryptoError
+  end
+
   module Util
     def self.zeros: (Integer) -> String
     def self.check_length: (String n, Integer l, String desc) -> bool
     def self.check_string: (String s, Integer l, String desc) -> String
+  end
+
+  class SigningKey
+    def self.generate: -> SigningKey
+    def self.from_keypair: (String keypair) -> SigningKey
+    def self.signature_bytes: -> Integer
+
+    def initialize: (String seed) -> void
+
+    def sign: (String message) -> String
+    def to_bytes: -> String
+    def verify_key: -> VerifyKey
+    def keypair: -> String
+  end
+
+  class VerifyKey
+    def self.signature_bytes: -> Integer
+    def initialize: (String key) -> void
+
+    def verify: (String signature, String message) -> bool
+    def to_bytes: -> String
   end
 end

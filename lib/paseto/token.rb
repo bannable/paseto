@@ -29,6 +29,10 @@ module Paseto
       @footer = footer
     end
 
+    def header
+      "#{version}.#{purpose}"
+    end
+
     def to_s
       parts = [version, purpose, Util.encode64(payload)]
       parts << Util.encode64(footer) unless footer.empty?
