@@ -1,22 +1,17 @@
 module Paseto
   class Key
-    @secret: bool
-
-    public
-
     attr_reader version: String
     attr_reader purpose: String
+    attr_reader public_key: String | nil
 
     def self.keysize: -> Integer
 
     def header: -> String
 
-    def secret?: -> bool
-
     private
 
-    attr_reader key: String
+    attr_reader secret_key: String
 
-    def initialize: (version: String, purpose: String, ikm: String) -> void
+    def initialize: (version: String, purpose: String, secret_key: String, ?public_key: (String | nil)) -> void
   end
 end

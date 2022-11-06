@@ -7,11 +7,11 @@ module Paseto
       raise NotImplementedError
     end
 
-    def initialize(version:, purpose:, ikm:)
+    def initialize(version:, purpose:, secret_key:, public_key: nil)
       @version = version
       @purpose = purpose
-      @key = ikm
-      @secret = true
+      @secret_key = secret_key
+      @public_key = public_key
     end
 
     def version
@@ -25,15 +25,15 @@ module Paseto
     def header
       "#{version}.#{purpose}"
     end
-    
-    def secret?
-      @secret
+
+    def public_key
+      @public_key
     end
 
     private
 
-    def key
-      @key
+    def secret_key
+      @secret_key
     end
   end
 end

@@ -7,8 +7,10 @@ module Paseto
     
     def self.parse: (String str) -> Token
 
-    def initialize: (payload: String, purpose: String, version: String, ?footer: String) -> void
-
     def to_s: -> String
+
+    private
+
+    def initialize: (payload: String, purpose: String, version: String, ?footer: String) -> void
   end
 end

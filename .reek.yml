@@ -17,15 +17,9 @@ detectors:
       - "Paseto::Key#valid_for?"
   TooManyStatements:
     enabled: false
-  UtilityFunction:
-    exclude:
-      - "RbNaCl::Stream::Base#data_len"
   InstanceVariableAssumption:
     exclude:
-      - "RbNaCl::Stream::XChaCha20Xor"
-  NilCheck:
-    exclude:
-      - "RbNaCl::Stream::Base#data_len"
+      - "Paseto::Sodium::Stream::XChaCha20Xor"
   FeatureEnvy:
     exclude:
       - "Paseto::V4::Local#decrypt"
