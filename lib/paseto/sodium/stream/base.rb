@@ -14,6 +14,18 @@ module Paseto
 
         MESSAGEBYTES_MAX = 0
 
+        def self.nonce_bytes
+          self.const_get(:NONCEBYTES)
+        end
+
+        def self.key_bytes
+          self.const_get(:KEYBYTES)
+        end
+
+        def self.primitive
+          raise NotImplementedError
+        end
+
         # Create a new Stream.
         #
         # Sets up Stream with a secret key for encrypting and decrypting messages.
@@ -30,7 +42,7 @@ module Paseto
         def encrypt(nonce, message)
           RbNaCl::Util.check_length(nonce, nonce_bytes, "Nonce")
 
-          ciphertext = RbNaCl::Util.zeros(message.bytesize)
+          ciphertext = RbNaCl::Util.zeros(data_len(message))
 
           success = do_encrypt(ciphertext, nonce, message)
           raise CryptoError, "Encryption failed" unless success
@@ -38,24 +50,12 @@ module Paseto
           ciphertext
         end
 
-        def self.primitive
-          raise NotImplementedError
-        end
-
         def primitive
           self.class.primitive
         end
 
-        def self.nonce_bytes
-          self.const_get(:NONCEBYTES)
-        end
-
         def nonce_bytes
           self.class.nonce_bytes
-        end
-
-        def self.key_bytes
-          self.const_get(:KEYBYTES)
         end
 
         def key_bytes
@@ -63,13 +63,19 @@ module Paseto
         end
 
         private
-        
+
         def key
           @key
         end
 
         def do_encrypt(_ciphertext, _nonce, _message)
           raise NotImplementedError
+        end
+
+        def data_len(data)
+          return 0 unless data
+
+          data.bytesize
         end
       end
     end

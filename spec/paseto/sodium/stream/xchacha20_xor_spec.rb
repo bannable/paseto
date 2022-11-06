@@ -1,7 +1,7 @@
 # encoding: binary
 # frozen_string_literal: true
 
-RSpec.describe RbNaCl::Stream::XChaCha20Xor do
+RSpec.describe Paseto::Sodium::Stream::XChaCha20Xor do
   if RbNaCl::Sodium::Version.supported_version?("1.0.12")
     # https://github.com/jedisct1/libsodium/blob/a972fe6498942900981d15d5b7a21259394f2805/test/default/xchacha20.c#L92
     # [[key, nonce, output], ...]

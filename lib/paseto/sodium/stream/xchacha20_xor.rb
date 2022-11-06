@@ -18,11 +18,11 @@ module Paseto
           sodium_function :stream_xchacha20_xor,
                           :crypto_stream_xchacha20_xor,
                           %i[pointer pointer ulong_long pointer pointer]
-          
+
           private
 
           def do_encrypt(ciphertext, nonce, message)
-            self.class.stream_xchacha20_xor(ciphertext, message, message.bytesize, nonce, @key)
+            self.class.stream_xchacha20_xor(ciphertext, message, data_len(message), nonce, @key)
           end
         end
       end
