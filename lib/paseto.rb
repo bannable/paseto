@@ -5,15 +5,16 @@ require "base64"
 require "rbnacl"
 require "securerandom"
 
-require "paseto/sodium/stream/base"
-require "paseto/sodium/stream/xchacha20_xor"
+require_relative "paseto/sodium/stream/base"
+require_relative "paseto/sodium/stream/xchacha20_xor"
 
-require "paseto/util"
-require "paseto/version"
-require "paseto/token"
-require "paseto/key"
+require_relative "paseto/util"
+require_relative "paseto/version"
+require_relative "paseto/token"
+require_relative "paseto/key"
 
-require "paseto/v4/local"
+require_relative "paseto/v4/local"
+require_relative "paseto/v4/public"
 
 module Paseto
   # Generic superclass for all Paseto errors
