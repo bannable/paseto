@@ -36,8 +36,4 @@ RSpec.describe Paseto::V4::Local do
   describe '#header' do
     it { expect(key.header).to eq('v4.local') }
   end
-
-  describe '#secret?' do
-    it { expect(key.secret?).to be true }
-  end
 end

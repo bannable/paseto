@@ -3,18 +3,32 @@
 
 require "base64"
 require "rbnacl"
+require "securerandom"
 
-require_relative "./rbnacl/stream/base"
-require_relative "./rbnacl/stream/xchacha20_xor"
+require "paseto/sodium/stream/base"
+require "paseto/sodium/stream/xchacha20_xor"
 
-require_relative "paseto/util"
-require_relative "paseto/version"
-require_relative "paseto/errors"
-require_relative "paseto/token"
-require_relative "paseto/key"
+require "paseto/util"
+require "paseto/version"
+require "paseto/token"
+require "paseto/key"
 
-require_relative "paseto/v4/local"
+require "paseto/v4/local"
 
 module Paseto
+  # Generic superclass for all Paseto errors
+  class Error < StandardError; end
+
+  # Deserialized data did not include mandatory fields.
+  class ParseError < Error; end
+
+  # A cryptographic primitive has failed for any reason,
+  # such as attempting to initialize a stream cipher with
+  # an invalid nonce.
+  class CryptoError < Error; end
+
+  # An authenticator was forged or otherwise corrupt
+  class InvalidAuthenticator < CryptoError; end
+  
   include Version
 end

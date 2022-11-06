@@ -15,7 +15,7 @@ module Paseto
 
         ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + n, key: key, digest_size: 32)
 
-        c = RbNaCl::Stream::XChaCha20Xor.new(ek).encrypt(n2, message)
+        c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message)
 
         pre_auth = Util.pre_auth_encode(header, n, c, footer, implicit_assertion)
 
@@ -39,9 +39,9 @@ module Paseto
 
         t2 = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 
-        raise DecryptError unless Util.constant_compare(t, t2)
+        raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        RbNaCl::Stream::XChaCha20Xor.new(ek).encrypt(n2, c)
+        Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, c)
       end
     end
   end

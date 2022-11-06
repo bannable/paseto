@@ -1,0 +1,21 @@
+module Paseto
+  module Sodium
+    module Stream
+      class XChaCha20Xor < Paseto::Sodium::Stream::Base
+        extend RbNaCl::Sodium
+
+        def self.stream_xchacha20_xor: (String c, String m, Integer mlen, String n, String key) -> bool
+
+        private
+
+        def do_encrypt: (String ciphertext, String nonce, String message) -> bool
+
+        KEYBYTES: Integer
+
+        NONCEBYTES: Integer
+
+        MESSAGEBYTES_MAX: Integer
+      end
+    end
+  end
+end
