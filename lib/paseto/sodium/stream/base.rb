@@ -15,11 +15,11 @@ module Paseto
         MESSAGEBYTES_MAX = 0
 
         def self.nonce_bytes
-          self.const_get(:NONCEBYTES)
+          const_get(:NONCEBYTES)
         end
 
         def self.key_bytes
-          self.const_get(:KEYBYTES)
+          const_get(:KEYBYTES)
         end
 
         def self.primitive
@@ -64,9 +64,7 @@ module Paseto
 
         private
 
-        def key
-          @key
-        end
+        attr_reader :key
 
         def do_encrypt(_ciphertext, _nonce, _message)
           raise NotImplementedError

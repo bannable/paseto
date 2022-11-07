@@ -34,7 +34,7 @@ module Paseto
         m2 = Util.pre_auth_encode("v4.public.", m, footer, implicit_assertion)
         sig = private_key.sign(m2)
         payload = m + sig
-        Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
+        Token.new(payload:, purpose:, version:, footer:)
       end
 
       def verify(token:, implicit_assertion: "")
@@ -56,15 +56,11 @@ module Paseto
         m
       end
 
-      def public_key
-        @public_key
-      end
+      attr_reader :public_key
 
       private
 
-      def private_key
-        @private_key
-      end
+      attr_reader :private_key
     end
   end
 end

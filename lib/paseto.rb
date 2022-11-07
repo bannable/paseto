@@ -33,6 +33,6 @@ module Paseto
 
   # A signature was forged or otherwise corrupt
   class InvalidSignature < CryptoError; end
-  
+
   include Version
 end

@@ -6,25 +6,23 @@ module Paseto
 
     # @dynamic version, purpose, payload, footer
     attr_reader :version
-    attr_reader :purpose
-    attr_reader :payload
-    attr_reader :footer
+    attr_reader :purpose, :payload, :footer
 
     def self.parse(str)
-      version, purpose, payload, footer = str.split('.')
+      version, purpose, payload, footer = str.split(".")
 
       raise ParseError, "not a valid token" unless version && purpose
 
-      payload = Util.decode64(payload || '')
-      footer = Util.decode64(footer || '')
-      
-      new(version: version,
-          purpose: purpose,
-          payload: payload,
-          footer: footer)
+      payload = Util.decode64(payload || "")
+      footer = Util.decode64(footer || "")
+
+      new(version:,
+          purpose:,
+          payload:,
+          footer:)
     end
 
-    def initialize(payload:, purpose:, version:, footer: '')
+    def initialize(payload:, purpose:, version:, footer: "")
       @version = version
       @purpose = purpose
       @payload = payload
@@ -38,7 +36,7 @@ module Paseto
     def to_s
       parts = [version, purpose, Util.encode64(payload)]
       parts << Util.encode64(footer) unless footer.empty?
-      parts.join('.')
+      parts.join(".")
     end
 
     def <=>(other)

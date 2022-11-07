@@ -8,13 +8,7 @@ module Paseto
       @purpose = purpose
     end
 
-    def version
-      @version
-    end
-
-    def purpose
-      @purpose
-    end
+    attr_reader :version, :purpose
 
     def header
       "#{version}.#{purpose}"
