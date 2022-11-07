@@ -10,6 +10,10 @@ module Paseto
       attr_reader key: String
       
       def initialize: (ikm: String) -> void
+
+      def split_payload: (String payload) -> [String, String, String]
+
+      def calc_keys: (String nonce) -> [String, String, String]
     end
   end
 end

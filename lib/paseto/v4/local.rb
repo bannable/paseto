@@ -12,9 +12,7 @@ module Paseto
       def encrypt(message:, footer: "", implicit_assertion: "", n: nil)
         n ||= RbNaCl::Random.random_bytes(32)
 
-        ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + n, key:, digest_size: 56).unpack("a32a24")
-
-        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + n, key:, digest_size: 32)
+        ek, n2, ak = calc_keys(n)
 
         c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message)
 
@@ -29,14 +27,9 @@ module Paseto
         raise ParseError, "incorrect header for key type v4.local" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time
-        payload = token.payload
-        n = payload.slice(0, 32) || ""
-        c = payload.slice(32, payload.size - 64) || ""
-        t = payload.slice(-32, 32) || ""
+        n, c, t = split_payload(token.payload)
 
-        ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + n, key:, digest_size: 56).unpack("a32a24")
-
-        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + n, key:, digest_size: 32)
+        ek, n2, ak = calc_keys(n)
 
         pre_auth = Util.pre_auth_encode("v4.local.", n, c, token.footer, implicit_assertion)
 
@@ -48,6 +41,19 @@ module Paseto
       end
 
       private
+
+      def split_payload(payload)
+        n = payload.slice(0, 32).to_s
+        c = payload.slice(32, payload.size - 64).to_s
+        t = payload.slice(-32, 32).to_s
+        [n, c, t]
+      end
+
+      def calc_keys(nonce)
+        ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + nonce, key:, digest_size: 56).unpack("a32a24")
+        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + nonce, key:, digest_size: 32)
+        [ek, n2, ak]
+      end
 
       attr_reader :key
     end
