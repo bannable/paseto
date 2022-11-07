@@ -30,51 +30,51 @@ RSpec.describe Paseto::Util do
     end
   end
 
-  describe '.le64' do
-    it 'encodes 0 as an unsigned long long' do
+  describe ".le64" do
+    it "encodes 0 as an unsigned long long" do
       expect(described_class.le64(0)).to eq("\x00\x00\x00\x00\x00\x00\x00\x00")
     end
 
-    it 'encodes a length as an unsigned long long' do
+    it "encodes a length as an unsigned long long" do
       expect(described_class.le64(10)).to eq("\x0A\x00\x00\x00\x00\x00\x00\x00")
     end
 
-    it 'encodes larger lengths' do
-      expect(described_class.le64(65534)).to eq("\xFE\xFF\x00\x00\x00\x00\x00\x00")
+    it "encodes larger lengths" do
+      expect(described_class.le64(0xFFFE)).to eq("\xFE\xFF\x00\x00\x00\x00\x00\x00")
     end
 
-    it 'raises when the input is larger than ULLONG_MAX' do
+    it "raises when the input is larger than ULLONG_MAX" do
       expect { described_class.le64(0xFFFFFFFFFFFFFFFF + 1) }
         .to raise_error(ArgumentError, "num too large")
     end
 
-    it 'raises on negative inputs' do
+    it "raises on negative inputs" do
       expect { described_class.le64(-1) }
         .to raise_error(ArgumentError, "num must not be negative")
     end
   end
 
-  describe '.pre_auth_encode' do
-    it 'encodes zero parts correctly' do
+  describe ".pre_auth_encode" do
+    it "encodes zero parts correctly" do
       expect(described_class.pre_auth_encode).to eq(
         "\x00\x00\x00\x00\x00\x00\x00\x00"
       )
     end
 
-    it 'encodes an empty string correctly' do
-      expect(described_class.pre_auth_encode('')).to eq(
+    it "encodes an empty string correctly" do
+      expect(described_class.pre_auth_encode("")).to eq(
         "\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
       )
     end
 
-    it 'encodes an arbitrary string correctly' do
-      expect(described_class.pre_auth_encode('some str')).to eq(
+    it "encodes an arbitrary string correctly" do
+      expect(described_class.pre_auth_encode("some str")).to eq(
         "\x01\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00some str"
       )
     end
 
-    it 'encodes multiple parts correctly' do
-      expect(described_class.pre_auth_encode('some', 'str')).to eq(
+    it "encodes multiple parts correctly" do
+      expect(described_class.pre_auth_encode("some", "str")).to eq(
         "\x02\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00some\x03\x00\x00\x00\x00\x00\x00\x00str"
       )
     end

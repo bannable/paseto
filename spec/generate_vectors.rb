@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require 'json'
+require "fileutils"
+require "json"
 
 TEST_VECTORS = [
-  { version: 'v4', path: 'vectors/v4.json' }
+  { version: "v4", path: "vectors/v4.json" }
 ]
 
 HEADER = <<HEADER
@@ -17,7 +18,7 @@ OUTER_DESCRIBE
 
 class V4LocalSpec
   attr_reader :name, :expect_fail, :nonce, :key, :token, :payload, :footer, :implicit_assertion
-  
+
   def initialize(name:, expect_fail:, nonce:, key:, token:, payload:, footer:, implicit_assertion:, **_unused)
     @name = name
     @expect_fail = expect_fail
@@ -44,9 +45,10 @@ class V4LocalSpec
 #{expectations}
 SPEC
   end
-  
+
   def payload_or_nil
     return %(%[#{payload}]) if payload
+
     "nil"
   end
 
@@ -106,6 +108,7 @@ SPEC
 
   def payload_or_nil
     return %(%[#{payload}]) if payload
+
     "nil"
   end
 
@@ -142,7 +145,7 @@ end
 module SpecFactory
   def self.generate(version, **test)
     case version
-    when 'v4'
+    when "v4"
       if test.include?(:key)
         V4LocalSpec.new(**test)
       elsif test.include?(:public_key)
@@ -158,19 +161,19 @@ end
 
 def generate_specs(version:, path:)
   vectors = JSON.load_file(path)
-  vectors['tests'].each do |t|
-    t.transform_keys! { |k| k.tr('-', '_').to_sym }
+  vectors["tests"].each do |t|
+    t.transform_keys! { |k| k.tr("-", "_").to_sym }
   end
 
   file_path = File.join("paseto", version, "test_vectors_spec.rb")
-  File.unlink(file_path) if File.exist?(file_path)
+  FileUtils.rm file_path
   file = File.new(file_path, "w")
   file.puts HEADER
-  file.puts sprintf(OUTER_DESCRIBE, vector_name: vectors['name'])
-  vectors['tests'].each do |test|
+  file.puts format(OUTER_DESCRIBE, vector_name: vectors["name"])
+  vectors["tests"].each do |test|
     file.puts SpecFactory.generate(version, **test).spec
   end
-  file.puts 'end'
+  file.puts "end"
   file.close
 end
 

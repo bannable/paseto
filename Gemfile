@@ -14,6 +14,7 @@ group :test do
 end
 
 group :development, :test do
+  gem "debug", "~> 1.6"
   gem "flay", require: false
   gem "flog", require: false
   gem "rake", "~> 13.0"
@@ -24,6 +25,5 @@ group :development, :test do
   gem "rubocop-performance", "~> 1.15.0", require: false
   gem "rubocop-rake", "~> 0.6.0", require: false
   gem "rubocop-rspec", "~> 2.14.2", require: false
-  gem "debug", "~> 1.6"
   gem "steep", require: false
 end

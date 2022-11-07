@@ -9,7 +9,7 @@ module Paseto
         super(version: "v4", purpose: "local")
       end
 
-      def encrypt(message:, footer: "", implicit_assertion: "", n: nil)
+      def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= RbNaCl::Random.random_bytes(32)
 
         ek, n2, ak = calc_keys(n)
@@ -50,8 +50,10 @@ module Paseto
       end
 
       def calc_keys(nonce)
+        # rubocop:disable Style/StringConcatenation
         ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + nonce, key:, digest_size: 56).unpack("a32a24")
         ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + nonce, key:, digest_size: 32)
+        # rubocop:enable Style/StringConcatenation
         [ek, n2, ak]
       end
 

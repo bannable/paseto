@@ -4,7 +4,7 @@ RSpec.describe Paseto::V4::Public do
   let(:sk1_bytes) { Paseto::Util.decode_hex("68c16bc05a4d4d2bc537c8695cd562d1d1421a37a95eb3de9bdf8468e0da3448") }
   let(:vk1_bytes) { Paseto::Util.decode_hex("f0d2091894bc5ed1cc9fa0ccbb17ce1512c8faa054b4b8f1882740562bacff13") }
   let(:sk2_bytes) { Paseto::Util.decode_hex("ea9ce393849031c4bce9dd1b3ba33eaf5c0a06189c81879f5e36e1b492a9b89f") }
-  let(:vk2_bytes) { Paseto::Util.decode_hex("56cb25816b593aaa89a8034a99e08d2f00e9f98e454b8c59e795f6ec07fd7a0e")}
+  let(:vk2_bytes) { Paseto::Util.decode_hex("56cb25816b593aaa89a8034a99e08d2f00e9f98e454b8c59e795f6ec07fd7a0e") }
   let(:signing_key) { RbNaCl::SigningKey.new(sk1_bytes) }
   let(:verify_key) { RbNaCl::VerifyKey.new(vk1_bytes) }
   let(:other_signing) { RbNaCl::SigningKey.new(sk2_bytes) }
@@ -15,9 +15,9 @@ RSpec.describe Paseto::V4::Public do
   let(:key) { described_class.new(private_key: sk_bytes) }
   let(:key_pub) { described_class.new(public_key: vk_bytes) }
 
-  let(:message) { 'asdf' }
-  let(:footer) { '' }
-  let(:implicit_assertion) { '' }
+  let(:message) { "asdf" }
+  let(:footer) { "" }
+  let(:implicit_assertion) { "" }
 
   describe ".generate" do
     it "returns a new instance" do
@@ -25,7 +25,7 @@ RSpec.describe Paseto::V4::Public do
     end
   end
 
-  describe '.new' do
+  describe ".new" do
     it "succeds" do
       expect(key).to be_a(described_class)
     end
@@ -44,7 +44,7 @@ RSpec.describe Paseto::V4::Public do
 
     context "when the public key is the wrong size" do
       context "too long" do
-        let(:vk_bytes) { vk1_bytes + 'a' }
+        let(:vk_bytes) { "#{vk1_bytes}a" }
 
         it "raises a CryptoError" do
           expect { key_pub }.to raise_error(Paseto::CryptoError, "incorrect key size")
@@ -62,10 +62,10 @@ RSpec.describe Paseto::V4::Public do
 
     context "when the private key is the wrong size" do
       context "too long" do
-        let(:sk_bytes) { sk1_bytes + 'a' }
+        let(:sk_bytes) { "#{sk1_bytes}a" }
 
         it "raises a CryptoError" do
-          expect { key } .to raise_error(Paseto::CryptoError, "incorrect key size")
+          expect { key }.to raise_error(Paseto::CryptoError, "incorrect key size")
         end
       end
 
@@ -73,7 +73,7 @@ RSpec.describe Paseto::V4::Public do
         let(:sk_bytes) { sk1_bytes.chop }
 
         it "raises a CryptoError" do
-          expect { key } .to raise_error(Paseto::CryptoError, "incorrect key size")
+          expect { key }.to raise_error(Paseto::CryptoError, "incorrect key size")
         end
       end
     end
@@ -81,7 +81,7 @@ RSpec.describe Paseto::V4::Public do
 
   describe "#version" do
     it { expect(key.version).to eq("v4") }
-    
+
     context "with only a public key" do
       it { expect(key_pub.version).to eq("v4") }
     end
@@ -127,13 +127,15 @@ RSpec.describe Paseto::V4::Public do
   let(:sk1_token_str_ia) { "v4.public.YXNkZqvCv_sax71-gsmJo1a_qA07mbxHiWSE7u4Xg-AZZnqaGuXEY967N3jhtIbd7t6DSLTJo8woMMj-kLUUUR5lTgM" }
 
   # with implicit assertion "false" and footer "1234"
-  let(:sk1_token_str_f_ia) { "v4.public.YXNkZjWIMWWI0bvOSppx166nMfCioF7_Y8t6d7TZDNuoIpRFix3tgQSVr3b4FHiHVh0TgB2PcXSmWdZ1efwt9MTzSAw.MTIzNA" }
+  let(:sk1_token_str_f_ia) do
+    "v4.public.YXNkZjWIMWWI0bvOSppx166nMfCioF7_Y8t6d7TZDNuoIpRFix3tgQSVr3b4FHiHVh0TgB2PcXSmWdZ1efwt9MTzSAw.MTIzNA"
+  end
 
   # "asdf" signed with sk2 above
   let(:sk2_token_str) { "v4.public.YXNkZmbFFrQrHx1LcDHcMHDv2iZOKyOMSd1T3YK62Hq31sKpSE6obRtFLIzjyDHtO6xmdTNFSTJ-kTcvTNilHxf_VAw" }
 
   describe "#sign" do
-    subject { key.sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s }
+    subject { key.sign(message:, footer:, implicit_assertion:).to_s }
 
     it "returns the expected token" do
       expect(subject).to eq(sk1_token_str)
@@ -184,14 +186,14 @@ RSpec.describe Paseto::V4::Public do
     let(:token_str) { sk1_token_str }
     let(:token) { Paseto::Token.parse(token_str) }
 
-    subject { key_pub.verify(token: token, implicit_assertion: implicit_assertion) }
+    subject { key_pub.verify(token:, implicit_assertion:) }
 
     it "returns the expected message" do
       expect(subject).to eq(message)
     end
 
     context "when the message is smaller than the signature size" do
-      let(:token_str) { "v4.public.YXNkZg"}
+      let(:token_str) { "v4.public.YXNkZg" }
 
       it "raises an error" do
         expect { subject }.to raise_error(Paseto::ParseError, "message too short")

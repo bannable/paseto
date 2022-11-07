@@ -38,13 +38,15 @@ module Paseto
       end
     end
 
+    # rubocop:disable Naming/MethodParameterName
     def self.constant_compare(a, b)
       return false unless a.bytesize == b.bytesize
 
       b_bytes = b.bytes
       res = 0
       a.each_byte { |byte| res |= byte ^ b_bytes.shift.to_i }
-      res == 0
+      res.zero?
     end
+    # rubocop:enable Naming/MethodParameterName
   end
 end

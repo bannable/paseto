@@ -29,6 +29,7 @@ detectors:
   UtilityFunction:
     exclude:
       - "Paseto::Sodium::Stream::Base#data_len"
+      - "Paseto::V4::Local#split_payload"
   LongParameterList:
     exclude:
       - "Paseto::V4::Local#encrypt"

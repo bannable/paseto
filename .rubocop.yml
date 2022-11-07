@@ -1,11 +1,13 @@
 require:
   - rubocop-performance
-  - rubocop-rake
-  - rubocop-rspec
+#  - rubocop-rake
+#  - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
+  Exclude:
+    - 'spec/paseto/**/test_vectors_spec.rb'
 
 Style/StringLiterals:
   Enabled: true
@@ -20,3 +22,37 @@ Layout/LineLength:
 
 Style/Documentation:
   Enabled: false
+
+Naming/MethodParameterName:
+  Exclude:
+    - 'lib/paseto/util.rb'
+    - 'lib/paseto/v4/local.rb'
+
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
+Style/StringConcatenation:
+  Exclude:
+    - 'lib/paseto/v4/local.rb'
+
+Layout/ClosingHeredocIndentation:
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
+Layout/HeredocIndentation:
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
+Metrics/AbcSize:
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
+Metrics/ParameterLists:
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
+Style/MutableConstant:
+  Exclude:
+    - 'spec/generate_vectors.rb'
