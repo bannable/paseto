@@ -26,6 +26,7 @@ module Paseto
       end
 
       def decrypt(token:, implicit_assertion: '')
+        raise ParseError, "incorrect header for key type v4.local" unless header == token.header
         # OPTIONAL: verify footer is expected, constant-time
         payload = token.payload
         n = payload.slice(0, 32) || ''

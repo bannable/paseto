@@ -56,7 +56,12 @@ SPEC
     enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
     expect(enc).to_not eq(token)
 
-    expect { local.decrypt(token: token, implicit_assertion: ia) }.to raise_error(Paseto::InvalidAuthenticator)
+    message = begin
+                local.decrypt(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
   end
       EXPECT
     else
