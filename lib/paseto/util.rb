@@ -8,7 +8,13 @@ module Paseto
     end
 
     def self.decode64(str)
+      # Ruby's Base64 library does not care about whether or not padding is present,
+      # but the PASETO test vectors do.
+      return '' if str.include?('=')
+      
       Base64.urlsafe_decode64(str)
+    rescue ArgumentError
+      ''
     end
 
     def self.encode_hex(str)

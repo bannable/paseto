@@ -9,8 +9,8 @@ module Paseto
         super(version: 'v4', purpose: 'local')
       end
 
-      def encrypt(message:, footer: '', implicit_assertion: '')
-        n = RbNaCl::Random.random_bytes(32)
+      def encrypt(message:, footer: '', implicit_assertion: '', n: nil)
+        n ||= RbNaCl::Random.random_bytes(32)
 
         ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + n, key: key, digest_size: 56).unpack('a32a24')
 
@@ -18,26 +18,25 @@ module Paseto
 
         c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message)
 
-        pre_auth = Util.pre_auth_encode(header, n, c, footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode("v4.local.", n, c, footer, implicit_assertion)
 
         t = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 
-        payload = Util.encode64(n + c + t)
-        Token.new(payload: payload, version: version, purpose: purpose, footer: footer)
+        Token.new(payload: (n + c + t), version: version, purpose: purpose, footer: footer)
       end
 
-      def decrypt(payload:, footer: '', implicit_assertion: '')
+      def decrypt(token:, implicit_assertion: '')
         # OPTIONAL: verify footer is expected, constant-time
-        raw = Util.decode64(payload)
-        n = raw.slice(0, 32) || ''
-        c = raw.slice(32, raw.size - 64) || ''
-        t = raw.slice(-32, 32) || ''
+        payload = token.payload
+        n = payload.slice(0, 32) || ''
+        c = payload.slice(32, payload.size - 64) || ''
+        t = payload.slice(-32, 32) || ''
 
         ek, n2 = RbNaCl::Hash.blake2b("paseto-encryption-key" + n, key: key, digest_size: 56).unpack('a32a24')
 
         ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead" + n, key: key, digest_size: 32)
 
-        pre_auth = Util.pre_auth_encode(header, n, c, footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode("v4.local.", n, c, token.footer, implicit_assertion)
 
         t2 = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 

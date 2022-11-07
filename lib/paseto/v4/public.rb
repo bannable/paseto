@@ -11,49 +11,42 @@ module Paseto
       end
 
       def initialize(private_key: "", public_key: "")
-        begin
-          if private_key.bytesize.positive?
-            raise ArgumentError, "may not provide both private and public keys" unless public_key.empty?
+        if private_key.bytesize.positive?
+          raise ArgumentError, "may not provide both private and public keys" unless public_key.empty?
 
-            @private_key = RbNaCl::SigningKey.new(private_key)
-
-            # https://libsodium.gitbook.io/doc/public-key_cryptography/public-key_signatures#extracting-the-seed-and-the-public-key-from-the-secret-key
-            # TODO: It is slow to compute the public key this way, maybe skip the initialization?
-            @public_key = @private_key.verify_key
-          elsif public_key.bytesize.positive?
-            @public_key = RbNaCl::VerifyKey.new(public_key)
-          else
-            raise ArgumentError, "must provide one of private or public key"
-          end
-        rescue RbNaCl::LengthError
-          raise CryptoError, "incorrect key size"
+          @private_key = RbNaCl::SigningKey.new(private_key)
+          @public_key = @private_key.verify_key
+        elsif public_key.bytesize.positive?
+          @public_key = RbNaCl::VerifyKey.new(public_key)
+        else
+          raise ArgumentError, "must provide one of private or public key"
         end
+
         super(version: "v4", purpose: "public")
+      rescue RbNaCl::LengthError
+        raise CryptoError, "incorrect key size"
       end
 
       def sign(message:, footer: "", implicit_assertion: "")
         raise ArgumentError, "no private key available" unless private_key
 
-        m2 = Util.pre_auth_encode("v4.public.", message, footer, implicit_assertion)
-        # TODO: Implement my own bindings for this, the RbNaCl implementation uses attached signatures
+        m = message.to_s
+        m2 = Util.pre_auth_encode("v4.public.", m, footer, implicit_assertion)
         sig = private_key.sign(m2)
-        payload = Util.encode64(message + sig)
+        payload = m + sig
         Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
       end
-
-      require 'debug'
 
       def verify(token:, implicit_assertion: "")
         # OPTIONAL: verify footer is expected, constant-time
         raise ParseError, "incorrect header for key type v4.public" unless header == token.header
 
-        m = Util.decode64(token.payload)
+        m = token.payload
         raise ParseError, "message too short" if m.size < SIGNATURE_BYTES
 
         s = m.slice!(-SIGNATURE_BYTES, SIGNATURE_BYTES) || ""
         m2 = Util.pre_auth_encode("v4.public.", m, token.footer, implicit_assertion)
 
-        # TODO: Implement my own bindings for this, the RbNaCl implementation uses attached signatures
         begin
           public_key.verify(s, m2)
         rescue RbNaCl::BadSignatureError

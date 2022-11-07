@@ -7,6 +7,10 @@ RSpec.describe Paseto::Token do
   let(:token) { described_class.parse(message) }
 
   describe '.parse' do
+    it 'is comparable with the input' do
+      expect(token).to eq(message)
+    end
+
     it 'decodes the version' do
       expect(token.version).to eq('v4')
     end
@@ -46,7 +50,7 @@ RSpec.describe Paseto::Token do
 
   describe '.to_s' do
     it 'serializes as expected' do
-      expect(token.to_s).to eq(message_no_footer)
+      expect(token.to_s).to eq(message)
     end
 
     context 'with a footer' do

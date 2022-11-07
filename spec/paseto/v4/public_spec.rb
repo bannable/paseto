@@ -118,19 +118,19 @@ RSpec.describe Paseto::V4::Public do
   end
 
   # "asdf" signed with sk1 above
-  let(:sk1_token_str) { "v4.public.WVhOa1p0YWZhSFV2ZVFQVUFNbGs5QVdPbXg5YzFUV1hjdUUyeDhGa2h4SUdkOWlWYy1zdWJhU0RLVmY4bm02NUhWbmVuMFBVWWlsck5NYlhHbHN5djdleWFBNA" }
+  let(:sk1_token_str) { "v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4" }
 
   # with footer "1234"
-  let(:sk1_token_str_f) { "v4.public.WVhOa1p2MzRJS1NGdW53OUxYY2g1VGxzLUZtU25RN2RYaEV1NGtSNzVwbXg1eXJKOHgydFg3YVc2cEZtRmprVUtzVUR3cUotR0dQZ1haSmdERTA2TWE5dUNBRQ.MTIzNA" }
+  let(:sk1_token_str_f) { "v4.public.YXNkZv34IKSFunw9LXch5Tls-FmSnQ7dXhEu4kR75pmx5yrJ8x2tX7aW6pFmFjkUKsUDwqJ-GGPgXZJgDE06Ma9uCAE.MTIzNA" }
 
   # with implicit assertion "false"
-  let(:sk1_token_str_ia) { "v4.public.WVhOa1pxdkN2X3NheDcxLWdzbUpvMWFfcUEwN21ieEhpV1NFN3U0WGctQVpabnFhR3VYRVk5NjdOM2podEliZDd0NkRTTFRKbzh3b01Nai1rTFVVVVI1bFRnTQ" }
+  let(:sk1_token_str_ia) { "v4.public.YXNkZqvCv_sax71-gsmJo1a_qA07mbxHiWSE7u4Xg-AZZnqaGuXEY967N3jhtIbd7t6DSLTJo8woMMj-kLUUUR5lTgM" }
 
   # with implicit assertion "false" and footer "1234"
-  let(:sk1_token_str_f_ia) { "v4.public.WVhOa1pqV0lNV1dJMGJ2T1NwcHgxNjZuTWZDaW9GN19ZOHQ2ZDdUWkROdW9JcFJGaXgzdGdRU1ZyM2I0RkhpSFZoMFRnQjJQY1hTbVdkWjFlZnd0OU1UelNBdw.MTIzNA" }
+  let(:sk1_token_str_f_ia) { "v4.public.YXNkZjWIMWWI0bvOSppx166nMfCioF7_Y8t6d7TZDNuoIpRFix3tgQSVr3b4FHiHVh0TgB2PcXSmWdZ1efwt9MTzSAw.MTIzNA" }
 
   # "asdf" signed with sk2 above
-  let(:sk2_token_str) { "v4.public.WVhOa1ptYkZGclFySHgxTGNESGNNSER2MmlaT0t5T01TZDFUM1lLNjJIcTMxc0twU0U2b2JSdEZMSXpqeURIdE82eG1kVE5GU1RKLWtUY3ZUTmlsSHhmX1ZBdw" }
+  let(:sk2_token_str) { "v4.public.YXNkZmbFFrQrHx1LcDHcMHDv2iZOKyOMSd1T3YK62Hq31sKpSE6obRtFLIzjyDHtO6xmdTNFSTJ-kTcvTNilHxf_VAw" }
 
   describe "#sign" do
     subject { key.sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s }

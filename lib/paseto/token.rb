@@ -2,6 +2,8 @@
 
 module Paseto
   class Token
+    include Comparable
+
     # @dynamic version, purpose, payload, footer
     attr_reader :version
     attr_reader :purpose
@@ -37,6 +39,10 @@ module Paseto
       parts = [version, purpose, Util.encode64(payload)]
       parts << Util.encode64(footer) unless footer.empty?
       parts.join('.')
+    end
+
+    def <=>(other)
+      to_s <=> other.to_s
     end
   end
 end

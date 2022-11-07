@@ -26,3 +26,13 @@ detectors:
   DuplicateMethodCall:
     exclude:
       - "Paseto::Util.constant_compare"
+  UtilityFunction:
+    exclude:
+      - "Paseto::Sodium::Stream::Base#data_len"
+  LongParameterList:
+    exclude:
+      - "Paseto::V4::Local#encrypt"
+
+exclude_paths:
+  - spec/generate_vectors.rb
+  - spec/**/test_vectors_spec.rb

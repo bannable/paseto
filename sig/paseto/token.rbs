@@ -1,5 +1,7 @@
 module Paseto
   class Token
+    include Comparable
+
     attr_reader version: String
     attr_reader purpose: String
     attr_reader payload: String
@@ -10,6 +12,8 @@ module Paseto
     def to_s: -> String
 
     def header: -> String
+
+    def <=>: (untyped) -> (Integer | nil)    
 
     private
 
