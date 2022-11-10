@@ -24,18 +24,13 @@ RSpec.describe Paseto::Sodium::Stream::XChaCha20Xor do
   let(:nonce) { Paseto::Util.decode_hex(TEST_VECTORS[0][1]) }
   let(:ciphertext) { Paseto::Util.decode_hex(TEST_VECTORS[0][2]) }
   let(:message) { RbNaCl::Util.zeros(ciphertext.bytesize) }
-  let(:corrupt_ciphertext) { ciphertext.succ }
-  let(:trunc_ciphertext) { ciphertext.byteslice(0, 10) }
-  let(:nonce_short) { nonce.byteslice(0, nonce.bytesize / 2) }
-  let(:nonce_long) { nonce + nonce }
-  let(:nonce_error_regex) { /Nonce.*(Expected #{stream.nonce_bytes})/ }
 
   let(:stream) { described_class.new(key) }
 
   # https://github.com/RubyCrypto/rbnacl/blob/ebbd271a291e174ad55421f14397ebeceb009840/spec/shared/aead.rb#L15
-  context ".new" do
+  describe ".new" do
     it "accepts strings" do
-      expect { described_class.new(key) }.to_not raise_error
+      expect { described_class.new(key) }.not_to raise_error
     end
 
     it "raises on a nil key" do
@@ -51,44 +46,46 @@ RSpec.describe Paseto::Sodium::Stream::XChaCha20Xor do
     end
   end
 
-  context "#encrypt" do
-    context "test vectors" do
+  describe "#encrypt" do
+    TEST_VECTORS.each_with_index do |vector, idx|
       # With the provided `key` and `nonce`, an array of 0's sized to match
       # the output should encrypt to `out` and then back to 0's for each vector
-      TEST_VECTORS.each_with_index do |vector, idx|
-        context "vector #{idx}" do
-          let(:key) { Paseto::Util.decode_hex(vector[0]) }
-          let(:nonce) { Paseto::Util.decode_hex(vector[1]) }
-          let(:out) { Paseto::Util.decode_hex(vector[2]) }
+      context "test vector #{idx}" do
+        let(:key) { Paseto::Util.decode_hex(vector[0]) }
 
-          it "passes" do
-            zeroes = RbNaCl::Util.zeros(out.bytesize)
+        it "decrypts correctly" do
+          nonce, out = vector[1, 2].map { |v| Paseto::Util.decode_hex(v) }
+          zeroes = RbNaCl::Util.zeros(out.bytesize)
+          result = stream.encrypt(nonce, out)
+          expect(result).to eq(zeroes)
+        end
 
-            result = stream.encrypt(nonce, out)
-            expect(result).to eq(zeroes)
-            result = stream.encrypt(nonce, result)
-            expect(result).to eq(out)
-          end
+        it "encrypts correctly" do
+          nonce, out = vector[1, 2].map { |v| Paseto::Util.decode_hex(v) }
+          result = stream.encrypt(nonce, stream.encrypt(nonce, out))
+          expect(result).to eq(out)
         end
       end
     end
 
     it "raises on a short nonce" do
+      nonce_short = nonce.byteslice(0, nonce.bytesize / 2)
       expect do
         stream.encrypt(nonce_short, message)
-      end.to raise_error(RbNaCl::LengthError, nonce_error_regex)
+      end.to raise_error(RbNaCl::LengthError, /Nonce.*(Expected #{stream.nonce_bytes})/)
     end
 
     it "raises on a long nonce" do
+      nonce_long = nonce + nonce
       expect do
         stream.encrypt(nonce_long, message)
-      end.to raise_error(RbNaCl::LengthError, nonce_error_regex)
+      end.to raise_error(RbNaCl::LengthError, /Nonce.*(Expected #{stream.nonce_bytes})/)
     end
 
     it "works with an empty message" do
       expect do
         stream.encrypt(nonce, nil)
-      end.to_not raise_error
+      end.not_to raise_error
     end
   end
 end
