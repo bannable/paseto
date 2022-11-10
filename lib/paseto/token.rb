@@ -9,17 +9,22 @@ module Paseto
     attr_reader :purpose, :payload, :footer
 
     def self.parse(str)
-      version, purpose, payload, footer = str.split(".")
+      case str.split(".")
+      in [String => version, String => purpose, String => payload]
+        footer = ''
+      in [String => version, String => purpose, String => payload, String => footer]
+      else
+        raise ParseError, "not a valid token"
+      end
 
-      raise ParseError, "not a valid token" unless version && purpose
+      payload = Util.decode64(payload)
+      footer = Util.decode64(footer)
 
-      payload = Util.decode64(payload || "")
-      footer = Util.decode64(footer || "")
-
-      new(version:,
-          purpose:,
-          payload:,
-          footer:)
+      begin
+        new(version:, purpose:, payload:, footer:)
+      rescue ArgumentError
+        raise ParseError, "not a valid token"
+      end
     end
 
     def initialize(payload:, purpose:, version:, footer: "")
@@ -27,6 +32,7 @@ module Paseto
       @purpose = purpose
       @payload = payload
       @footer = footer
+      raise ArgumentError, "not a valid token" unless valid?
     end
 
     def header
@@ -45,6 +51,19 @@ module Paseto
 
     def <=>(other)
       to_s <=> other.to_s
+    end
+
+    private
+
+    def valid?
+      case version
+      when "v3"
+        %w(local public).include? purpose
+      when "v4"
+        %w(local public).include? purpose
+      else
+        false
+      end
     end
   end
 end

@@ -8,15 +8,13 @@ module Paseto
     attr_reader footer: String
     
     def self.parse: (String str) -> Token
-
-    def to_s: -> String
-
     def header: -> String
-
+    def to_s: -> String
     def <=>: (untyped) -> (Integer | nil)    
 
     private
 
     def initialize: (payload: String, purpose: String, version: String, ?footer: String) -> void
+    def valid?: -> bool
   end
 end
