@@ -17,10 +17,6 @@ module Paseto
       ""
     end
 
-    def self.encode_hex(str)
-      str.unpack1("H*")
-    end
-
     def self.decode_hex(str)
       [str].pack("H*")
     end
