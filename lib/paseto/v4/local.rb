@@ -32,7 +32,7 @@ module Paseto
         Token.new(payload: (n + c + t), version:, purpose:, footer:)
       end
 
-      def decrypt(token:, implicit_assertion: "")
+      def decrypt(token:, implicit_assertion: "") # rubocop:disable Metrics/AbcSize
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time

@@ -29,6 +29,7 @@ module Paseto
         super(version: "v3", purpose: "public")
       end
 
+      # rubocop:disable Metrics/AbcSize
       def sign(message:, footer: "", implicit_assertion: "")
         raise ArgumentError, "no private key available" unless key.private?
         raise ArgumentError, "message field is mandatory" unless message
@@ -67,6 +68,7 @@ module Paseto
 
         m
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 

@@ -23,6 +23,7 @@ module Paseto
         super(version: "v3", purpose: "local")
       end
 
+      # rubocop:disable Metrics/AbcSize
       def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
         raise ArgumentError, "no message" unless message
 
@@ -62,6 +63,7 @@ module Paseto
         cipher.iv = n2
         cipher.update(c) + cipher.final
       end
+      # rubocop:enable Metrics/AbcSize
 
       private
 
