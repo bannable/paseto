@@ -64,6 +64,9 @@ module Paseto
 
         private
 
+        # @dynamic key
+
+        # Symmetric encryption key for a cipher instance
         attr_reader :key
 
         def do_encrypt(_ciphertext, _nonce, _message)
