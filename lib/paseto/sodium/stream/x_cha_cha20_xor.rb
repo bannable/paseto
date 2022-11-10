@@ -5,6 +5,8 @@ module Paseto
   module Sodium
     module Stream
       class XChaCha20Xor < Paseto::Sodium::Stream::Base
+        # @dynamic self.stream_xchacha20_xor
+
         extend RbNaCl::Sodium
         sodium_type :stream
 
