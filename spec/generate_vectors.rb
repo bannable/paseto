@@ -3,11 +3,6 @@
 require "fileutils"
 require "json"
 
-TEST_VECTORS = [
-  { version: "v4", path: "vectors/v4.json" },
-  { version: "v3", path: "vectors/v3.json" }
-]
-
 HEADER = <<HEADER
 # frozen_string_literal: true
 
@@ -347,4 +342,11 @@ def generate_specs(version:, path:)
   file.close
 end
 
-TEST_VECTORS.each { |tv| generate_specs(**tv) }
+if __FILE__ == $PROGRAM_NAME
+  TEST_VECTORS = [
+    { version: "v4", path: "vectors/v4.json" },
+    { version: "v3", path: "vectors/v3.json" }
+  ]
+
+  TEST_VECTORS.each { |tv| generate_specs(**tv) }
+end
