@@ -20,7 +20,9 @@ module Paseto
         def key_bytes: -> Integer
 
         private
-        def key: -> String
+
+        attr_reader key: String
+
         def do_encrypt: (String _ciphertext, String _nonce, String _message) -> bool
         def data_len: (String | nil) -> Integer
       end

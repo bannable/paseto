@@ -4,7 +4,8 @@ require "fileutils"
 require "json"
 
 TEST_VECTORS = [
-  { version: "v4", path: "vectors/v4.json" }
+  { version: "v4", path: "vectors/v4.json" },
+  { version: "v3", path: "vectors/v3.json" }
 ]
 
 HEADER = <<HEADER
@@ -16,22 +17,23 @@ OUTER_DESCRIBE = <<OUTER_DESCRIBE
 RSpec.describe "%<vector_name>s" do
 OUTER_DESCRIBE
 
-class V4LocalSpec
-  attr_reader :name, :expect_fail, :nonce, :key, :token, :payload, :footer, :implicit_assertion
+module V4
+  class LocalSpec
+    attr_reader :name, :expect_fail, :nonce, :key, :token, :payload, :footer, :implicit_assertion
 
-  def initialize(name:, expect_fail:, nonce:, key:, token:, payload:, footer:, implicit_assertion:, **_unused)
-    @name = name
-    @expect_fail = expect_fail
-    @nonce = nonce
-    @key = key
-    @token = token
-    @payload = payload
-    @footer = footer
-    @implicit_assertion = implicit_assertion
-  end
+    def initialize(name:, expect_fail:, nonce:, key:, token:, payload:, footer:, implicit_assertion:, **_unused)
+      @name = name
+      @expect_fail = expect_fail
+      @nonce = nonce
+      @key = key
+      @token = token
+      @payload = payload
+      @footer = footer
+      @implicit_assertion = implicit_assertion
+    end
 
-  def spec
-    <<-SPEC
+    def spec
+      <<-SPEC
   it "#{name}" do
     nonce = Paseto::Util.decode_hex(%[#{nonce}])
     key = Paseto::Util.decode_hex(%[#{key}])
@@ -43,18 +45,18 @@ class V4LocalSpec
     local = Paseto::V4::Local.new(ikm: key)
 
 #{expectations}
-SPEC
-  end
+      SPEC
+    end
 
-  def payload_or_nil
-    return %(%[#{payload}]) if payload
+    def payload_or_nil
+      return %(%[#{payload}]) if payload
 
-    "nil"
-  end
+      "nil"
+    end
 
-  def expectations
-    if expect_fail
-      <<-EXPECT
+    def expectations
+      if expect_fail
+        <<-EXPECT
     enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
     expect(enc).to_not eq(token)
 
@@ -65,34 +67,34 @@ SPEC
               end
     expect(message).to be_nil
   end
-      EXPECT
-    else
-      <<-EXPECT
+        EXPECT
+      else
+        <<-EXPECT
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)).to eq(tok)
 
     expect(local.decrypt(token: token, implicit_assertion: ia)).to eq(payload)
   end
-EXPECT
+        EXPECT
+      end
     end
   end
-end
 
-class V4PublicSpec
-  attr_reader :name, :expect_fail, :public_key, :secret_key_seed, :token, :payload, :footer, :implicit_assertion
+  class PublicSpec
+    attr_reader :name, :expect_fail, :public_key, :secret_key_seed, :token, :payload, :footer, :implicit_assertion
 
-  def initialize(name:, expect_fail:, public_key:, secret_key_seed:, token:, payload:, footer:, implicit_assertion:, **_unused)
-    @name = name
-    @expect_fail = expect_fail
-    @public_key = public_key
-    @secret_key_seed = secret_key_seed
-    @token = token
-    @payload = payload
-    @footer = footer
-    @implicit_assertion = implicit_assertion
-  end
+    def initialize(name:, expect_fail:, public_key:, secret_key_seed:, token:, payload:, footer:, implicit_assertion:, **_unused)
+      @name = name
+      @expect_fail = expect_fail
+      @public_key = public_key
+      @secret_key_seed = secret_key_seed
+      @token = token
+      @payload = payload
+      @footer = footer
+      @implicit_assertion = implicit_assertion
+    end
 
-  def spec
-    <<-SPEC
+    def spec
+      <<-SPEC
   it "#{name}" do
     pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[#{public_key}]))
     priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[#{secret_key_seed}]))
@@ -103,18 +105,18 @@ class V4PublicSpec
     token = Paseto::Token.parse(tok)
 
 #{expectations}
-SPEC
-  end
+      SPEC
+    end
 
-  def payload_or_nil
-    return %(%[#{payload}]) if payload
+    def payload_or_nil
+      return %(%[#{payload}]) if payload
 
-    "nil"
-  end
+      "nil"
+    end
 
-  def expectations
-    if expect_fail
-      <<-EXPECT
+    def expectations
+      if expect_fail
+        <<-EXPECT
     signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
     expect(signed).to_not eq(token)
 
@@ -125,9 +127,9 @@ SPEC
               end
     expect(message).to be_nil
   end
-      EXPECT
-    else
-      <<-EXPECT
+        EXPECT
+      else
+        <<-EXPECT
     signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
     expect(signed).to eq(tok)
 
@@ -137,7 +139,175 @@ SPEC
     verify = pub.verify(token: signed, implicit_assertion: ia)
     expect(verify).to eq(payload)
   end
-EXPECT
+        EXPECT
+      end
+    end
+  end
+end
+
+module V3
+  class LocalSpec
+    attr_reader :name, :expect_fail, :nonce, :key, :token, :payload, :footer, :implicit_assertion
+
+    def initialize(name:, expect_fail:, nonce:, key:, token:, payload:, footer:, implicit_assertion:, **_unused)
+      @name = name
+      @expect_fail = expect_fail
+      @nonce = nonce
+      @key = key
+      @token = token
+      @payload = payload
+      @footer = footer
+      @implicit_assertion = implicit_assertion
+    end
+
+    def spec
+      <<-SPEC
+  it "#{name}" do
+    nonce = Paseto::Util.decode_hex(%[#{nonce}])
+    key = Paseto::Util.decode_hex(%[#{key}])
+    tok = %[#{token}]
+    payload = #{payload_or_nil}
+    footer = %[#{footer}]
+    ia = %[#{implicit_assertion}]
+    token = Paseto::Token.parse(tok)
+    local = Paseto::V3::Local.new(ikm: key)
+
+#{expectations}
+      SPEC
+    end
+
+    def payload_or_nil
+      return %(%[#{payload}]) if payload
+
+      "nil"
+    end
+
+    def expectations
+      if expect_fail
+        <<-EXPECT
+    if payload
+      enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+      expect(enc).to_not eq(token)
+    else
+      expect do
+        local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+      end.to raise_error(ArgumentError, "no message")
+    end
+
+    message = begin
+                local.decrypt(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+  end
+        EXPECT
+      else
+        <<-EXPECT
+    expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
+
+    expect(local.decrypt(token: token, implicit_assertion: ia)).to eq(payload)
+  end
+        EXPECT
+      end
+    end
+  end
+
+  class PublicSpec
+    attr_reader :name, :expect_fail, :token, :payload, :footer, :implicit_assertion, :public_key, :secret_key, :public_key_pem,
+                :secret_key_pem
+
+    def initialize(name:, expect_fail:, public_key:, secret_key:, public_key_pem:, secret_key_pem:, token:, payload:, footer:,
+                   implicit_assertion:, **_unused)
+      @name = name
+      @expect_fail = expect_fail
+      @public_key = public_key
+      @public_key_pem = public_key_pem
+      @secret_key = secret_key
+      @secret_key_pem = secret_key_pem
+      @token = token
+      @payload = payload
+      @footer = footer
+      @implicit_assertion = implicit_assertion
+    end
+
+    def spec
+      <<-SPEC
+  it "#{name}" do
+    pub_pem = %[
+#{public_key_pem}
+    ]
+    priv_pem = %[
+#{secret_key_pem}
+    ]
+    # pub_der = Paseto::Util.decode_hex(%[#{public_key}])
+    # priv_der = Paseto::Util.decode_hex(%[#{secret_key}])
+    # pub = Paseto::V3::Public.new(public_key: pub_der)
+    # priv = Paseto::V3::Public.new(private_key: priv_der)
+    pub = Paseto::V3::Public.new(public_key: pub_pem)
+    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    tok = %[#{token}]
+    payload = #{payload_or_nil}
+    footer = %[#{footer}]
+    ia = %[#{implicit_assertion}]
+    token = Paseto::Token.parse(tok)
+
+#{expectations}
+      SPEC
+    end
+
+    def payload_or_nil
+      return %(%[#{payload}]) if payload
+
+      "nil"
+    end
+
+    def expectations
+      if expect_fail
+        <<-EXPECT
+    signed  = begin
+                priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
+                nil
+              end
+
+    message = begin
+                pub.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+
+    message = begin
+                pub.verify(token: signed, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
+                nil
+              end
+    expect(message).to be_nil
+
+    message = begin
+                priv.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+  end
+        EXPECT
+      else
+        <<-EXPECT
+    signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+
+    verify = pub.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = pub.verify(token: signed, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = priv.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+  end
+        EXPECT
+      end
     end
   end
 end
@@ -147,9 +317,17 @@ module SpecFactory
     case version
     when "v4"
       if test.include?(:key)
-        V4LocalSpec.new(**test)
+        V4::LocalSpec.new(**test)
       elsif test.include?(:public_key)
-        V4PublicSpec.new(**test)
+        V4::PublicSpec.new(**test)
+      else
+        raise ArgumentError, "unrecognized test type: #{test}"
+      end
+    when "v3"
+      if test.include?(:key)
+        V3::LocalSpec.new(**test)
+      elsif test.include?(:public_key)
+        V3::PublicSpec.new(**test)
       else
         raise ArgumentError, "unrecognized test type: #{test}"
       end
@@ -166,7 +344,8 @@ def generate_specs(version:, path:)
   end
 
   file_path = File.join("paseto", version, "test_vectors_spec.rb")
-  FileUtils.rm file_path
+  FileUtils.mkdir_p File.dirname(file_path)
+  FileUtils.rm file_path, force: true
   file = File.new(file_path, "w")
   file.puts HEADER
   file.puts format(OUTER_DESCRIBE, vector_name: vectors["name"])

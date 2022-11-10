@@ -32,6 +32,8 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
+  spec.add_dependency "ffi", "~> 1"
+  spec.add_dependency "openssl", "~> 3.0.0"
   spec.add_dependency "rbnacl", "~> 7.1.1"
 
   spec.add_development_dependency "bundler"

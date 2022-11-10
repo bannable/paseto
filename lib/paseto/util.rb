@@ -42,10 +42,7 @@ module Paseto
     def self.constant_compare(a, b)
       return false unless a.bytesize == b.bytesize
 
-      b_bytes = b.bytes
-      res = 0
-      a.each_byte { |byte| res |= byte ^ b_bytes.shift.to_i }
-      res.zero?
+      OpenSSL.fixed_length_secure_compare(a, b)
     end
     # rubocop:enable Naming/MethodParameterName
   end

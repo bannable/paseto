@@ -5,6 +5,8 @@ module Paseto
 
     def header: -> String
 
+    def pae_header: -> String
+
     private
     
     def initialize: (version: String, purpose: String) -> void

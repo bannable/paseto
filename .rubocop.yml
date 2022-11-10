@@ -23,19 +23,10 @@ Layout/LineLength:
 Style/Documentation:
   Enabled: false
 
-Naming/MethodParameterName:
-  Exclude:
-    - 'lib/paseto/util.rb'
-    - 'lib/paseto/v4/local.rb'
-
 Metrics/MethodLength:
   Max: 15
   Exclude:
     - 'spec/generate_vectors.rb'
-
-Style/StringConcatenation:
-  Exclude:
-    - 'lib/paseto/v4/local.rb'
 
 Layout/ClosingHeredocIndentation:
   Exclude:
@@ -56,3 +47,7 @@ Metrics/ParameterLists:
 Style/MutableConstant:
   Exclude:
     - 'spec/generate_vectors.rb'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'

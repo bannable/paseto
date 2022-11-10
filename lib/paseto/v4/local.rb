@@ -16,7 +16,7 @@ module Paseto
 
         c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message)
 
-        pre_auth = Util.pre_auth_encode("v4.local.", n, c, footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
         t = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 
@@ -24,14 +24,14 @@ module Paseto
       end
 
       def decrypt(token:, implicit_assertion: "")
-        raise ParseError, "incorrect header for key type v4.local" unless header == token.header
+        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time
         n, c, t = split_payload(token.payload)
 
         ek, n2, ak = calc_keys(n)
 
-        pre_auth = Util.pre_auth_encode("v4.local.", n, c, token.footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
 
         t2 = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 

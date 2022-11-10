@@ -3,8 +3,10 @@
 
 module Paseto
   module V4
-    class Public < Key
+    class Public < Paseto::Key
       SIGNATURE_BYTES = 64
+
+      attr_reader :public_key
 
       def self.generate
         new(private_key: RbNaCl::SigningKey.generate.to_s)
@@ -31,7 +33,7 @@ module Paseto
         raise ArgumentError, "no private key available" unless private_key
 
         m = message.to_s
-        m2 = Util.pre_auth_encode("v4.public.", m, footer, implicit_assertion)
+        m2 = Util.pre_auth_encode(pae_header, m, footer, implicit_assertion)
         sig = private_key.sign(m2)
         payload = m + sig
         Token.new(payload:, purpose:, version:, footer:)
@@ -39,13 +41,13 @@ module Paseto
 
       def verify(token:, implicit_assertion: "")
         # OPTIONAL: verify footer is expected, constant-time
-        raise ParseError, "incorrect header for key type v4.public" unless header == token.header
+        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload
         raise ParseError, "message too short" if m.size < SIGNATURE_BYTES
 
         s = m.slice!(-SIGNATURE_BYTES, SIGNATURE_BYTES) || ""
-        m2 = Util.pre_auth_encode("v4.public.", m, token.footer, implicit_assertion)
+        m2 = Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
 
         begin
           public_key.verify(s, m2)
@@ -55,8 +57,6 @@ module Paseto
 
         m
       end
-
-      attr_reader :public_key
 
       private
 

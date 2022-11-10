@@ -11,7 +11,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: ast
@@ -19,7 +19,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: csv
@@ -35,7 +35,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: io-console
@@ -51,7 +51,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: logger
@@ -67,7 +67,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: rainbow
@@ -75,7 +75,7 @@ gems:
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 9d61d7ba12b3a34d72a304171f14f17cc1122a4c
+    revision: 0a45b6d56b0e1b089731f5eb007912a7c36be121
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: securerandom

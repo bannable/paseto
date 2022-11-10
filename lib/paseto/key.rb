@@ -13,5 +13,9 @@ module Paseto
     def header
       "#{version}.#{purpose}"
     end
+
+    def pae_header
+      "#{header}."
+    end
   end
 end

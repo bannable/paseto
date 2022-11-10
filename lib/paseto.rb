@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "base64"
+require "openssl"
 require "rbnacl"
 require "securerandom"
 
@@ -13,6 +14,8 @@ require_relative "paseto/version"
 require_relative "paseto/token"
 require_relative "paseto/key"
 
+require_relative "paseto/v3/local"
+require_relative "paseto/v3/public"
 require_relative "paseto/v4/local"
 require_relative "paseto/v4/public"
 
