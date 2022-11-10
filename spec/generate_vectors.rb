@@ -185,14 +185,9 @@ module V3
     def expectations
       if expect_fail
         <<-EXPECT
-    if payload
-      enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-      expect(enc).to_not eq(token)
-    else
-      expect do
-        local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-      end.to raise_error(ArgumentError, "no message")
-    end
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(ArgumentError, "no message")
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
