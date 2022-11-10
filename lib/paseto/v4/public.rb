@@ -4,9 +4,11 @@
 module Paseto
   module V4
     class Public < Paseto::Key
+      # Number of bytes in an Ed25519 signature
       SIGNATURE_BYTES = 64
 
-      attr_reader :public_key
+      # @dynamic private_key, public_key
+      attr_reader :private_key, :public_key
 
       def self.generate
         new(private_key: RbNaCl::SigningKey.generate.to_s)
@@ -57,10 +59,6 @@ module Paseto
 
         m
       end
-
-      private
-
-      attr_reader :private_key
     end
   end
 end

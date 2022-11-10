@@ -3,11 +3,8 @@ module Paseto
     class Public < Paseto::Key
       SIGNATURE_BYTES: 64
 
-      @private_key: RbNaCl::SigningKey
-
-      public
-
       attr_reader public_key: RbNaCl::VerifyKey
+      attr_reader private_key: RbNaCl::SigningKey
 
       def self.generate: -> Public
 
@@ -16,8 +13,6 @@ module Paseto
       def verify: (token: Token, ?implicit_assertion: String) -> String
 
       private
-
-      def private_key: -> RbNaCl::SigningKey
 
       def initialize: (?private_key: String, ?public_key: String) -> void
     end
