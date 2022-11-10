@@ -19,7 +19,6 @@ module Paseto
           raise ArgumentError, "may not provide both private and public keys" if public_key
 
           @key = OpenSSL::PKey::EC.new(private_key)
-          @key.public_key = OpenSSL::PKey::EC.new(public_key) if public_key
         elsif public_key
           @key = OpenSSL::PKey::EC.new(public_key)
         else
