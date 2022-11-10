@@ -15,10 +15,12 @@ namespace :steep do
   require "steep"
   require "steep/cli"
 
+  desc "Look for type checking violations"
   task :check do
     Steep::CLI.new(argv: %w[check], stdout: $stdout, stderr: $stderr, stdin: $stdin).run
   end
 
+  desc "Steep type checking report"
   task :stats do
     Steep::CLI.new(argv: %w[stats], stdout: $stdout, stderr: $stderr, stdin: $stdin).run
   end

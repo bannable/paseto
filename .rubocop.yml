@@ -1,6 +1,6 @@
 require:
   - rubocop-performance
-#  - rubocop-rake
+  - rubocop-rake
 #  - rubocop-rspec
 
 AllCops:
