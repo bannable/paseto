@@ -12,5 +12,4 @@
 
 Gemfile.lock
 
-# RBS collections
-/.gem_rbs_collection/
+sorbet/rbi/hidden-definitions/errors.txt
