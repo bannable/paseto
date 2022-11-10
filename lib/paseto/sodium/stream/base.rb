@@ -26,7 +26,7 @@ module Paseto
         #
         # Sets up Stream with a secret key for encrypting and decrypting messages.
         #
-        # @paramn key [String] The key to encrypt and decrypt with
+        # @param key [String] The key to encrypt and decrypt with
         #
         # @raise [RbNaCl::LengthError] on invalid keys
         #

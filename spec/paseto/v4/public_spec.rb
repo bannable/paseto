@@ -134,5 +134,13 @@ RSpec.describe Paseto::V4::Public do
         expect { verified }.to raise_error(Paseto::ParseError, "message too short")
       end
     end
+
+    context "with an invalid signature" do
+      let(:token) { Paseto::Token.parse("v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm66HVnen0PUYilrNMbXGlsyv7eyaA4") }
+
+      it "raises an error" do
+        expect { verified }.to raise_error(Paseto::InvalidSignature)
+      end
+    end
   end
 end
