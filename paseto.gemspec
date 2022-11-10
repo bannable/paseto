@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Joe Truba"]
   spec.email = ["joe@bannable.net"]
 
-  spec.summary = "A toy implementation of PASETO v4"
+  spec.summary = "A ruby implementation of PASETO tokens"
   # spec.description = "TODO: Write a longer description or delete this line."
   spec.homepage = "https://github.com/bannable/paseto"
   spec.license = "MIT"
