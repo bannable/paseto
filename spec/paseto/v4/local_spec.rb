@@ -9,6 +9,12 @@ RSpec.describe Paseto::V4::Local do
   let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
   let(:key) { described_class.new(ikm: key_material) }
 
+  describe ".generate" do
+    it "returns a new instance" do
+      expect(described_class.generate).to be_a(described_class)
+    end
+  end
+
   describe "#encrypt" do
     subject { key.encrypt(message: payload, n: nonce) }
 

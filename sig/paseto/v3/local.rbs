@@ -4,13 +4,13 @@ module Paseto
       SHA384_DIGEST_LEN: Integer
       NULL_SALT: String
 
+      attr_reader key: String
+
       def initialize: (ikm: String) -> void
       def encrypt: (message: String, ?footer: String, ?implicit_assertion: String, ?n: String?) -> Token
       def decrypt: (token: untyped, ?implicit_assertion: String) -> String
 
       private
-
-      attr_reader key: String
 
       def calc_keys: (String nonce) -> [untyped, untyped, untyped]
       def split_payload: (untyped payload) -> [String, String, String]

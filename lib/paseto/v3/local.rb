@@ -4,8 +4,19 @@
 module Paseto
   module V3
     class Local < Paseto::Key
+      # Size in bytes of a SHA384 digest
       SHA384_DIGEST_LEN = 48
+
       NULL_SALT = 0.chr * SHA384_DIGEST_LEN
+
+      # @dynamic key
+
+      # Symmetric encryption key
+      attr_reader :key
+
+      def self.generate
+        new(ikm: SecureRandom.random_bytes(32))
+      end
 
       def initialize(ikm:)
         @key = ikm
@@ -53,8 +64,6 @@ module Paseto
       end
 
       private
-
-      attr_reader :key
 
       def calc_keys(nonce)
         ek, n2 = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384").unpack("a32a16")

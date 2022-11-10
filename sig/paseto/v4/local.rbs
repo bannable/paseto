@@ -1,18 +1,15 @@
 module Paseto
   module V4
     class Local < Paseto::Key
-      def encrypt: (message: String, ?footer: String, ?implicit_assertion: String, ?n: String?) -> Token
+      attr_reader key: String
 
+      def encrypt: (message: String, ?footer: String, ?implicit_assertion: String, ?n: String?) -> Token
       def decrypt: (token: Token, ?implicit_assertion: String) -> String
 
       private
-
-      attr_reader key: String
       
       def initialize: (ikm: String) -> void
-
       def split_payload: (String payload) -> [String, String, String]
-
       def calc_keys: (String nonce) -> [String, String, String]
     end
   end

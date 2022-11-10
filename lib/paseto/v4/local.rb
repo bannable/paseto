@@ -4,6 +4,15 @@
 module Paseto
   module V4
     class Local < Paseto::Key
+      # @dynamic key
+
+      # Symmetric encryption key
+      attr_reader :key
+
+      def self.generate
+        new(ikm: RbNaCl::Random.random_bytes(32))
+      end
+
       def initialize(ikm:)
         @key = ikm
         super(version: "v4", purpose: "local")
@@ -56,8 +65,6 @@ module Paseto
         # rubocop:enable Style/StringConcatenation
         [ek, n2, ak]
       end
-
-      attr_reader :key
     end
   end
 end
