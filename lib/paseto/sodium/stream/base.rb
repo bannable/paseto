@@ -22,10 +22,6 @@ module Paseto
           const_get(:KEYBYTES)
         end
 
-        def self.primitive
-          raise NotImplementedError
-        end
-
         # Create a new Stream.
         #
         # Sets up Stream with a secret key for encrypting and decrypting messages.
@@ -48,10 +44,6 @@ module Paseto
           raise CryptoError, "Encryption failed" unless success
 
           ciphertext
-        end
-
-        def primitive
-          self.class.primitive
         end
 
         def nonce_bytes
