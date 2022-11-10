@@ -7,15 +7,15 @@ module Paseto
       # Size of r | s in an ECDSA secp384 signature
       SIGNATURE_PART_LEN: Integer
 
+      attr_reader key: OpenSSL::PKey::EC
+
       def self.generate: -> Paseto::V3::Public
-      def initialize: (?private_key: String?, ?public_key: String?) -> void
       def sign: (message: String, ?footer: ::String, ?implicit_assertion: ::String) -> Paseto::Token
       def verify: (token: Paseto::Token, ?implicit_assertion: ::String) -> String
 
       private
 
-      attr_reader key: OpenSSL::PKey::EC
-
+      def initialize: (key: String) -> void
       def rs_to_asn1: (String signature) -> String
       def asn1_to_rs: (String signature) -> String
     end

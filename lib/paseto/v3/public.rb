@@ -10,20 +10,15 @@ module Paseto
       # Size of r | s in an ECDSA secp384 signature
       SIGNATURE_PART_LEN = SIGNATURE_BYTE_LEN / 2
 
+      # @dynamic key
+      attr_reader :key
+
       def self.generate
-        new(private_key: OpenSSL::PKey::EC.generate("secp384r1"))
+        new(key: OpenSSL::PKey::EC.generate("secp384r1"))
       end
 
-      def initialize(private_key: nil, public_key: nil)
-        if private_key
-          raise ArgumentError, "may not provide both private and public keys" if public_key
-
-          @key = OpenSSL::PKey::EC.new(private_key)
-        elsif public_key
-          @key = OpenSSL::PKey::EC.new(public_key)
-        else
-          raise ArgumentError, "must provide one of private or public key"
-        end
+      def initialize(key:)
+        @key = OpenSSL::PKey::EC.new(key)
 
         begin
           @key.check_key
@@ -74,8 +69,6 @@ module Paseto
       end
 
       private
-
-      attr_reader :key
 
       # OpenSSL returns and expects ECDSA signatures in a DER-encoded ECDSA_SIG struct,
       # but we need to be able to transport only (r || s) in big-endian form.
