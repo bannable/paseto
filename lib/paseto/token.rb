@@ -11,8 +11,9 @@ module Paseto
     def self.parse(str)
       case str.split(".")
       in [String => version, String => purpose, String => payload]
-        footer = ''
+        footer = ""
       in [String => version, String => purpose, String => payload, String => footer]
+        nil
       else
         raise ParseError, "not a valid token"
       end
@@ -57,10 +58,8 @@ module Paseto
 
     def valid?
       case version
-      when "v3"
-        %w(local public).include? purpose
-      when "v4"
-        %w(local public).include? purpose
+      when "v3", "v4"
+        %w[local public].include? purpose
       else
         false
       end

@@ -136,7 +136,9 @@ RSpec.describe Paseto::V4::Public do
     end
 
     context "with an invalid signature" do
-      let(:token) { Paseto::Token.parse("v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm66HVnen0PUYilrNMbXGlsyv7eyaA4") }
+      let(:token) do
+        Paseto::Token.parse("v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm66HVnen0PUYilrNMbXGlsyv7eyaA4")
+      end
 
       it "raises an error" do
         expect { verified }.to raise_error(Paseto::InvalidSignature)
