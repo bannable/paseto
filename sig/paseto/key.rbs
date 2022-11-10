@@ -4,7 +4,6 @@ module Paseto
     attr_reader purpose: String
 
     def header: -> String
-
     def pae_header: -> String
 
     private

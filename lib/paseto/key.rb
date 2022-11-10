@@ -8,6 +8,8 @@ module Paseto
       @purpose = purpose
     end
 
+    # @dynamic version, purpose
+
     attr_reader :version, :purpose
 
     def header
