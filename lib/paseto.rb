@@ -7,7 +7,7 @@ require "rbnacl"
 require "securerandom"
 
 require_relative "paseto/sodium/stream/base"
-require_relative "paseto/sodium/stream/xchacha20_xor"
+require_relative "paseto/sodium/stream/x_cha_cha20_xor"
 
 require_relative "paseto/util"
 require_relative "paseto/version"
