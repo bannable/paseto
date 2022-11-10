@@ -39,6 +39,10 @@ module Paseto
       parts.join(".")
     end
 
+    def inspect
+      to_s
+    end
+
     def <=>(other)
       to_s <=> other.to_s
     end
