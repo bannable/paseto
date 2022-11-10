@@ -235,12 +235,8 @@ module V3
     priv_pem = %[
 #{secret_key_pem}
     ]
-    # pub_der = Paseto::Util.decode_hex(%[#{public_key}])
-    # priv_der = Paseto::Util.decode_hex(%[#{secret_key}])
-    # pub = Paseto::V3::Public.new(public_key: pub_der)
-    # priv = Paseto::V3::Public.new(private_key: priv_der)
-    pub = Paseto::V3::Public.new(public_key: pub_pem)
-    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    pub = Paseto::V3::Public.new(key: pub_pem)
+    priv = Paseto::V3::Public.new(key: priv_pem)
     tok = %[#{token}]
     payload = #{payload_or_nil}
     footer = %[#{footer}]

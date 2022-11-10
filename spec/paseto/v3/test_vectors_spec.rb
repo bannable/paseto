@@ -152,12 +152,8 @@ AUA5ftFM72N9dyCSXERpnqMOcodMcvt8kgcrB8KcKee0HU23E79/s4CvEs8hBfnj
 SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 -----END EC PRIVATE KEY-----
     ]
-    # pub_der = Paseto::Util.decode_hex(%[02fbcb7c69ee1c60579be7a334134878d9c5c5bf35d552dab63c0140397ed14cef637d7720925c44699ea30e72874c72fb])
-    # priv_der = Paseto::Util.decode_hex(%[20347609607477aca8fbfbc5e6218455f3199669792ef8b466faa87bdc67798144c848dd03661eed5ac62461340cea96])
-    # pub = Paseto::V3::Public.new(public_key: pub_der)
-    # priv = Paseto::V3::Public.new(private_key: priv_der)
-    pub = Paseto::V3::Public.new(public_key: pub_pem)
-    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    pub = Paseto::V3::Public.new(key: pub_pem)
+    priv = Paseto::V3::Public.new(key: priv_pem)
     tok = %[v3.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9qqEwwrKHKi5lJ7b9MBKc0G4MGZy0ptUiMv3lAUAaz-JY_zjoqBSIxMxhfAoeNYiSyvfUErj76KOPWm1OeNnBPkTSespeSXDGaDfxeIrl3bRrPEIy7tLwLAIsRzsXkfph]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[]
@@ -192,12 +188,8 @@ AUA5ftFM72N9dyCSXERpnqMOcodMcvt8kgcrB8KcKee0HU23E79/s4CvEs8hBfnj
 SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 -----END EC PRIVATE KEY-----
     ]
-    # pub_der = Paseto::Util.decode_hex(%[02fbcb7c69ee1c60579be7a334134878d9c5c5bf35d552dab63c0140397ed14cef637d7720925c44699ea30e72874c72fb])
-    # priv_der = Paseto::Util.decode_hex(%[20347609607477aca8fbfbc5e6218455f3199669792ef8b466faa87bdc67798144c848dd03661eed5ac62461340cea96])
-    # pub = Paseto::V3::Public.new(public_key: pub_der)
-    # priv = Paseto::V3::Public.new(private_key: priv_der)
-    pub = Paseto::V3::Public.new(public_key: pub_pem)
-    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    pub = Paseto::V3::Public.new(key: pub_pem)
+    priv = Paseto::V3::Public.new(key: priv_pem)
     tok = %[v3.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9ZWrbGZ6L0MDK72skosUaS0Dz7wJ_2bMcM6tOxFuCasO9GhwHrvvchqgXQNLQQyWzGC2wkr-VKII71AvkLpC8tJOrzJV1cap9NRwoFzbcXjzMZyxQ0wkshxZxx8ImmNWP.eyJraWQiOiJkWWtJU3lseFFlZWNFY0hFTGZ6Rjg4VVpyd2JMb2xOaUNkcHpVSEd3OVVxbiJ9]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[{"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}]
@@ -232,12 +224,8 @@ AUA5ftFM72N9dyCSXERpnqMOcodMcvt8kgcrB8KcKee0HU23E79/s4CvEs8hBfnj
 SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 -----END EC PRIVATE KEY-----
     ]
-    # pub_der = Paseto::Util.decode_hex(%[02fbcb7c69ee1c60579be7a334134878d9c5c5bf35d552dab63c0140397ed14cef637d7720925c44699ea30e72874c72fb])
-    # priv_der = Paseto::Util.decode_hex(%[20347609607477aca8fbfbc5e6218455f3199669792ef8b466faa87bdc67798144c848dd03661eed5ac62461340cea96])
-    # pub = Paseto::V3::Public.new(public_key: pub_der)
-    # priv = Paseto::V3::Public.new(private_key: priv_der)
-    pub = Paseto::V3::Public.new(public_key: pub_pem)
-    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    pub = Paseto::V3::Public.new(key: pub_pem)
+    priv = Paseto::V3::Public.new(key: priv_pem)
     tok = %[v3.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ94SjWIbjmS7715GjLSnHnpJrC9Z-cnwK45dmvnVvCRQDCCKAXaKEopTajX0DKYx1Xqr6gcTdfqscLCAbiB4eOW9jlt-oNqdG8TjsYEi6aloBfTzF1DXff_45tFlnBukEX.eyJraWQiOiJkWWtJU3lseFFlZWNFY0hFTGZ6Rjg4VVpyd2JMb2xOaUNkcHpVSEd3OVVxbiJ9]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[{"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}]
@@ -272,12 +260,8 @@ AUA5ftFM72N9dyCSXERpnqMOcodMcvt8kgcrB8KcKee0HU23E79/s4CvEs8hBfnj
 SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 -----END EC PRIVATE KEY-----
     ]
-    # pub_der = Paseto::Util.decode_hex(%[02fbcb7c69ee1c60579be7a334134878d9c5c5bf35d552dab63c0140397ed14cef637d7720925c44699ea30e72874c72fb])
-    # priv_der = Paseto::Util.decode_hex(%[20347609607477aca8fbfbc5e6218455f3199669792ef8b466faa87bdc67798144c848dd03661eed5ac62461340cea96])
-    # pub = Paseto::V3::Public.new(public_key: pub_der)
-    # priv = Paseto::V3::Public.new(private_key: priv_der)
-    pub = Paseto::V3::Public.new(public_key: pub_pem)
-    priv = Paseto::V3::Public.new(private_key: priv_pem)
+    pub = Paseto::V3::Public.new(key: pub_pem)
+    priv = Paseto::V3::Public.new(key: priv_pem)
     tok = %[v3.local.tthw-G1Da_BzYeMu_GEDp-IyQ7jzUCQHxCHRdDY6hQjKg6CuxECXfjOzlmNgNJ-WELjN61gMDnldG9OLkr3wpxuqdZksCzH9Ul16t3pXCLGPoHQ9_l51NOqVmMLbFVZOPhsmdhef9RxJwmqvzQ_Mo_JkYRlrNA.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24]
     payload = nil
     footer = %[arbitrary-string-that-isn't-json]
