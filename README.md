@@ -7,11 +7,18 @@ Additionally, the library uses [Sorbet](https://sorbet.org) to enforce types at 
 
 ## Installing
 
+### libsodium
+
+This gem requires libsodium `1.0.0` or newer. You can find instructions for obtaining libsodium at https://libsodium.org.
+
 ### Using Bundler:
-Add the following to your Gemfile
+
+Add the following to your Gemfile:
 ```
 gem 'paseto', git: 'git://github.com/bannable/paseto.git'
 ```
+
+And run `bundle install`.
 <!--
 ### Using Rubygems:
 ```bash
@@ -174,9 +181,42 @@ signer.key.private_to_der # => DER encoded private key
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+This repository includes a [VSCode DevContainer](.devcontainer) configuration which automatically includes extensions for both Sorbet and Solargraph, and configures a docker image with libsodium.
+
+After checking out the repo, run `bin/setup` to install dependencies.
+
+If you are using the provided DevContainer, this happens automatically after the container image is first created. You may need to restart Solargraph for it to work correctly when first bringing up the container.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+### Type Checking
+
+`paseto` uses `sorbet` to provide both static and runtime type checking.
+
+You can learn more over at the `sorbet` [documentation](https://sorbet.org/docs/overview).
+
+### Running Tests
+
+```
+rspec
+rubocop
+srb tc
+```
+
+### Updating RBI Files
+
+To check that RBI files for gems are up-to-date with your Gemfile.lock:
+```
+bin/tapioca gems --verify
+```
+
+To update RBI files for gems:
+```
+bin/tapioca gems
+bin/tapioca annotations
+```
 
 ## Contributing
 
