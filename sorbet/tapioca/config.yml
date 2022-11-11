@@ -5,6 +5,14 @@ gem:
   # - gem_name
   # doc: true
   # workers: 5
+  exclude:
+  - flay
+  - flog
+  - reek
+  - rubocop
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
 dsl:
   # Add your `dsl` command parameters here:
   #
