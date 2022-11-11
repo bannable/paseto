@@ -1,3 +1,4 @@
+# typed: false
 # encoding: binary
 # frozen_string_literal: true
 

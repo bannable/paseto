@@ -7,6 +7,8 @@
 # --
 # Add double dispatch to Integer
 # ++
+#
+# source://openssl//lib/openssl/bn.rb#33
 class Integer < ::Numeric
   # Casts an Integer as an OpenSSL::BN
   #
@@ -18,6 +20,7 @@ end
 
 Integer::GMP_VERSION = T.let(T.unsafe(nil), String)
 
+# source://openssl//lib/openssl/bn.rb#16
 module OpenSSL
   private
 
@@ -60,6 +63,7 @@ module OpenSSL
   end
 end
 
+# source://openssl//lib/openssl/bn.rb#17
 class OpenSSL::BN
   include ::Comparable
 
@@ -75,6 +79,8 @@ OpenSSL::BN::CONSTTIME = T.let(T.unsafe(nil), Integer)
 #
 # You typically won't use this module directly, you can see it implemented in
 # OpenSSL::SSL::SSLSocket.
+#
+# source://openssl//lib/openssl/buffering.rb#22
 module OpenSSL::Buffering
   include ::Enumerable
 
@@ -350,6 +356,8 @@ module OpenSSL::Buffering
 end
 
 # A buffer which will retain binary encoding.
+#
+# source://openssl//lib/openssl/buffering.rb#26
 class OpenSSL::Buffering::Buffer < ::String
   # @return [Buffer] a new instance of Buffer
   #
@@ -366,6 +374,7 @@ end
 # source://openssl//lib/openssl/buffering.rb#27
 OpenSSL::Buffering::Buffer::BINARY = T.let(T.unsafe(nil), Encoding)
 
+# source://openssl//lib/openssl/cipher.rb#16
 class OpenSSL::Cipher
   # call-seq:
   #   cipher.random_iv -> iv
@@ -390,31 +399,37 @@ class OpenSSL::Cipher
   def random_key; end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::AES < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#28
 class OpenSSL::Cipher::AES128 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#29
   def initialize(mode = T.unsafe(nil)); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#28
 class OpenSSL::Cipher::AES192 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#29
   def initialize(mode = T.unsafe(nil)); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#28
 class OpenSSL::Cipher::AES256 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#29
   def initialize(mode = T.unsafe(nil)); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::BF < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::CAST5 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
@@ -424,28 +439,35 @@ end
 #
 # This class is only provided for backwards compatibility.
 # Use OpenSSL::Cipher.
+#
+# source://openssl//lib/openssl/cipher.rb#64
 class OpenSSL::Cipher::Cipher < ::OpenSSL::Cipher; end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::DES < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::IDEA < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::RC2 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::RC4 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
 end
 
+# source://openssl//lib/openssl/cipher.rb#18
 class OpenSSL::Cipher::RC5 < ::OpenSSL::Cipher
   # source://openssl//lib/openssl/cipher.rb#19
   def initialize(*args); end
@@ -455,6 +477,7 @@ class OpenSSL::Config
   include ::Enumerable
 end
 
+# source://openssl//lib/openssl/digest.rb#16
 class OpenSSL::Digest < ::Digest::Class
   class << self
     # Return the hash value computed with _name_ Digest. _name_ is either the
@@ -477,8 +500,11 @@ end
 #
 # This class is only provided for backwards compatibility.
 # Use OpenSSL::Digest instead.
+#
+# source://openssl//lib/openssl/digest.rb#52
 class OpenSSL::Digest::Digest < ::OpenSSL::Digest; end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::MD4 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -492,6 +518,7 @@ class OpenSSL::Digest::MD4 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::MD5 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -505,6 +532,7 @@ class OpenSSL::Digest::MD5 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::RIPEMD160 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -518,6 +546,7 @@ class OpenSSL::Digest::RIPEMD160 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::SHA1 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -531,6 +560,7 @@ class OpenSSL::Digest::SHA1 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::SHA224 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -544,6 +574,7 @@ class OpenSSL::Digest::SHA224 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::SHA256 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -557,6 +588,7 @@ class OpenSSL::Digest::SHA256 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::SHA384 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -570,6 +602,7 @@ class OpenSSL::Digest::SHA384 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/digest.rb#34
 class OpenSSL::Digest::SHA512 < ::OpenSSL::Digest
   # source://openssl//lib/openssl/digest.rb#35
   def initialize(data = T.unsafe(nil)); end
@@ -583,6 +616,7 @@ class OpenSSL::Digest::SHA512 < ::OpenSSL::Digest
   end
 end
 
+# source://openssl//lib/openssl/hmac.rb#4
 class OpenSSL::HMAC
   # Securely compare with another HMAC instance in constant time.
   #
@@ -651,6 +685,7 @@ class OpenSSL::HMAC
   end
 end
 
+# source://openssl//lib/openssl/marshal.rb#15
 module OpenSSL::Marshal
   mixes_in_class_methods ::OpenSSL::Marshal::ClassMethods
 
@@ -665,11 +700,13 @@ module OpenSSL::Marshal
   end
 end
 
+# source://openssl//lib/openssl/marshal.rb#20
 module OpenSSL::Marshal::ClassMethods
   # source://openssl//lib/openssl/marshal.rb#21
   def _load(string); end
 end
 
+# source://openssl//lib/openssl/pkcs5.rb#8
 module OpenSSL::PKCS5
   private
 
@@ -694,6 +731,7 @@ module OpenSSL::PKCS5
   end
 end
 
+# source://openssl//lib/openssl/pkey.rb#10
 class OpenSSL::PKey::DH < ::OpenSSL::PKey::PKey
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -794,6 +832,7 @@ class OpenSSL::PKey::DH < ::OpenSSL::PKey::PKey
   end
 end
 
+# source://openssl//lib/openssl/pkey.rb#138
 class OpenSSL::PKey::DSA < ::OpenSSL::PKey::PKey
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -884,6 +923,7 @@ class OpenSSL::PKey::DSA < ::OpenSSL::PKey::PKey
   end
 end
 
+# source://openssl//lib/openssl/pkey.rb#251
 class OpenSSL::PKey::EC < ::OpenSSL::PKey::PKey
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -921,6 +961,7 @@ end
 
 OpenSSL::PKey::EC::EXPLICIT_CURVE = T.let(T.unsafe(nil), Integer)
 
+# source://openssl//lib/openssl/pkey.rb#296
 class OpenSSL::PKey::EC::Point
   # :call-seq:
   #    point.to_bn([conversion_form]) -> OpenSSL::BN
@@ -937,6 +978,7 @@ class OpenSSL::PKey::EC::Point
   def to_bn(conversion_form = T.unsafe(nil)); end
 end
 
+# source://openssl//lib/openssl/pkey.rb#313
 class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -1041,6 +1083,7 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   end
 end
 
+# source://openssl//lib/openssl/ssl.rb#19
 module OpenSSL::SSL
   private
 
@@ -1080,6 +1123,7 @@ OpenSSL::SSL::OP_TLSEXT_PADDING = T.let(T.unsafe(nil), Integer)
 OpenSSL::SSL::SSL2_VERSION = T.let(T.unsafe(nil), Integer)
 OpenSSL::SSL::SSL3_VERSION = T.let(T.unsafe(nil), Integer)
 
+# source://openssl//lib/openssl/ssl.rb#20
 class OpenSSL::SSL::SSLContext
   # call-seq:
   #    SSLContext.new           -> ctx
@@ -1238,6 +1282,8 @@ class OpenSSL::SSL::SSLErrorWaitWritable < ::OpenSSL::SSL::SSLError
 end
 
 # SSLServer represents a TCP/IP server socket with Secure Sockets Layer.
+#
+# source://openssl//lib/openssl/ssl.rb#480
 class OpenSSL::SSL::SSLServer
   include ::OpenSSL::SSL::SocketForwarder
 
@@ -1286,6 +1332,7 @@ class OpenSSL::SSL::SSLServer
   def to_io; end
 end
 
+# source://openssl//lib/openssl/ssl.rb#357
 class OpenSSL::SSL::SSLSocket
   include ::Enumerable
   include ::OpenSSL::Buffering
@@ -1400,6 +1447,7 @@ class OpenSSL::SSL::SSLSocket
   end
 end
 
+# source://openssl//lib/openssl/ssl.rb#238
 module OpenSSL::SSL::SocketForwarder
   # source://openssl//lib/openssl/ssl.rb#244
   def addr; end
@@ -1503,6 +1551,7 @@ class OpenSSL::Timestamp::TokenInfo
   def version; end
 end
 
+# source://openssl//lib/openssl/x509.rb#327
 class OpenSSL::X509::Attribute
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -1511,6 +1560,7 @@ class OpenSSL::X509::Attribute
   def ==(other); end
 end
 
+# source://openssl//lib/openssl/x509.rb#365
 class OpenSSL::X509::CRL
   include ::OpenSSL::Marshal
   include ::OpenSSL::X509::Extension::Helpers
@@ -1521,6 +1571,7 @@ class OpenSSL::X509::CRL
   def ==(other); end
 end
 
+# source://openssl//lib/openssl/x509.rb#342
 class OpenSSL::X509::Certificate
   include ::OpenSSL::Marshal
   include ::OpenSSL::X509::Extension::Helpers
@@ -1539,6 +1590,7 @@ class OpenSSL::X509::Certificate
   end
 end
 
+# source://openssl//lib/openssl/x509.rb#45
 class OpenSSL::X509::Extension
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -1560,6 +1612,7 @@ class OpenSSL::X509::Extension
   def to_s; end
 end
 
+# source://openssl//lib/openssl/x509.rb#154
 module OpenSSL::X509::Extension::AuthorityInfoAccess
   include ::OpenSSL::X509::Extension::Helpers
 
@@ -1586,6 +1639,7 @@ module OpenSSL::X509::Extension::AuthorityInfoAccess
   def parse_aia_asn1; end
 end
 
+# source://openssl//lib/openssl/x509.rb#95
 module OpenSSL::X509::Extension::AuthorityKeyIdentifier
   include ::OpenSSL::X509::Extension::Helpers
 
@@ -1600,6 +1654,7 @@ module OpenSSL::X509::Extension::AuthorityKeyIdentifier
   def authority_key_identifier; end
 end
 
+# source://openssl//lib/openssl/x509.rb#121
 module OpenSSL::X509::Extension::CRLDistributionPoints
   include ::OpenSSL::X509::Extension::Helpers
 
@@ -1613,11 +1668,13 @@ module OpenSSL::X509::Extension::CRLDistributionPoints
   def crl_uris; end
 end
 
+# source://openssl//lib/openssl/x509.rb#68
 module OpenSSL::X509::Extension::Helpers
   # source://openssl//lib/openssl/x509.rb#69
   def find_extension(oid); end
 end
 
+# source://openssl//lib/openssl/x509.rb#74
 module OpenSSL::X509::Extension::SubjectKeyIdentifier
   include ::OpenSSL::X509::Extension::Helpers
 
@@ -1631,6 +1688,7 @@ module OpenSSL::X509::Extension::SubjectKeyIdentifier
   def subject_key_identifier; end
 end
 
+# source://openssl//lib/openssl/x509.rb#204
 class OpenSSL::X509::Name
   include ::Comparable
   include ::OpenSSL::Marshal
@@ -1686,6 +1744,7 @@ class OpenSSL::X509::Name
   end
 end
 
+# source://openssl//lib/openssl/x509.rb#207
 module OpenSSL::X509::Name::RFC2253DN
   private
 
@@ -1716,6 +1775,7 @@ module OpenSSL::X509::Name::RFC2253DN
   end
 end
 
+# source://openssl//lib/openssl/x509.rb#382
 class OpenSSL::X509::Request
   include ::OpenSSL::Marshal
   extend ::OpenSSL::Marshal::ClassMethods
@@ -1724,6 +1784,7 @@ class OpenSSL::X509::Request
   def ==(other); end
 end
 
+# source://openssl//lib/openssl/x509.rb#375
 class OpenSSL::X509::Revoked
   # source://openssl//lib/openssl/x509.rb#376
   def ==(other); end

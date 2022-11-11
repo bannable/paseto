@@ -1,3 +1,4 @@
+# typed: strict
 # encoding: binary
 # frozen_string_literal: true
 
@@ -5,6 +6,7 @@ require "base64"
 require "openssl"
 require "rbnacl"
 require "securerandom"
+require "sorbet-runtime"
 
 require_relative "paseto/sodium/stream/base"
 require_relative "paseto/sodium/stream/x_cha_cha20_xor"
