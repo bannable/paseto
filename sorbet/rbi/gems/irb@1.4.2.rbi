@@ -5,6 +5,8 @@
 # Please instead update this file by running `bin/tapioca gem irb`.
 
 # An output formatter used internally by the lexer.
+#
+# source://irb//lib/irb/notifier.rb#17
 module IRB::Notifier
   private
 
@@ -38,6 +40,8 @@ end
 # An abstract class, or superclass, for CompositeNotifier and
 # LeveledNotifier to inherit. It provides several wrapper methods for the
 # OutputMethod object used by the Notifier.
+#
+# source://irb//lib/irb/notifier.rb#45
 class IRB::Notifier::AbstractNotifier
   # Creates a new Notifier object
   #
@@ -114,6 +118,8 @@ end
 # create a new composite notifier. Using the first composite notifier
 # object you create, sibling notifiers can be initialized with
 # #def_notifier.
+#
+# source://irb//lib/irb/notifier.rb#122
 class IRB::Notifier::CompositeNotifier < ::IRB::Notifier::AbstractNotifier
   # Create a new composite notifier object with the given +prefix+, and
   # +base_notifier+ to use for output.
@@ -185,6 +191,7 @@ class IRB::Notifier::CompositeNotifier < ::IRB::Notifier::AbstractNotifier
   def notifiers; end
 end
 
+# source://irb//lib/irb/notifier.rb#18
 class IRB::Notifier::ErrUndefinedNotifier < ::StandardError
   # @return [ErrUndefinedNotifier] a new instance of ErrUndefinedNotifier
   #
@@ -192,6 +199,7 @@ class IRB::Notifier::ErrUndefinedNotifier < ::StandardError
   def initialize(val); end
 end
 
+# source://irb//lib/irb/notifier.rb#23
 class IRB::Notifier::ErrUnrecognizedLevel < ::StandardError
   # @return [ErrUnrecognizedLevel] a new instance of ErrUnrecognizedLevel
   #
@@ -201,6 +209,8 @@ end
 
 # A leveled notifier is comparable to the composite group from
 # CompositeNotifier#notifiers.
+#
+# source://irb//lib/irb/notifier.rb#181
 class IRB::Notifier::LeveledNotifier < ::IRB::Notifier::AbstractNotifier
   include ::Comparable
 
@@ -243,6 +253,8 @@ end
 #
 # This notifier is used as the +zero+ index, or level +0+, for
 # CompositeNotifier#notifiers, and will not output messages of any sort.
+#
+# source://irb//lib/irb/notifier.rb#220
 class IRB::Notifier::NoMsgNotifier < ::IRB::Notifier::LeveledNotifier
   # Creates a new notifier that should not be used to output messages.
   #
@@ -263,6 +275,8 @@ end
 # An abstract output class for IO in irb. This is mainly used internally by
 # IRB::Notifier. You can define your own output method to use with Irb.new,
 # or Context.new
+#
+# source://irb//lib/irb/output-method.rb#17
 class IRB::OutputMethod
   # Returns an array of the given +format+ and +opts+ to be used by
   # Kernel#sprintf, if there was a successful Regexp match in the given
@@ -319,6 +333,7 @@ class IRB::OutputMethod
   def puts(*objs); end
 end
 
+# source://irb//lib/irb/output-method.rb#18
 class IRB::OutputMethod::NotImplementedError < ::StandardError
   # @return [NotImplementedError] a new instance of NotImplementedError
   #

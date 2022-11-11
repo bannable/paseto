@@ -10,6 +10,7 @@ gem:
   - flog
   - reek
   - rubocop
+  - rubocop-ast
   - rubocop-performance
   - rubocop-rake
   - rubocop-rspec

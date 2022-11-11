@@ -5,8 +5,9 @@
 # Please instead update this file by running `bin/tapioca gem rspec-core`.
 
 # Namespace for all core RSpec code.
+#
+# source://rspec-core//lib/rspec/core/version.rb#1
 module RSpec
-  extend ::RSpec::Support::Warnings
   extend ::RSpec::Core::Warnings
 
   class << self
@@ -171,6 +172,8 @@ module RSpec
 end
 
 # Namespace for the rspec-core code.
+#
+# source://rspec-core//lib/rspec/core/version.rb#2
 module RSpec::Core
   class << self
     # @private path to executable file.
@@ -183,6 +186,8 @@ end
 # Unnamed example group used by `SuiteHookContext`.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_group.rb#775
 class RSpec::Core::AnonymousExampleGroup < ::RSpec::Core::ExampleGroup
   class << self
     # source://rspec-core//lib/rspec/core/example_group.rb#776
@@ -191,6 +196,8 @@ class RSpec::Core::AnonymousExampleGroup < ::RSpec::Core::ExampleGroup
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/backtrace_formatter.rb#4
 class RSpec::Core::BacktraceFormatter
   # @return [BacktraceFormatter] a new instance of BacktraceFormatter
   #
@@ -252,9 +259,13 @@ class RSpec::Core::BacktraceFormatter
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/bisect/utilities.rb#3
 module RSpec::Core::Bisect; end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/bisect/utilities.rb#8
 class RSpec::Core::Bisect::BisectFailedError < ::StandardError
   class << self
     # source://rspec-core//lib/rspec/core/bisect/utilities.rb#9
@@ -268,6 +279,8 @@ end
 # parent.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/bisect/utilities.rb#36
 class RSpec::Core::Bisect::Channel
   # @return [Channel] a new instance of Channel
   #
@@ -288,6 +301,8 @@ end
 RSpec::Core::Bisect::Channel::MARSHAL_DUMP_ENCODING = T.let(T.unsafe(nil), Encoding)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/bisect/utilities.rb#5
 class RSpec::Core::Bisect::ExampleSetDescriptor < ::Struct
   # Returns the value of attribute all_example_ids
   #
@@ -325,6 +340,8 @@ end
 # any way.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/bisect/utilities.rb#19
 class RSpec::Core::Bisect::Notifier
   # @return [Notifier] a new instance of Notifier
   #
@@ -370,6 +387,8 @@ end
 #   end
 # @see RSpec.configure
 # @see Hooks
+#
+# source://rspec-core//lib/rspec/core/configuration.rb#47
 class RSpec::Core::Configuration
   include ::RSpec::Core::Hooks
   include ::RSpec::Core::Configuration::Readers
@@ -2456,6 +2475,8 @@ RSpec::Core::Configuration::DEFAULT_FORMATTER = T.let(T.unsafe(nil), Proc)
 # during formatter initialization can cause an infinite loop.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/configuration.rb#1018
 class RSpec::Core::Configuration::DeprecationReporterBuffer
   # @return [DeprecationReporterBuffer] a new instance of DeprecationReporterBuffer
   #
@@ -2470,6 +2491,8 @@ class RSpec::Core::Configuration::DeprecationReporterBuffer
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/configuration.rb#1794
 module RSpec::Core::Configuration::ExposeCurrentExample; end
 
 # @private
@@ -2483,6 +2506,8 @@ RSpec::Core::Configuration::FAILED_STATUS = T.let(T.unsafe(nil), String)
 RSpec::Core::Configuration::MOCKING_ADAPTERS = T.let(T.unsafe(nil), Hash)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/configuration.rb#57
 class RSpec::Core::Configuration::MustBeConfiguredBeforeExampleGroupsError < ::StandardError; end
 
 # @private
@@ -2504,6 +2529,8 @@ RSpec::Core::Configuration::RAISE_ERROR_WARNING_NOTIFIER = T.let(T.unsafe(nil), 
 # module to allow us to override those methods and use `super`.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/configuration.rb#53
 module RSpec::Core::Configuration::Readers
   # source://rspec-core//lib/rspec/core/configuration.rb#63
   def default_color; end
@@ -2613,6 +2640,8 @@ RSpec::Core::Configuration::VALID_STATUSES = T.let(T.unsafe(nil), Array)
 # whether via the command line, `.rspec`, `~/.rspec`,
 # `$XDG_CONFIG_HOME/rspec/options`, `.rspec-local` or a custom options
 # file.
+#
+# source://rspec-core//lib/rspec/core/configuration_options.rb#10
 class RSpec::Core::ConfigurationOptions
   # @param args [Array<String>] command line arguments
   # @return [ConfigurationOptions] a new instance of ConfigurationOptions
@@ -2754,6 +2783,8 @@ RSpec::Core::ConfigurationOptions::UNPROCESSABLE_OPTIONS = T.let(T.unsafe(nil), 
 #
 # @see ExampleGroup
 # @see ExampleGroup.example_group
+#
+# source://rspec-core//lib/rspec/core/dsl.rb#25
 module RSpec::Core::DSL
   class << self
     # @private
@@ -2809,11 +2840,15 @@ module RSpec::Core::DSL
 end
 
 # Deprecation Error.
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#221
 class RSpec::Core::DeprecationError < ::StandardError; end
 
 # Wrapper around Ruby's `DidYouMean::SpellChecker` when available to provide file name suggestions.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/did_you_mean.rb#5
 class RSpec::Core::DidYouMean
   # @return [DidYouMean] a new instance of DidYouMean
   #
@@ -2882,6 +2917,8 @@ end
 # @note Example blocks are evaluated in the context of an instance
 #   of an `ExampleGroup`, not in the context of an instance of `Example`.
 # @see ExampleGroup
+#
+# source://rspec-core//lib/rspec/core/example.rb#44
 class RSpec::Core::Example
   # Creates a new instance of Example.
   #
@@ -3176,6 +3213,8 @@ RSpec::Core::Example::AllExceptionsExcludingDangerousOnesOnRubiesThatAllowIt = R
 
 # Represents the result of executing an example.
 # Behaves like a hash for backwards compatibility.
+#
+# source://rspec-core//lib/rspec/core/example.rb#556
 class RSpec::Core::Example::ExecutionResult
   include ::RSpec::Core::HashImitatable
   extend ::RSpec::Core::HashImitatable::ClassMethods
@@ -3336,6 +3375,8 @@ end
 #   end
 # @note This class also exposes the instance methods of {Example},
 #   proxying them through to the wrapped {Example} instance.
+#
+# source://rspec-core//lib/rspec/core/example.rb#331
 class RSpec::Core::Example::Procsy
   # @return [Procsy] a new instance of Procsy
   #
@@ -3520,6 +3561,8 @@ end
 # defined in {Hooks}, {MemoizedHelpers::ClassMethods} and
 # {SharedExampleGroup}. There are additional instance methods available to
 # your examples defined in {MemoizedHelpers} and {Pending}.
+#
+# source://rspec-core//lib/rspec/core/example_group.rb#29
 class RSpec::Core::ExampleGroup
   include ::RSpec::Core::MemoizedHelpers
   include ::RSpec::Core::Pending
@@ -4201,6 +4244,8 @@ RSpec::Core::ExampleGroup::INSTANCE_VARIABLE_TO_IGNORE = T.let(T.unsafe(nil), Sy
 # Raised when an RSpec API is called in the wrong scope, such as `before`
 # being called from within an example rather than from within an example
 # group block.
+#
+# source://rspec-core//lib/rspec/core/example_group.rb#740
 class RSpec::Core::ExampleGroup::WrongScopeError < ::NoMethodError; end
 
 # Dumps a list of hashes in a pretty, human readable format
@@ -4209,6 +4254,8 @@ class RSpec::Core::ExampleGroup::WrongScopeError < ::NoMethodError; end
 # set of keys.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_status_persister.rb#143
 class RSpec::Core::ExampleStatusDumper
   # @return [ExampleStatusDumper] a new instance of ExampleStatusDumper
   #
@@ -4260,6 +4307,8 @@ end
 #     the saved file is easily scannable if users want to inspect it.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_status_persister.rb#74
 class RSpec::Core::ExampleStatusMerger
   # @return [ExampleStatusMerger] a new instance of ExampleStatusMerger
   #
@@ -4305,6 +4354,8 @@ end
 # all, who puts those in file names?
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_status_persister.rb#207
 class RSpec::Core::ExampleStatusParser
   # @return [ExampleStatusParser] a new instance of ExampleStatusParser
   #
@@ -4335,6 +4386,8 @@ end
 # to just the ones that failed the last time they ran.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_status_persister.rb#8
 class RSpec::Core::ExampleStatusPersister
   # @return [ExampleStatusPersister] a new instance of ExampleStatusPersister
   #
@@ -4367,6 +4420,8 @@ end
 RSpec::Core::ExclusionRules = RSpec::Core::FilterRules
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/filter_manager.rb#4
 class RSpec::Core::FilterManager
   # @return [FilterManager] a new instance of FilterManager
   #
@@ -4440,6 +4495,8 @@ class RSpec::Core::FilterManager
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/filter_manager.rb#115
 class RSpec::Core::FilterRules
   # @return [FilterRules] a new instance of FilterRules
   #
@@ -4519,6 +4576,8 @@ RSpec::Core::FilterRules::PROJECT_DIR = T.let(T.unsafe(nil), String)
 # There are two implementations, optimized for different uses.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata_filter.rb#87
 module RSpec::Core::FilterableItemRepository; end
 
 # This implementation is much more complex, and is optimized for
@@ -4534,6 +4593,8 @@ module RSpec::Core::FilterableItemRepository; end
 # and then repeatedly queried as example groups and examples are defined.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata_filter.rb#151
 class RSpec::Core::FilterableItemRepository::QueryOptimized < ::RSpec::Core::FilterableItemRepository::UpdateOptimized
   # @return [QueryOptimized] a new instance of QueryOptimized
   #
@@ -4581,6 +4642,8 @@ end
 # groups.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata_filter.rb#98
 class RSpec::Core::FilterableItemRepository::UpdateOptimized
   # @return [UpdateOptimized] a new instance of UpdateOptimized
   #
@@ -4606,6 +4669,8 @@ class RSpec::Core::FilterableItemRepository::UpdateOptimized
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/flat_map.rb#4
 module RSpec::Core::FlatMap
   private
 
@@ -4688,6 +4753,8 @@ end
 #
 # @see RSpec::Core::Formatters::BaseTextFormatter
 # @see RSpec::Core::Reporter
+#
+# source://rspec-core//lib/rspec/core/formatters/console_codes.rb#3
 module RSpec::Core::Formatters
   class << self
     # Register the formatter class
@@ -4709,6 +4776,8 @@ end
 # method.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/base_bisect_formatter.rb#12
 class RSpec::Core::Formatters::BaseBisectFormatter
   # @return [BaseBisectFormatter] a new instance of BaseBisectFormatter
   #
@@ -4738,6 +4807,8 @@ end
 # @see RSpec::Core::Formatters::BaseTextFormatter
 # @see RSpec::Core::Reporter
 # @see RSpec::Core::Formatters::Protocol
+#
+# source://rspec-core//lib/rspec/core/formatters/base_formatter.rb#13
 class RSpec::Core::Formatters::BaseFormatter
   # @api public
   # @param output [IO] the formatter output
@@ -4804,6 +4875,8 @@ end
 #
 # @see RSpec::Core::Formatters::BaseFormatter
 # @see RSpec::Core::Reporter
+#
+# source://rspec-core//lib/rspec/core/formatters/base_text_formatter.rb#12
 class RSpec::Core::Formatters::BaseTextFormatter < ::RSpec::Core::Formatters::BaseFormatter
   # Invoked at the end of a suite run. Allows the formatter to do any
   # tidying up, but be aware that formatter output streams may be used
@@ -4861,6 +4934,8 @@ end
 # after each example.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/bisect_drb_formatter.rb#15
 class RSpec::Core::Formatters::BisectDRbFormatter < ::RSpec::Core::Formatters::BaseBisectFormatter
   # @return [BisectDRbFormatter] a new instance of BisectDRbFormatter
   #
@@ -4873,6 +4948,8 @@ end
 
 # ConsoleCodes provides helpers for formatting console output
 # with ANSI codes, e.g. color's and bold.
+#
+# source://rspec-core//lib/rspec/core/formatters/console_codes.rb#6
 module RSpec::Core::Formatters::ConsoleCodes
   private
 
@@ -4940,6 +5017,8 @@ RSpec::Core::Formatters::ConsoleCodes::VT100_CODES = T.let(T.unsafe(nil), Hash)
 RSpec::Core::Formatters::ConsoleCodes::VT100_CODE_VALUES = T.let(T.unsafe(nil), Hash)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#7
 class RSpec::Core::Formatters::DeprecationFormatter
   # @return [DeprecationFormatter] a new instance of DeprecationFormatter
   #
@@ -4983,6 +5062,8 @@ end
 RSpec::Core::Formatters::DeprecationFormatter::DEPRECATION_STREAM_NOTICE = T.let(T.unsafe(nil), String)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#135
 class RSpec::Core::Formatters::DeprecationFormatter::DelayedPrinter
   # @return [DelayedPrinter] a new instance of DelayedPrinter
   #
@@ -5023,6 +5104,8 @@ RSpec::Core::Formatters::DeprecationFormatter::DelayedPrinter::TOO_MANY_USES_LIM
 # Wraps a File object and provides file-specific operations.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#196
 class RSpec::Core::Formatters::DeprecationFormatter::FileStream
   # @return [FileStream] a new instance of FileStream
   #
@@ -5037,6 +5120,8 @@ class RSpec::Core::Formatters::DeprecationFormatter::FileStream
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#94
 class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage < ::Struct
   # @return [GeneratedDeprecationMessage] a new instance of GeneratedDeprecationMessage
   #
@@ -5070,6 +5155,8 @@ class RSpec::Core::Formatters::DeprecationFormatter::GeneratedDeprecationMessage
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#113
 class RSpec::Core::Formatters::DeprecationFormatter::ImmediatePrinter
   # @return [ImmediatePrinter] a new instance of ImmediatePrinter
   #
@@ -5104,6 +5191,8 @@ RSpec::Core::Formatters::DeprecationFormatter::RAISE_ERROR_CONFIG_NOTICE = T.let
 # Not really a stream, but is usable in place of one.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#184
 class RSpec::Core::Formatters::DeprecationFormatter::RaiseErrorStream
   # @raise [DeprecationError]
   #
@@ -5115,6 +5204,8 @@ class RSpec::Core::Formatters::DeprecationFormatter::RaiseErrorStream
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/deprecation_formatter.rb#66
 class RSpec::Core::Formatters::DeprecationFormatter::SpecifiedDeprecationMessage < ::Struct
   # @return [SpecifiedDeprecationMessage] a new instance of SpecifiedDeprecationMessage
   #
@@ -5159,6 +5250,8 @@ end
 RSpec::Core::Formatters::DeprecationFormatter::TOO_MANY_WARNINGS_NOTICE = T.let(T.unsafe(nil), String)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/documentation_formatter.rb#8
 class RSpec::Core::Formatters::DocumentationFormatter < ::RSpec::Core::Formatters::BaseTextFormatter
   # @return [DocumentationFormatter] a new instance of DocumentationFormatter
   #
@@ -5208,6 +5301,8 @@ class RSpec::Core::Formatters::DocumentationFormatter < ::RSpec::Core::Formatter
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#11
 class RSpec::Core::Formatters::ExceptionPresenter
   # @return [ExceptionPresenter] a new instance of ExceptionPresenter
   #
@@ -5333,6 +5428,8 @@ end
 # provided example.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#284
 class RSpec::Core::Formatters::ExceptionPresenter::Factory
   # @return [Factory] a new instance of Factory
   #
@@ -5366,6 +5463,8 @@ class RSpec::Core::Formatters::ExceptionPresenter::Factory
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#396
 class RSpec::Core::Formatters::ExceptionPresenter::Factory::CommonBacktraceTruncater
   # @return [CommonBacktraceTruncater] a new instance of CommonBacktraceTruncater
   #
@@ -5380,6 +5479,8 @@ end
 # block declared for `:aggregate_failures` metadata.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#389
 module RSpec::Core::Formatters::ExceptionPresenter::Factory::EmptyBacktraceFormatter
   class << self
     # source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#390
@@ -5393,6 +5494,8 @@ end
 RSpec::Core::Formatters::ExceptionPresenter::PENDING_DETAIL_FORMATTER = T.let(T.unsafe(nil), Proc)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/failure_list_formatter.rb#7
 class RSpec::Core::Formatters::FailureListFormatter < ::RSpec::Core::Formatters::BaseFormatter
   # Discard profile and messages
   #
@@ -5413,6 +5516,8 @@ end
 # profiler implements #message
 #
 # @api private
+#
+# source://rspec-core//lib/rspec/core/formatters/fallback_message_formatter.rb#7
 class RSpec::Core::Formatters::FallbackMessageFormatter
   # @api private
   # @return [FallbackMessageFormatter] a new instance of FallbackMessageFormatter
@@ -5436,6 +5541,8 @@ class RSpec::Core::Formatters::FallbackMessageFormatter
 end
 
 # Formatters helpers.
+#
+# source://rspec-core//lib/rspec/core/formatters/helpers.rb#7
 module RSpec::Core::Formatters::Helpers
   class << self
     # Formats seconds into a human-readable string.
@@ -5513,6 +5620,8 @@ RSpec::Core::Formatters::Helpers::DEFAULT_PRECISION = T.let(T.unsafe(nil), Integ
 RSpec::Core::Formatters::Helpers::SUB_SECOND_PRECISION = T.let(T.unsafe(nil), Integer)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/html_formatter.rb#8
 class RSpec::Core::Formatters::HtmlFormatter < ::RSpec::Core::Formatters::BaseFormatter
   # @return [HtmlFormatter] a new instance of HtmlFormatter
   #
@@ -5567,6 +5676,8 @@ class RSpec::Core::Formatters::HtmlFormatter < ::RSpec::Core::Formatters::BaseFo
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/html_printer.rb#7
 class RSpec::Core::Formatters::HtmlPrinter
   include ::ERB::Util
 
@@ -5633,6 +5744,8 @@ RSpec::Core::Formatters::HtmlPrinter::HTML_HEADER = T.let(T.unsafe(nil), String)
 RSpec::Core::Formatters::HtmlPrinter::REPORT_HEADER = T.let(T.unsafe(nil), String)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/json_formatter.rb#8
 class RSpec::Core::Formatters::JsonFormatter < ::RSpec::Core::Formatters::BaseFormatter
   # @return [JsonFormatter] a new instance of JsonFormatter
   #
@@ -5684,6 +5797,8 @@ end
 # interface.
 #
 # @api private
+#
+# source://rspec-core//lib/rspec/core/formatters.rb#96
 class RSpec::Core::Formatters::Loader
   # @api private
   # @return [Loader] a new instance of Loader
@@ -5819,6 +5934,8 @@ end
 # Formatter for providing profile output.
 #
 # @api private
+#
+# source://rspec-core//lib/rspec/core/formatters/profile_formatter.rb#8
 class RSpec::Core::Formatters::ProfileFormatter
   # @api private
   # @return [ProfileFormatter] a new instance of ProfileFormatter
@@ -5866,6 +5983,8 @@ class RSpec::Core::Formatters::ProfileFormatter
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/progress_formatter.rb#8
 class RSpec::Core::Formatters::ProgressFormatter < ::RSpec::Core::Formatters::BaseTextFormatter
   # source://rspec-core//lib/rspec/core/formatters/progress_formatter.rb#19
   def example_failed(_notification); end
@@ -5881,6 +6000,8 @@ class RSpec::Core::Formatters::ProgressFormatter < ::RSpec::Core::Formatters::Ba
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/snippet_extractor.rb#5
 class RSpec::Core::Formatters::SnippetExtractor
   # @return [SnippetExtractor] a new instance of SnippetExtractor
   #
@@ -5950,14 +6071,21 @@ class RSpec::Core::Formatters::SnippetExtractor
   end
 end
 
+# source://rspec-core//lib/rspec/core/formatters/snippet_extractor.rb#22
 class RSpec::Core::Formatters::SnippetExtractor::NoExpressionAtLineError < ::StandardError; end
+
+# source://rspec-core//lib/rspec/core/formatters/snippet_extractor.rb#6
 class RSpec::Core::Formatters::SnippetExtractor::NoSuchFileError < ::StandardError; end
+
+# source://rspec-core//lib/rspec/core/formatters/snippet_extractor.rb#7
 class RSpec::Core::Formatters::SnippetExtractor::NoSuchLineError < ::StandardError; end
 
 # Provides terminal syntax highlighting of code snippets
 # when coderay is available.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/syntax_highlighter.rb#7
 class RSpec::Core::Formatters::SyntaxHighlighter
   # @return [SyntaxHighlighter] a new instance of SyntaxHighlighter
   #
@@ -5984,6 +6112,8 @@ class RSpec::Core::Formatters::SyntaxHighlighter
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/syntax_highlighter.rb#61
 module RSpec::Core::Formatters::SyntaxHighlighter::CodeRayImplementation
   class << self
     # source://rspec-core//lib/rspec/core/formatters/syntax_highlighter.rb#64
@@ -5995,6 +6125,8 @@ end
 RSpec::Core::Formatters::SyntaxHighlighter::CodeRayImplementation::RESET_CODE = T.let(T.unsafe(nil), String)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/syntax_highlighter.rb#78
 module RSpec::Core::Formatters::SyntaxHighlighter::NoSyntaxHighlightingImplementation
   class << self
     # source://rspec-core//lib/rspec/core/formatters/syntax_highlighter.rb#79
@@ -6015,6 +6147,8 @@ RSpec::Core::Formatters::SyntaxHighlighter::WindowsImplementation = RSpec::Core:
 # declare attributes.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#349
 module RSpec::Core::HashImitatable
   mixes_in_class_methods ::RSpec::Core::HashImitatable::ClassMethods
 
@@ -6406,6 +6540,8 @@ module RSpec::Core::HashImitatable
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#435
 module RSpec::Core::HashImitatable::ClassMethods
   # source://rspec-core//lib/rspec/core/metadata.rb#440
   def attr_accessor(*names); end
@@ -6420,6 +6556,8 @@ end
 # or `context` block and included in {Configuration}, making them
 # available off of the configuration object to define global setup
 # or teardown logic.
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#9
 module RSpec::Core::Hooks
   # Declare a block of code to be run after each example (using `:example`)
   # or once after all examples n the context (using `:context`). See
@@ -6945,18 +7083,24 @@ module RSpec::Core::Hooks
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#379
 class RSpec::Core::Hooks::AfterContextHook < ::RSpec::Core::Hooks::Hook
   # source://rspec-core//lib/rspec/core/hooks.rb#380
   def run(example); end
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#370
 class RSpec::Core::Hooks::AfterHook < ::RSpec::Core::Hooks::Hook
   # source://rspec-core//lib/rspec/core/hooks.rb#371
   def run(example); end
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#388
 class RSpec::Core::Hooks::AroundHook < ::RSpec::Core::Hooks::Hook
   # source://rspec-core//lib/rspec/core/hooks.rb#389
   def execute_with(example, procsy); end
@@ -6968,12 +7112,16 @@ class RSpec::Core::Hooks::AroundHook < ::RSpec::Core::Hooks::Hook
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#363
 class RSpec::Core::Hooks::BeforeHook < ::RSpec::Core::Hooks::Hook
   # source://rspec-core//lib/rspec/core/hooks.rb#364
   def run(example); end
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#360
 class RSpec::Core::Hooks::Hook < ::Struct
   # Returns the value of attribute block
   #
@@ -7017,6 +7165,8 @@ end
 # asking this class for a list of hooks, and then doing something with them.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/hooks.rb#420
 class RSpec::Core::Hooks::HookCollections
   # @return [HookCollections] a new instance of HookCollections
   #
@@ -7104,6 +7254,8 @@ RSpec::Core::Hooks::HookCollections::SCOPES = T.let(T.unsafe(nil), Array)
 RSpec::Core::Hooks::HookCollections::SCOPE_ALIASES = T.let(T.unsafe(nil), Hash)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/filter_manager.rb#186
 class RSpec::Core::InclusionRules < ::RSpec::Core::FilterRules
   # source://rspec-core//lib/rspec/core/filter_manager.rb#187
   def add(*args); end
@@ -7139,9 +7291,13 @@ class RSpec::Core::InclusionRules < ::RSpec::Core::FilterRules
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#4
 module RSpec::Core::Invocations; end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#28
 class RSpec::Core::Invocations::Bisect
   # source://rspec-core//lib/rspec/core/invocations.rb#29
   def call(options, err, out); end
@@ -7153,18 +7309,24 @@ class RSpec::Core::Invocations::Bisect
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#15
 class RSpec::Core::Invocations::DRbWithFallback
   # source://rspec-core//lib/rspec/core/invocations.rb#16
   def call(options, err, out); end
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#6
 class RSpec::Core::Invocations::InitializeProject
   # source://rspec-core//lib/rspec/core/invocations.rb#7
   def call(*_args); end
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#78
 class RSpec::Core::Invocations::PrintHelp < ::Struct
   # source://rspec-core//lib/rspec/core/invocations.rb#79
   def call(_options, _err, out); end
@@ -7201,6 +7363,8 @@ class RSpec::Core::Invocations::PrintHelp < ::Struct
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/invocations.rb#52
 class RSpec::Core::Invocations::PrintVersion
   # source://rspec-core//lib/rspec/core/invocations.rb#53
   def call(_options, _err, out); end
@@ -7230,6 +7394,8 @@ end
 #     `[:example_group][:example_group]`.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#470
 class RSpec::Core::LegacyExampleGroupHash
   include ::RSpec::Core::HashImitatable
   extend ::RSpec::Core::HashImitatable::ClassMethods
@@ -7260,6 +7426,8 @@ end
 # available to be called from within example blocks.
 #
 # @see ClassMethods
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#9
 module RSpec::Core::MemoizedHelpers
   # @private
   #
@@ -7432,6 +7600,8 @@ end
 # This module is extended onto {ExampleGroup}, making the methods
 # available to be called from within example group blocks.
 # You can think of them as being analagous to class macros.
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#274
 module RSpec::Core::MemoizedHelpers::ClassMethods
   # Generates a method whose return value is memoized after the first
   # call. Useful for reducing duplication between examples that assign
@@ -7624,6 +7794,8 @@ end
 # memoized hash when used in a `before(:context)` hook.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#200
 class RSpec::Core::MemoizedHelpers::ContextHookMemoized
   class << self
     # source://rspec-core//lib/rspec/core/memoized_helpers.rb#222
@@ -7635,6 +7807,8 @@ class RSpec::Core::MemoizedHelpers::ContextHookMemoized
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#256
 class RSpec::Core::MemoizedHelpers::ContextHookMemoized::After < ::RSpec::Core::MemoizedHelpers::ContextHookMemoized
   class << self
     # source://rspec-core//lib/rspec/core/memoized_helpers.rb#261
@@ -7649,6 +7823,8 @@ class RSpec::Core::MemoizedHelpers::ContextHookMemoized::After < ::RSpec::Core::
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#241
 class RSpec::Core::MemoizedHelpers::ContextHookMemoized::Before < ::RSpec::Core::MemoizedHelpers::ContextHookMemoized
   class << self
     # source://rspec-core//lib/rspec/core/memoized_helpers.rb#246
@@ -7663,6 +7839,8 @@ class RSpec::Core::MemoizedHelpers::ContextHookMemoized::Before < ::RSpec::Core:
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#186
 class RSpec::Core::MemoizedHelpers::NonThreadSafeMemoized
   # @return [NonThreadSafeMemoized] a new instance of NonThreadSafeMemoized
   #
@@ -7674,6 +7852,8 @@ class RSpec::Core::MemoizedHelpers::NonThreadSafeMemoized
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/memoized_helpers.rb#170
 class RSpec::Core::MemoizedHelpers::ThreadsafeMemoized
   # @return [ThreadsafeMemoized] a new instance of ThreadsafeMemoized
   #
@@ -7708,6 +7888,8 @@ end
 # @see FilterManager
 # @see Configuration#filter_run_including
 # @see Configuration#filter_run_excluding
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#27
 module RSpec::Core::Metadata
   class << self
     # Returns an enumerator that iteratively walks up the given metadata through all
@@ -7774,6 +7956,8 @@ module RSpec::Core::Metadata
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#247
 class RSpec::Core::Metadata::ExampleGroupHash < ::RSpec::Core::Metadata::HashPopulator
   private
 
@@ -7796,6 +7980,8 @@ class RSpec::Core::Metadata::ExampleGroupHash < ::RSpec::Core::Metadata::HashPop
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#213
 class RSpec::Core::Metadata::ExampleHash < ::RSpec::Core::Metadata::HashPopulator
   private
 
@@ -7815,6 +8001,8 @@ end
 # managed by RSpec.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/metadata.rb#117
 class RSpec::Core::Metadata::HashPopulator
   # @return [HashPopulator] a new instance of HashPopulator
   #
@@ -7875,6 +8063,8 @@ RSpec::Core::Metadata::RESERVED_KEYS = T.let(T.unsafe(nil), Array)
 # does not manage any of the state in the hash. We're moving towards
 # having metadata be a raw hash (not a custom subclass), so externalizing
 # this filtering logic helps us move in that direction.
+#
+# source://rspec-core//lib/rspec/core/metadata_filter.rb#8
 module RSpec::Core::MetadataFilter
   class << self
     # @private
@@ -7927,6 +8117,8 @@ end
 # multiple sub-exceptions. This is used in situations where a single
 # individual spec has multiple exceptions, such as one in the `it` block
 # and one in an `after` block.
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#436
 class RSpec::Core::MultipleExceptionError < ::StandardError
   include ::RSpec::Core::MultipleExceptionError::InterfaceTag
 
@@ -7986,6 +8178,8 @@ end
 # checking to see if rspec-expectations is loaded.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/formatters/exception_presenter.rb#437
 module RSpec::Core::MultipleExceptionError::InterfaceTag
   # Appends the provided exception to the list.
   #
@@ -8009,11 +8203,15 @@ end
 
 # Notifications are value objects passed to formatters to provide them
 # with information about a particular event of interest.
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#9
 module RSpec::Core::Notifications; end
 
 # `CustomNotification` is used when sending custom events to formatters /
 # other registered listeners, it creates attributes based on supplied hash
 # of options.
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#514
 class RSpec::Core::Notifications::CustomNotification < ::Struct
   class << self
     # Build a custom notification based on the supplied option key / values.
@@ -8036,6 +8234,8 @@ end
 # @attr replacement [String] An optional replacement for the deprecation
 # @attr call_site [String] An optional call site from which the deprecation
 #   was issued
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#491
 class RSpec::Core::Notifications::DeprecationNotification < ::Struct
   # An optional call site from which the deprecation
   # was issued
@@ -8114,6 +8314,8 @@ end
 #   def example_started(notification)
 #   puts "Hey I started #{notification.example.description}"
 #   end
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#38
 class RSpec::Core::Notifications::ExampleNotification < ::Struct
   # the current example
   #
@@ -8151,6 +8353,8 @@ end
 #   def stop(notification)
 #   puts "Hey I ran #{notification.examples.size}"
 #   end
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#69
 class RSpec::Core::Notifications::ExamplesNotification
   # @return [ExamplesNotification] a new instance of ExamplesNotification
   #
@@ -8220,6 +8424,8 @@ end
 #   puts notification.exception.backtrace.join("\n")
 #   end
 # @see ExampleNotification
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#154
 class RSpec::Core::Notifications::FailedExampleNotification < ::RSpec::Core::Notifications::ExampleNotification
   # @return [FailedExampleNotification] a new instance of FailedExampleNotification
   #
@@ -8289,6 +8495,8 @@ end
 #   def example_group_started(notification)
 #   puts "Hey I started #{notification.group.description}"
 #   end
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#256
 class RSpec::Core::Notifications::GroupNotification < ::Struct
   # the current group
   #
@@ -8314,6 +8522,8 @@ end
 # sends to formatters.
 #
 # @attr message [String] the message
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#262
 class RSpec::Core::Notifications::MessageNotification < ::Struct
   # the message
   #
@@ -8336,6 +8546,8 @@ class RSpec::Core::Notifications::MessageNotification < ::Struct
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#11
 module RSpec::Core::Notifications::NullColorizer
   private
 
@@ -8350,12 +8562,18 @@ end
 
 # `NullNotification` represents a placeholder value for notifications that
 # currently require no information, but we may wish to extend in future.
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#504
 class RSpec::Core::Notifications::NullNotification; end
 
 # @deprecated Use {FailedExampleNotification} instead.
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#221
 class RSpec::Core::Notifications::PendingExampleFailedAsExpectedNotification < ::RSpec::Core::Notifications::FailedExampleNotification; end
 
 # @deprecated Use {FailedExampleNotification} instead.
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#218
 class RSpec::Core::Notifications::PendingExampleFixedNotification < ::RSpec::Core::Notifications::FailedExampleNotification; end
 
 # The `ProfileNotification` holds information about the results of running a
@@ -8366,6 +8584,8 @@ class RSpec::Core::Notifications::PendingExampleFixedNotification < ::RSpec::Cor
 # @attr examples [Array<RSpec::Core::Example>] the examples run
 # @attr number_of_examples [Fixnum] the number of examples to profile
 # @attr example_groups [Array<RSpec::Core::Profiler>] example groups run
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#427
 class RSpec::Core::Notifications::ProfileNotification
   # @return [ProfileNotification] a new instance of ProfileNotification
   #
@@ -8424,6 +8644,8 @@ end
 #
 # @attr seed [Fixnum] the seed used to randomize ordering
 # @attr used [Boolean] whether the seed has been used or not
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#269
 class RSpec::Core::Notifications::SeedNotification < ::Struct
   # @return [String] The seed information fully formatted in the way that
   #   RSpec's built-in formatters emit.
@@ -8475,6 +8697,8 @@ end
 #
 # @attr example [RSpec::Core::Example] the current example
 # @see ExampleNotification
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#228
 class RSpec::Core::Notifications::SkippedExampleNotification < ::RSpec::Core::Notifications::ExampleNotification
   # @return [String] The pending detail fully formatted in the way that
   #   RSpec's built-in formatters emit.
@@ -8490,6 +8714,8 @@ end
 # @attr count [Fixnum] the number counted
 # @attr load_time [Float] the number of seconds taken to boot RSpec
 #   and load the spec files
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#26
 class RSpec::Core::Notifications::StartNotification < ::Struct
   # the number counted
   #
@@ -8537,6 +8763,8 @@ end
 # @attr errors_outside_of_examples_count [Integer] the number of errors that
 #   have occurred processing
 #   the spec suite
+#
+# source://rspec-core//lib/rspec/core/notifications.rb#298
 class RSpec::Core::Notifications::SummaryNotification < ::Struct
   include ::RSpec::Core::ShellEscape
 
@@ -8696,6 +8924,8 @@ end
 # # Used in place of a {Reporter} for situations where we don't want reporting output.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/reporter.rb#259
 class RSpec::Core::NullReporter
   class << self
     private
@@ -8706,6 +8936,8 @@ class RSpec::Core::NullReporter
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#4
 module RSpec::Core::Ordering; end
 
 # Manages ordering configuration.
@@ -8713,6 +8945,8 @@ module RSpec::Core::Ordering; end
 # @note This is not intended to be used externally. Use
 #   the APIs provided by `RSpec::Core::Configuration` instead.
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#116
 class RSpec::Core::Ordering::ConfigurationManager
   # @return [ConfigurationManager] a new instance of ConfigurationManager
   #
@@ -8750,6 +8984,8 @@ end
 # Orders items based on a custom block.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#71
 class RSpec::Core::Ordering::Custom
   # @return [Custom] a new instance of Custom
   #
@@ -8763,6 +8999,8 @@ end
 # The default global ordering (defined order).
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#7
 class RSpec::Core::Ordering::Identity
   # source://rspec-core//lib/rspec/core/ordering.rb#8
   def order(items); end
@@ -8771,6 +9009,8 @@ end
 # Orders items randomly.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#15
 class RSpec::Core::Ordering::Random
   # @return [Random] a new instance of Random
   #
@@ -8803,6 +9043,8 @@ RSpec::Core::Ordering::Random::MAX_32_BIT = T.let(T.unsafe(nil), Integer)
 # Orders items by modification time (most recent modified first).
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#63
 class RSpec::Core::Ordering::RecentlyModified
   # source://rspec-core//lib/rspec/core/ordering.rb#64
   def order(list); end
@@ -8811,6 +9053,8 @@ end
 # Stores the different ordering strategies.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/ordering.rb#83
 class RSpec::Core::Ordering::Registry
   # @return [Registry] a new instance of Registry
   #
@@ -8830,6 +9074,8 @@ class RSpec::Core::Ordering::Registry
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/output_wrapper.rb#4
 class RSpec::Core::OutputWrapper
   # @private
   # @return [OutputWrapper] a new instance of OutputWrapper
@@ -9094,6 +9340,8 @@ class RSpec::Core::OutputWrapper
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/option_parser.rb#6
 class RSpec::Core::Parser
   # @return [Parser] a new instance of Parser
   #
@@ -9130,6 +9378,8 @@ end
 
 # Provides methods to mark examples as pending. These methods are available
 # to be called from within any example or hook.
+#
+# source://rspec-core//lib/rspec/core/pending.rb#5
 module RSpec::Core::Pending
   # Marks an example as pending. The rest of the example will still be
   # executed, and if it passes the example will fail to indicate that the
@@ -9224,10 +9474,13 @@ RSpec::Core::Pending::NOT_YET_IMPLEMENTED = T.let(T.unsafe(nil), String)
 # source://rspec-core//lib/rspec/core/pending.rb#26
 RSpec::Core::Pending::NO_REASON_GIVEN = T.let(T.unsafe(nil), String)
 
+# source://rspec-core//lib/rspec/core/pending.rb#22
 class RSpec::Core::Pending::PendingExampleFixedError < ::StandardError; end
 
 # Raised in the middle of an example to indicate that it should be marked
 # as skipped.
+#
+# source://rspec-core//lib/rspec/core/pending.rb#8
 class RSpec::Core::Pending::SkipDeclaredInExample < ::StandardError
   # @return [SkipDeclaredInExample] a new instance of SkipDeclaredInExample
   #
@@ -9241,6 +9494,8 @@ class RSpec::Core::Pending::SkipDeclaredInExample < ::StandardError
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/profiler.rb#4
 class RSpec::Core::Profiler
   # @return [Profiler] a new instance of Profiler
   #
@@ -9267,6 +9522,8 @@ RSpec::Core::Profiler::NOTIFICATIONS = T.let(T.unsafe(nil), Array)
 
 # A reporter will send notifications to listeners, usually formatters for the
 # spec suite run.
+#
+# source://rspec-core//lib/rspec/core/reporter.rb#4
 class RSpec::Core::Reporter
   # @return [Reporter] a new instance of Reporter
   #
@@ -9459,6 +9716,8 @@ end
 RSpec::Core::Reporter::RSPEC_NOTIFICATIONS = T.let(T.unsafe(nil), RSpec::Core::Set)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/ruby_project.rb#7
 module RSpec::Core::RubyProject
   private
 
@@ -9502,6 +9761,8 @@ module RSpec::Core::RubyProject
 end
 
 # Provides the main entry point to run a suite of RSpec examples.
+#
+# source://rspec-core//lib/rspec/core/runner.rb#4
 class RSpec::Core::Runner
   # @return [Runner] a new instance of Runner
   #
@@ -9651,6 +9912,8 @@ end
 # builds.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/set.rb#11
 class RSpec::Core::Set
   include ::Enumerable
 
@@ -9701,6 +9964,8 @@ end
 #   include LoggedInAsAdmin
 #   # ...
 #   end
+#
+# source://rspec-core//lib/rspec/core/shared_context.rb#19
 module RSpec::Core::SharedContext
   # @private
   #
@@ -9763,6 +10028,8 @@ module RSpec::Core::SharedContext
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/shared_context.rb#33
 class RSpec::Core::SharedContext::Recording < ::Struct
   # Returns the value of attribute args
   #
@@ -9822,6 +10089,8 @@ end
 # for inclusion in that example group or any child example groups,
 # but not in any parent or sibling example groups. Shared example
 # groups defined at the top level can be included from any example group.
+#
+# source://rspec-core//lib/rspec/core/shared_example_group.rb#57
 module RSpec::Core::SharedExampleGroup
   # Stores the block for later use. The block will be evaluated
   # in the context of an example group via `include_examples`,
@@ -9900,6 +10169,8 @@ module RSpec::Core::SharedExampleGroup
 end
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/shared_example_group.rb#149
 class RSpec::Core::SharedExampleGroup::Registry
   # source://rspec-core//lib/rspec/core/shared_example_group.rb#150
   def add(context, name, *metadata_args, &block); end
@@ -9942,6 +10213,8 @@ end
 # Shared examples top level DSL.
 #
 # @api private
+#
+# source://rspec-core//lib/rspec/core/shared_example_group.rb#106
 module RSpec::Core::SharedExampleGroup::TopLevelDSL
   class << self
     # @api private
@@ -9974,6 +10247,8 @@ module RSpec::Core::SharedExampleGroup::TopLevelDSL
 end
 
 # Contains information about the inclusion site of a shared example group.
+#
+# source://rspec-core//lib/rspec/core/example_group.rb#782
 class RSpec::Core::SharedExampleGroupInclusionStackFrame
   # @private
   # @return [SharedExampleGroupInclusionStackFrame] a new instance of SharedExampleGroupInclusionStackFrame
@@ -10024,6 +10299,8 @@ end
 # The functionality is defined by the provided block, which is lazily
 # eval'd when the `SharedExampleGroupModule` instance is included in an example
 # group.
+#
+# source://rspec-core//lib/rspec/core/shared_example_group.rb#10
 class RSpec::Core::SharedExampleGroupModule < ::Module
   # @return [SharedExampleGroupModule] a new instance of SharedExampleGroupModule
   #
@@ -10061,6 +10338,8 @@ end
 # Deals with the fact that `shellwords` only works on POSIX systems.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/shell_escape.rb#5
 module RSpec::Core::ShellEscape
   private
 
@@ -10108,6 +10387,8 @@ RSpec::Core::ShellEscape::SHELLS_ALLOWING_UNQUOTED_IDS = T.let(T.unsafe(nil), Ar
 # Provides an execution context for before/after :suite hooks.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example.rb#651
 class RSpec::Core::SuiteHookContext < ::RSpec::Core::Example
   # @return [SuiteHookContext] a new instance of SuiteHookContext
   #
@@ -10118,7 +10399,22 @@ class RSpec::Core::SuiteHookContext < ::RSpec::Core::Example
   def set_exception(exception); end
 end
 
+# This avoids issues with reporting time caused by examples that
+# change the value/meaning of Time.now without properly restoring
+# it.
+#
+# @private
+#
+# source://rspec-core//lib/rspec/core.rb#174
+class RSpec::Core::Time
+  class << self
+    def now(in: T.unsafe(nil)); end
+  end
+end
+
 # Version information for RSpec Core.
+#
+# source://rspec-core//lib/rspec/core/version.rb#4
 module RSpec::Core::Version; end
 
 # Current version of RSpec Core, in semantic versioning format.
@@ -10127,6 +10423,8 @@ module RSpec::Core::Version; end
 RSpec::Core::Version::STRING = T.let(T.unsafe(nil), String)
 
 # @private
+#
+# source://rspec-core//lib/rspec/core/warnings.rb#6
 module RSpec::Core::Warnings
   # Used internally to print deprecation warnings.
   #
@@ -10151,6 +10449,8 @@ end
 # Internal container for global non-configuration data.
 #
 # @api private
+#
+# source://rspec-core//lib/rspec/core/world.rb#6
 class RSpec::Core::World
   # @api private
   # @return [World] a new instance of World
@@ -10407,6 +10707,8 @@ end
 #
 # @api private
 # @private
+#
+# source://rspec-core//lib/rspec/core/world.rb#264
 module RSpec::Core::World::Null
   class << self
     # @api private
@@ -10447,6 +10749,8 @@ end
 # `describe`.
 #
 # @private
+#
+# source://rspec-core//lib/rspec/core/example_group.rb#839
 module RSpec::ExampleGroups
   extend ::RSpec::Support::RecursiveConstMethods
 
@@ -10477,8 +10781,3 @@ RSpec::MODULES_TO_AUTOLOAD = T.let(T.unsafe(nil), Hash)
 #
 # source://rspec-core//lib/rspec/core/shared_context.rb#54
 RSpec::SharedContext = RSpec::Core::SharedContext
-
-module RSpec::Version; end
-
-# source://rspec/3.12.0/lib/rspec/version.rb#3
-RSpec::Version::STRING = T.let(T.unsafe(nil), String)
