@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # encoding: binary
 # frozen_string_literal: true
 
@@ -9,17 +9,19 @@ module Paseto
       SIGNATURE_BYTE_LEN = 96
 
       # Size of r | s in an ECDSA secp384 signature
-      SIGNATURE_PART_LEN = SIGNATURE_BYTE_LEN / 2
+      SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
-      # @dynamic key
+      sig { returns(OpenSSL::PKey::EC) }
       attr_reader :key
 
+      sig { returns(Public) }
       def self.generate
         new(key: OpenSSL::PKey::EC.generate("secp384r1"))
       end
 
+      sig { params(key: String).void }
       def initialize(key:)
-        @key = OpenSSL::PKey::EC.new(key)
+        @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
 
         begin
           @key.check_key
@@ -31,9 +33,9 @@ module Paseto
       end
 
       # rubocop:disable Metrics/AbcSize
+      sig { params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: "", implicit_assertion: "")
         raise ArgumentError, "no private key available" unless key.private?
-        raise ArgumentError, "message field is mandatory" unless message
 
         pk = key.public_key.to_octet_string(:compressed)
 
@@ -49,9 +51,9 @@ module Paseto
         Token.new(payload:, purpose:, version:, footer:)
       end
 
+      sig { params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: "")
         # OPTIONAL: verify footer is expected, constant-time
-        raise ArgumentError, "no token" unless token
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload.dup.to_s
@@ -76,7 +78,7 @@ module Paseto
       # OpenSSL returns and expects ECDSA signatures in a DER-encoded ECDSA_SIG struct,
       # but we need to be able to transport only (r || s) in big-endian form.
       # These methods allow us to convert (r ||s ) -> ECDSA_SIG and vice-versa.
-
+      sig { params(signature: String).returns(String) }
       def rs_to_asn1(signature)
         r = signature[0, SIGNATURE_PART_LEN] || ""
         s = signature[-SIGNATURE_PART_LEN, SIGNATURE_PART_LEN] || ""
@@ -89,6 +91,7 @@ module Paseto
         ).to_der
       end
 
+      sig { params(signature: String).returns(String) }
       def asn1_to_rs(signature)
         OpenSSL::ASN1.decode(signature).value.map do |v|
           v.value.to_s(2).rjust(SIGNATURE_PART_LEN, "\x00")

@@ -53,3 +53,6 @@ Style/MutableConstant:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
+
+Style/AccessorGrouping:
+  Enabled: false

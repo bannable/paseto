@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # encoding: binary
 # frozen_string_literal: true
 
@@ -8,26 +8,26 @@ module Paseto
       # Size in bytes of a SHA384 digest
       SHA384_DIGEST_LEN = 48
 
-      NULL_SALT = 0.chr * SHA384_DIGEST_LEN
+      NULL_SALT = T.let(0.chr * SHA384_DIGEST_LEN, String)
 
-      # @dynamic key
-
+      sig { returns(String) }
       # Symmetric encryption key
       attr_reader :key
 
+      sig { returns(Local) }
       def self.generate
         new(ikm: SecureRandom.random_bytes(32))
       end
 
+      sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
         super(version: "v3", purpose: "local")
       end
 
       # rubocop:disable Metrics/AbcSize
+      sig { params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
       def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
-        raise ArgumentError, "no message" unless message
-
         n ||= SecureRandom.random_bytes(32)
 
         ek, n2, ak = calc_keys(n)
@@ -44,20 +44,20 @@ module Paseto
         Token.new(payload: (n + c + t), version:, purpose:, footer:)
       end
 
+      sig { params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: "")
-        raise ArgumentError, "no token" unless token
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time
         n, c, t = split_payload(token.payload)
 
-        ek, n2, ak = calc_keys(n)
+        ek, n2, ak = calc_keys(T.must(n))
 
-        pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode(pae_header, n, T.must(c), token.footer, implicit_assertion)
 
         t2 = OpenSSL::HMAC.digest("SHA384", ak, pre_auth)
 
-        raise InvalidAuthenticator unless Util.constant_compare(t, t2)
+        raise InvalidAuthenticator unless Util.constant_compare(T.must(t), t2)
 
         cipher = OpenSSL::Cipher.new("aes-256-ctr").decrypt
         cipher.key = ek
@@ -68,16 +68,20 @@ module Paseto
 
       private
 
+      sig { params(nonce: String).returns(T::Array[String]) }
       def calc_keys(nonce)
-        ek, n2 = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384").unpack("a32a16")
+        tmp = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384")
+        ek = T.must(tmp[0, 32])
+        n2 = T.must(tmp[-16, 16])
         ak = OpenSSL::KDF.hkdf(key, info: "paseto-auth-key-for-aead#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384")
         [ek, n2, ak]
       end
 
+      sig { params(payload: String).returns(T::Array[String]) }
       def split_payload(payload)
-        n = payload.slice(0, 32).to_s
-        c = payload.slice(32, payload.size - 80).to_s
-        t = payload.slice(-48, 48).to_s
+        n = T.must(payload.slice(0, 32))
+        c = T.must(payload.slice(32, payload.size - 80))
+        t = T.must(payload.slice(-48, 48))
         [n, c, t]
       end
     end

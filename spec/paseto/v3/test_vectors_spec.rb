@@ -268,22 +268,13 @@ SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
     ia = %[{"test-vector":"3-F-1"}]
     token = Paseto::Token.parse(tok)
 
-    signed  = begin
-                priv.sign(message: payload, footer: footer, implicit_assertion: ia)
-              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
-                nil
-              end
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
 
     message = begin
                 pub.verify(token: token, implicit_assertion: ia)
               rescue Paseto::InvalidSignature, Paseto::ParseError
-                nil
-              end
-    expect(message).to be_nil
-
-    message = begin
-                pub.verify(token: signed, implicit_assertion: ia)
-              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
                 nil
               end
     expect(message).to be_nil
@@ -308,11 +299,11 @@ SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 
     expect do
       local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    end.to raise_error(ArgumentError, "no message")
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
                 nil
               end
     expect(message).to be_nil
@@ -330,11 +321,11 @@ SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 
     expect do
       local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    end.to raise_error(ArgumentError, "no message")
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
                 nil
               end
     expect(message).to be_nil
@@ -352,11 +343,11 @@ SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 
     expect do
       local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    end.to raise_error(ArgumentError, "no message")
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
                 nil
               end
     expect(message).to be_nil
@@ -374,11 +365,11 @@ SUd/gcAm08EjSIz06iWjrNy4NakxR3I=
 
     expect do
       local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    end.to raise_error(ArgumentError, "no message")
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
                 nil
               end
     expect(message).to be_nil

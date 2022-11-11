@@ -33,7 +33,7 @@ RSpec.describe Paseto::Token do
       let(:version) { "v0" }
 
       it "raises an error" do
-        expect { token }.to raise_error(ArgumentError, "not a valid token")
+        expect { token }.to raise_error(Paseto::ParseError, "not a valid token")
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe Paseto::Token do
       let(:purpose) { "evilthings" }
 
       it "raises an error" do
-        expect { token }.to raise_error(ArgumentError, "not a valid token")
+        expect { token }.to raise_error(Paseto::ParseError, "not a valid token")
       end
     end
 

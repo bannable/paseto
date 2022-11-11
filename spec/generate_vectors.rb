@@ -52,8 +52,9 @@ module V4
     def expectations
       if expect_fail
         <<-EXPECT
-    enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    expect(enc).to_not eq(token)
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
@@ -112,8 +113,9 @@ module V4
     def expectations
       if expect_fail
         <<-EXPECT
-    signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
-    expect(signed).to_not eq(token)
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
 
     message = begin
                 pub.verify(token: token, implicit_assertion: ia)
@@ -182,11 +184,11 @@ module V3
         <<-EXPECT
     expect do
       local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    end.to raise_error(ArgumentError, "no message")
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
                 nil
               end
     expect(message).to be_nil
@@ -251,22 +253,13 @@ module V3
     def expectations
       if expect_fail
         <<-EXPECT
-    signed  = begin
-                priv.sign(message: payload, footer: footer, implicit_assertion: ia)
-              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
-                nil
-              end
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
 
     message = begin
                 pub.verify(token: token, implicit_assertion: ia)
               rescue Paseto::InvalidSignature, Paseto::ParseError
-                nil
-              end
-    expect(message).to be_nil
-
-    message = begin
-                pub.verify(token: signed, implicit_assertion: ia)
-              rescue Paseto::InvalidSignature, Paseto::ParseError, ArgumentError
                 nil
               end
     expect(message).to be_nil

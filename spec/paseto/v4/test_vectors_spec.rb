@@ -202,8 +202,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     ia = %[{"test-vector":"4-F-1"}]
     token = Paseto::Token.parse(tok)
 
-    signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
-    expect(signed).to_not eq(token)
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
 
     message = begin
                 pub.verify(token: token, implicit_assertion: ia)
@@ -223,8 +224,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     token = Paseto::Token.parse(tok)
     local = Paseto::V4::Local.new(ikm: key)
 
-    enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    expect(enc).to_not eq(token)
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
@@ -244,8 +246,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     token = Paseto::Token.parse(tok)
     local = Paseto::V4::Local.new(ikm: key)
 
-    enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    expect(enc).to_not eq(token)
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
@@ -265,8 +268,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     token = Paseto::Token.parse(tok)
     local = Paseto::V4::Local.new(ikm: key)
 
-    enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    expect(enc).to_not eq(token)
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
@@ -286,8 +290,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     token = Paseto::Token.parse(tok)
     local = Paseto::V4::Local.new(ikm: key)
 
-    enc = local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
-    expect(enc).to_not eq(token)
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
