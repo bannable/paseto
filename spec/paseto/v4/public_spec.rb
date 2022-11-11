@@ -64,26 +64,14 @@ RSpec.describe Paseto::V4::Public do
 
   describe "#version" do
     it { expect(key.version).to eq("v4") }
-
-    context "with only a public key" do
-      it { expect(key_pub.version).to eq("v4") }
-    end
   end
 
   describe "#purpose" do
     it { expect(key.purpose).to eq("public") }
-
-    context "with only a public key" do
-      it { expect(key_pub.purpose).to eq("public") }
-    end
   end
 
   describe "#header" do
     it { expect(key.header).to eq("v4.public") }
-
-    context "with only a public key" do
-      it { expect(key_pub.header).to eq("v4.public") }
-    end
   end
 
   describe "#public_key" do
