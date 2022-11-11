@@ -51,13 +51,13 @@ module Paseto
         # OPTIONAL: verify footer is expected, constant-time
         n, c, t = split_payload(token.payload)
 
-        ek, n2, ak = calc_keys(T.must(n))
+        ek, n2, ak = calc_keys(n)
 
-        pre_auth = Util.pre_auth_encode(pae_header, n, T.must(c), token.footer, implicit_assertion)
+        pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
 
         t2 = OpenSSL::HMAC.digest("SHA384", ak, pre_auth)
 
-        raise InvalidAuthenticator unless Util.constant_compare(T.must(t), t2)
+        raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
         cipher = OpenSSL::Cipher.new("aes-256-ctr").decrypt
         cipher.key = ek
@@ -77,7 +77,7 @@ module Paseto
         [ek, n2, ak]
       end
 
-      sig { params(payload: String).returns(T::Array[String]) }
+      sig { params(payload: String).returns([String, String, String]) }
       def split_payload(payload)
         n = T.must(payload.slice(0, 32))
         c = T.must(payload.slice(32, payload.size - 80))

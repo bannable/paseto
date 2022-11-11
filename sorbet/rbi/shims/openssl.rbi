@@ -5,7 +5,7 @@ class OpenSSL::PKey::EC
     params(
       digest: T.nilable(String),
       data: String,
-      options: T.untyped
+      options: T.nilable(T::Hash[String, String])
     ).returns(String)
   end
   def sign_raw(digest, data, options = nil); end
@@ -19,4 +19,12 @@ class OpenSSL::PKey::EC
     ).returns(T::Boolean)
   end
   def verify_raw(digest, signature, data, options = nil); end
+end
+
+module OpenSSL
+  sig { params(a: String, b: String).returns(T::Boolean) }
+  def self.secure_compare(a, b); end
+
+  sig { params(a: String, b: String).returns(T::Boolean) }
+  def self.fixed_length_secure_compare(a, b); end
 end

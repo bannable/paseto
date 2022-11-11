@@ -42,7 +42,7 @@ module Paseto
         # OPTIONAL: verify footer is expected, constant-time
         n, c, t = split_payload(token.payload)
 
-        ek, n2, ak = calc_keys(T.must(n))
+        ek, n2, ak = calc_keys(n)
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
 
@@ -55,19 +55,19 @@ module Paseto
 
       private
 
-      sig { params(payload: String).returns(T::Array[String]) }
+      sig { params(payload: String).returns([String, String, String]) }
       def split_payload(payload)
-        n = payload.slice(0, 32).to_s
-        c = payload.slice(32, payload.size - 64).to_s
-        t = payload.slice(-32, 32).to_s
+        n = T.must(payload.slice(0, 32))
+        c = T.must(payload.slice(32, payload.size - 64))
+        t = T.must(payload.slice(-32, 32))
         [n, c, t]
       end
 
-      sig { params(nonce: String).returns(T::Array[String]) }
+      sig { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
         tmp = RbNaCl::Hash.blake2b("paseto-encryption-key#{nonce}", key:, digest_size: 56)
-        ek = T.cast(tmp[0, 32], String)
-        n2 = T.cast(tmp[-24, 24], String)
+        ek = T.must(tmp[0, 32])
+        n2 = T.must(tmp[-24, 24])
         ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead#{nonce}", key:, digest_size: 32)
         [ek, n2, ak]
       end
