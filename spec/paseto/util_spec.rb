@@ -87,21 +87,21 @@ RSpec.describe Paseto::Util do
       let(:left) { "foo" }
       let(:right) { "foo" }
 
-      it { is_expected.to eq true }
+      it { is_expected.to be true }
     end
 
     context "with different length strings" do
       let(:left) { "foofoo" }
       let(:right) { "foo" }
 
-      it { is_expected.to eq false }
+      it { is_expected.to be false }
     end
 
     context "with different strings" do
       let(:left) { "foo" }
       let(:right) { "bar" }
 
-      it { is_expected.to eq false }
+      it { is_expected.to be false }
     end
   end
 end

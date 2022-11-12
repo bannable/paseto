@@ -43,7 +43,7 @@ RSpec.describe Paseto::V3::Public do
           MIGkAgEBBDDA1Tm0m7YhkfeVpFuarAJYVlHp2tQj+1fOBiLa10t9E8TiQO/hVfxB
           vGaVEQwOheWgBwYFK4EEACKhZANiAASyGqmryZGqdpsq5gEDIfNvgC3AwSJxiBCL
           XKHBTFRp+tCezLDOK/6V8KK/vVGBJlGFW6/I7ahyXprxS7xs7hPA9iz5YiuqXlu+
-          lbrIpZOz7b73hyQQCkvbBO/Avg+hPAk=                                                                        
+          lbrIpZOz7b73hyQQCkvbBO/Avg+hPAk=
           -----END EC PRIVATE KEY-----
         INVALID_KEY
       end
@@ -113,7 +113,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe "#verify" do
-    subject(:verify) { crypt.verify(token: token, implicit_assertion: "test") }
+    subject(:verify) { crypt.verify(token:, implicit_assertion: "test") }
 
     let(:token) do
       Paseto::Token.parse(
@@ -148,7 +148,11 @@ RSpec.describe Paseto::V3::Public do
     end
 
     context "with a mismatched token type" do
-      let(:token) { Paseto::Token.parse("v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4") }
+      let(:token) do
+        Paseto::Token.parse(
+          "v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4"
+        )
+      end
 
       it "raises an error" do
         expect { verify }.to raise_error(Paseto::ParseError, "incorrect header for key type v3.public")
