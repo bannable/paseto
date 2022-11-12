@@ -19,7 +19,7 @@ module Paseto
       # Create a new Public instance with a brand new EC key.
       sig { returns(Public) }
       def self.generate
-        new(key: OpenSSL::PKey::EC.generate("secp384r1").to_der)
+        new(key: OpenSSL::PKey::EC.generate('secp384r1').to_der)
       end
 
       # `key` must be either a DER or PEM encoded secp384r1 key.
@@ -31,12 +31,12 @@ module Paseto
         # This ensures that we never accept keys that are off-curve or for groups
         # other than secp384r1.
         maybe_unsafe = OpenSSL::PKey::EC.new(key)
-        @key = T.let(OpenSSL::PKey::EC.new(OpenSSL::PKey::EC::Group.new("secp384r1")), OpenSSL::PKey::EC)
+        @key = T.let(OpenSSL::PKey::EC.new(OpenSSL::PKey::EC::Group.new('secp384r1')), OpenSSL::PKey::EC)
         @key.private_key = maybe_unsafe.private_key
         @key.public_key = maybe_unsafe.public_key
         @key.check_key
 
-        super(version: "v3", purpose: "public")
+        super(version: 'v3', purpose: 'public')
       rescue OpenSSL::PKey::ECError => e
         raise Paseto::CryptoError, e.message
       end
@@ -46,14 +46,14 @@ module Paseto
       # Sign `message` and optional non-empty `footer` and return a Token.
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
       sig { params(message: String, footer: String, implicit_assertion: String).returns(Token) }
-      def sign(message:, footer: "", implicit_assertion: "")
-        raise ArgumentError, "no private key available" unless key.private?
+      def sign(message:, footer: '', implicit_assertion: '')
+        raise ArgumentError, 'no private key available' unless key.private?
 
         pk = key.public_key.to_octet_string(:compressed)
 
         m2 = Util.pre_auth_encode(pk, pae_header, message, footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest("SHA384", m2)
+        data = OpenSSL::Digest.digest('SHA384', m2)
         sig_asn = key.sign_raw(nil, data)
         sig = asn1_to_rs(sig_asn)
 
@@ -66,21 +66,21 @@ module Paseto
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: "")
+      def verify(token:, implicit_assertion: '')
         # OPTIONAL: verify footer is expected, constant-time
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload.dup.to_s
-        raise ParseError, "message too short" if m.bytesize < SIGNATURE_BYTE_LEN
+        raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN
 
         pk = key.public_key.to_octet_string(:compressed)
 
-        sig = m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN) || ""
+        sig = m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN) || ''
         s = rs_to_asn1(sig)
 
         m2 = Util.pre_auth_encode(pk, pae_header, m, token.footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest("SHA384", m2)
+        data = OpenSSL::Digest.digest('SHA384', m2)
         raise InvalidSignature unless key.verify_raw(nil, s, data)
 
         m
@@ -94,8 +94,8 @@ module Paseto
       # that can be used by OpenSSL.
       sig { params(signature: String).returns(String) }
       def rs_to_asn1(signature)
-        r = signature[0, SIGNATURE_PART_LEN] || ""
-        s = signature[-SIGNATURE_PART_LEN, SIGNATURE_PART_LEN] || ""
+        r = signature[0, SIGNATURE_PART_LEN] || ''
+        s = signature[-SIGNATURE_PART_LEN, SIGNATURE_PART_LEN] || ''
         OpenSSL::ASN1::Sequence.new(
           [r, s].map do |i|
             OpenSSL::ASN1::Integer.new(

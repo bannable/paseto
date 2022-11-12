@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "fileutils"
-require "json"
+require 'fileutils'
+require 'json'
 
 HEADER = <<HEADER
 # frozen_string_literal: true
@@ -46,7 +46,7 @@ module V4
     def payload_or_nil
       return %(%[#{payload}]) if payload
 
-      "nil"
+      'nil'
     end
 
     def expectations
@@ -107,7 +107,7 @@ module V4
     def payload_or_nil
       return %(%[#{payload}]) if payload
 
-      "nil"
+      'nil'
     end
 
     def expectations
@@ -176,7 +176,7 @@ module V3
     def payload_or_nil
       return %(%[#{payload}]) if payload
 
-      "nil"
+      'nil'
     end
 
     def expectations
@@ -247,7 +247,7 @@ module V3
     def payload_or_nil
       return %(%[#{payload}]) if payload
 
-      "nil"
+      'nil'
     end
 
     def expectations
@@ -294,7 +294,7 @@ end
 module SpecFactory
   def self.generate(version, **test)
     case version
-    when "v4"
+    when 'v4'
       if test.include?(:key)
         V4::LocalSpec.new(**test)
       elsif test.include?(:public_key)
@@ -302,7 +302,7 @@ module SpecFactory
       else
         raise ArgumentError, "unrecognized test type: #{test}"
       end
-    when "v3"
+    when 'v3'
       if test.include?(:key)
         V3::LocalSpec.new(**test)
       elsif test.include?(:public_key)
@@ -318,27 +318,27 @@ end
 
 def generate_specs(version:, path:)
   vectors = JSON.load_file(path)
-  vectors["tests"].each do |t|
-    t.transform_keys! { |k| k.tr("-", "_").to_sym }
+  vectors['tests'].each do |t|
+    t.transform_keys! { |k| k.tr('-', '_').to_sym }
   end
 
-  file_path = File.join("paseto", version, "test_vectors_spec.rb")
+  file_path = File.join('paseto', version, 'test_vectors_spec.rb')
   FileUtils.mkdir_p File.dirname(file_path)
   FileUtils.rm file_path, force: true
-  file = File.new(file_path, "w")
+  file = File.new(file_path, 'w')
   file.puts HEADER
-  file.puts format(OUTER_DESCRIBE, vector_name: vectors["name"])
-  vectors["tests"].each do |test|
+  file.puts format(OUTER_DESCRIBE, vector_name: vectors['name'])
+  vectors['tests'].each do |test|
     file.puts SpecFactory.generate(version, **test).spec
   end
-  file.puts "end"
+  file.puts 'end'
   file.close
 end
 
 if __FILE__ == $PROGRAM_NAME
   TEST_VECTORS = [
-    { version: "v4", path: "vectors/v4.json" },
-    { version: "v3", path: "vectors/v3.json" }
+    { version: 'v4', path: 'vectors/v4.json' },
+    { version: 'v3', path: 'vectors/v3.json' }
   ]
 
   TEST_VECTORS.each { |tv| generate_specs(**tv) }

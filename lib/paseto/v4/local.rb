@@ -20,14 +20,14 @@ module Paseto
       sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
-        super(version: "v4", purpose: "local")
+        super(version: 'v4', purpose: 'local')
       end
 
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
       sig { params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
-      def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
+      def encrypt(message:, footer: '', implicit_assertion: '', n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= RbNaCl::Random.random_bytes(32)
 
         ek, n2, ak = calc_keys(n)
@@ -45,7 +45,7 @@ module Paseto
       # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
       # `token` must be a `v4.local` type Token.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
-      def decrypt(token:, implicit_assertion: "") # rubocop:disable Metrics/AbcSize
+      def decrypt(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time

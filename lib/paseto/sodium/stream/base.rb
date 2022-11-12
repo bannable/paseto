@@ -38,17 +38,17 @@ module Paseto
         # @return [RbNaCL::Stream::Base] The new Stream construct, ready to use
         sig { params(key: String).void }
         def initialize(key)
-          @key = T.let(RbNaCl::Util.check_string(key, key_bytes, "Secret key"), String)
+          @key = T.let(RbNaCl::Util.check_string(key, key_bytes, 'Secret key'), String)
         end
 
         sig { params(nonce: String, message: T.nilable(String)).returns(String) }
         def encrypt(nonce, message)
-          RbNaCl::Util.check_length(nonce, nonce_bytes, "Nonce")
+          RbNaCl::Util.check_length(nonce, nonce_bytes, 'Nonce')
 
           ciphertext = RbNaCl::Util.zeros(data_len(message))
 
           success = do_encrypt(ciphertext, nonce, message)
-          raise CryptoError, "Encryption failed" unless success
+          raise CryptoError, 'Encryption failed' unless success
 
           ciphertext
         end

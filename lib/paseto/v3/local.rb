@@ -26,7 +26,7 @@ module Paseto
       sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
-        super(version: "v3", purpose: "local")
+        super(version: 'v3', purpose: 'local')
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -35,19 +35,19 @@ module Paseto
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
       sig { params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
-      def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
+      def encrypt(message:, footer: '', implicit_assertion: '', n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= SecureRandom.random_bytes(32)
 
         ek, n2, ak = calc_keys(n)
 
-        cipher = OpenSSL::Cipher.new("aes-256-ctr").encrypt
+        cipher = OpenSSL::Cipher.new('aes-256-ctr').encrypt
         cipher.key = ek
         cipher.iv = n2
         c = cipher.update(message) + cipher.final
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
-        t = OpenSSL::HMAC.digest("SHA384", ak, pre_auth)
+        t = OpenSSL::HMAC.digest('SHA384', ak, pre_auth)
 
         Token.new(payload: (n + c + t), version:, purpose:, footer:)
       end
@@ -56,7 +56,7 @@ module Paseto
       # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
       # `token` must be a `v3.local` type Token.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
-      def decrypt(token:, implicit_assertion: "")
+      def decrypt(token:, implicit_assertion: '')
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         # OPTIONAL: verify footer is expected, constant-time
@@ -66,11 +66,11 @@ module Paseto
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
 
-        t2 = OpenSSL::HMAC.digest("SHA384", ak, pre_auth)
+        t2 = OpenSSL::HMAC.digest('SHA384', ak, pre_auth)
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        cipher = OpenSSL::Cipher.new("aes-256-ctr").decrypt
+        cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
         cipher.key = ek
         cipher.iv = n2
         cipher.update(c) + cipher.final
@@ -82,10 +82,10 @@ module Paseto
       # Derive an encryption key, nonce, and authentication key from an input nonce.
       sig { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
-        tmp = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384")
+        tmp = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: 'SHA384')
         ek = T.must(tmp[0, 32])
         n2 = T.must(tmp[-16, 16])
-        ak = OpenSSL::KDF.hkdf(key, info: "paseto-auth-key-for-aead#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384")
+        ak = OpenSSL::KDF.hkdf(key, info: "paseto-auth-key-for-aead#{nonce}", salt: NULL_SALT, length: 48, hash: 'SHA384')
         [ek, n2, ak]
       end
 
