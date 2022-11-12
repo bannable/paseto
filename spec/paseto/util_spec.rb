@@ -79,4 +79,29 @@ RSpec.describe Paseto::Util do
       )
     end
   end
+
+  describe ".constant_compare" do
+    subject(:compare) { described_class.constant_compare(left, right) }
+
+    context "with equivelant strings" do
+      let(:left) { "foo" }
+      let(:right) { "foo" }
+
+      it { is_expected.to eq true }
+    end
+
+    context "with different length strings" do
+      let(:left) { "foofoo" }
+      let(:right) { "foo" }
+
+      it { is_expected.to eq false }
+    end
+
+    context "with different strings" do
+      let(:left) { "foo" }
+      let(:right) { "bar" }
+
+      it { is_expected.to eq false }
+    end
+  end
 end
