@@ -32,11 +32,23 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
-  spec.add_dependency "ffi", "~> 1"
-  spec.add_dependency "openssl", "~> 3.0.0"
-  spec.add_dependency "rbnacl", "~> 7.1.1"
+  spec.add_runtime_dependency "ffi", "~> 1"
+  spec.add_runtime_dependency "openssl", "~> 3.0.0"
+  spec.add_runtime_dependency "rbnacl", "~> 7.1.1"
+  spec.add_runtime_dependency "securerandom"
+  spec.add_runtime_dependency "sorbet-runtime"
 
   spec.add_development_dependency "bundler"
+  spec.add_development_dependency "debug", "~> 1.6"
+  spec.add_development_dependency "parlour"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rubocop", "~> 1.38.0"
+  spec.add_development_dependency "rubocop-performance", "~> 1.15.0"
+  spec.add_development_dependency "rubocop-rspec", "~> 2.14.2"
+  spec.add_development_dependency "simplecov", "~> 0.21.2"
+  spec.add_development_dependency "sorbet"
+  spec.add_development_dependency "tapioca"
 
   spec.metadata["rubygems_mfa_required"] = "true"
 end
