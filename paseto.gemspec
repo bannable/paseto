@@ -46,9 +46,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 1.38.0"
   spec.add_development_dependency "rubocop-performance", "~> 1.15.0"
   spec.add_development_dependency "rubocop-rspec", "~> 2.14.2"
+  spec.add_development_dependency "rubocop-sorbet"
   spec.add_development_dependency "simplecov", "~> 0.21.2"
   spec.add_development_dependency "sorbet"
   spec.add_development_dependency "tapioca"
+  spec.add_development_dependency "unparser"
 
   spec.metadata["rubygems_mfa_required"] = "true"
 end

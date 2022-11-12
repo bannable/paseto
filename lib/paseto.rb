@@ -1,5 +1,5 @@
-# typed: strict
 # encoding: binary
+# typed: strict
 # frozen_string_literal: true
 
 require 'base64'

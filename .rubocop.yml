@@ -1,6 +1,7 @@
 require:
   - rubocop-performance
   - rubocop-rspec
+  - rubocop-sorbet
 
 AllCops:
   TargetRubyVersion: 3.1
@@ -9,10 +10,6 @@ AllCops:
     - 'spec/paseto/**/test_vectors_spec.rb'
     - 'bin/*'
     - 'paseto.gemspec'
-
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
   Enabled: true
@@ -55,3 +52,7 @@ Metrics/BlockLength:
 
 Style/AccessorGrouping:
   Enabled: false
+
+Sorbet/ConstantsFromStrings:
+  Exclude:
+    - 'lib/paseto/sodium/stream/base.rb'

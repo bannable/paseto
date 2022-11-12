@@ -1,5 +1,5 @@
-# typed: false
 # encoding: binary
+# typed: false
 # frozen_string_literal: true
 
 module Paseto

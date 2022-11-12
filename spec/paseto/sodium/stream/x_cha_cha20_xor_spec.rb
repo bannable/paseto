@@ -1,4 +1,5 @@
 # encoding: binary
+# typed: false
 # frozen_string_literal: true
 
 # rubocop:disable Layout/LineLength, Style/WordArray, Style/MutableConstant
