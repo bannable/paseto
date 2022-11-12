@@ -4,6 +4,7 @@
 
 module Paseto
   module V3
+    # PASETOv3 `public` token interface providing asymmetric signature signing and verification of tokens.
     class Public < Paseto::Key
       # Size of (r || s) in an ECDSA secp384r1 signature
       SIGNATURE_BYTE_LEN = 96
@@ -42,8 +43,8 @@ module Paseto
 
       # rubocop:disable Metrics/AbcSize
 
-      # Sign `message` and optional non-empty `footer` and return a PASETO Token.
-      # The resulting token may be bound to particular uses by passing a non-empty `implicit_assertion`.
+      # Sign `message` and optional non-empty `footer` and return a Token.
+      # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
       sig { params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: "", implicit_assertion: "")
         raise ArgumentError, "no private key available" unless key.private?
@@ -62,7 +63,8 @@ module Paseto
         Token.new(payload:, purpose:, version:, footer:)
       end
 
-      # Verify the signature of `token`, with an optional non-empty `implicit_assertion`.
+      # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
+      # Returns the verified payload if successful, otherwise raises an exception.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: "")
         # OPTIONAL: verify footer is expected, constant-time
