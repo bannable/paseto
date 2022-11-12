@@ -4,21 +4,25 @@
 
 module Paseto
   module V3
+    # PASETOv3 `local` token interface providing symmetric encryption of tokens.
     class Local < Paseto::Key
       # Size in bytes of a SHA384 digest
       SHA384_DIGEST_LEN = 48
 
+      # String initialized to \x00 for use in key derivation
       NULL_SALT = T.let(0.chr * SHA384_DIGEST_LEN, String)
 
-      sig { returns(String) }
       # Symmetric encryption key
+      sig { returns(String) }
       attr_reader :key
 
+      # Create a new Local instance with a randomly generated key.
       sig { returns(Local) }
       def self.generate
         new(ikm: SecureRandom.random_bytes(32))
       end
 
+      # `ikm` must be a 32-byte string
       sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
@@ -26,6 +30,10 @@ module Paseto
       end
 
       # rubocop:disable Metrics/AbcSize
+
+      # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
+      # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
+      # `n` must not be used outside of tests.
       sig { params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
       def encrypt(message:, footer: "", implicit_assertion: "", n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= SecureRandom.random_bytes(32)
@@ -44,6 +52,9 @@ module Paseto
         Token.new(payload: (n + c + t), version:, purpose:, footer:)
       end
 
+      # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.
+      # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
+      # `token` must be a `v3.local` type Token.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: "")
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
@@ -68,7 +79,8 @@ module Paseto
 
       private
 
-      sig { params(nonce: String).returns(T::Array[String]) }
+      # Derive an encryption key, nonce, and authentication key from an input nonce.
+      sig { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
         tmp = OpenSSL::KDF.hkdf(key, info: "paseto-encryption-key#{nonce}", salt: NULL_SALT, length: 48, hash: "SHA384")
         ek = T.must(tmp[0, 32])
@@ -77,6 +89,10 @@ module Paseto
         [ek, n2, ak]
       end
 
+      # Split `payload` into the following parts:
+      # - nonce, 32 leftmost bytes
+      # - tag, 48 rightmost bytes
+      # - ciphertext, everything in between
       sig { params(payload: String).returns([String, String, String]) }
       def split_payload(payload)
         n = T.must(payload.slice(0, 32))
