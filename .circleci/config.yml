@@ -22,14 +22,30 @@ spec_steps: &spec_steps
         - codeclimate.*.json
 
 jobs:
-  # Ruby 3.1
-  ruby-3.1-spec:
+  specs:
+    parameters:
+      version:
+        type: string
+        default: "3.1"
     docker:
-      - image: cimg/ruby:3.1
+      - image: cimg/ruby:<< parameters.version >>
     environment:
       <<: *shared_env
     steps:
-      *spec_steps
+      - checkout
+      - attach_workspace:
+          at: ~/project/tmp
+      - run: bundle install
+      - run:
+          name: Run specs
+          command: |
+            ./tmp/cc-test-reporter before-build
+            bundle exec rake spec
+            ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - codeclimate.*.json
 
   circleci-setup:
     docker:
@@ -68,9 +84,9 @@ workflows:
   build:
     jobs:
       - circleci-setup
-      - ruby-3.1-spec:
-          requires:
-            - circleci-setup
+      - specs:
+          name: "ruby-3.1-specs"
+          version: "3.1"
       - circleci-upload:
           requires:
-            - ruby-3.1-spec
+            - ruby-3.1-specs
