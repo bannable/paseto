@@ -179,6 +179,20 @@ signer.key.public_to_der # => DER encoded public key
 signer.key.private_to_der # => DER encoded private key
 ```
 
+### Encoding and Decoding hash objects
+
+```ruby
+signer = Paseto::V3::Public.generate
+encrypter = Paseto::V4::Local.generate
+
+h = { "foo" => "bar", "baz" => 1 }
+signed_token = Paseto.encode(payload: h, key: signer)
+encrypted_token = Paseto.encode(payload: h, key: encrypter)
+
+Paseto.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
+Paseto.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
+Paseto.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
+```
 ## Development
 
 This repository includes a [VSCode DevContainer](.devcontainer) configuration which automatically includes extensions for both Sorbet and Solargraph, and configures a docker image with libsodium.
