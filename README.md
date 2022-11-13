@@ -62,10 +62,10 @@ And run `bundle install`
 -->
 ## Implementation Guideline compliance
 
-- [ ] require payload to be UTF-8 encoded
-- [ ] enforce JSON encoding of payload
+- [x] require payload to be UTF-8 encoded
+- [x] enforce JSON encoding of payload
   - [ ] require topmost object to be an object, map, or associative array
-- [ ] protect against loading off-curve public keys
+- [x] protect against loading off-curve public keys
 - [ ] support "expected footer" inputs during public#verify and local#decrypt operations
 - [ ] support for [Validators](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/02-Validators.md)
 - [ ] protect against arbitrary/invalid data in [Registered Claims](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md)
