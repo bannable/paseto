@@ -2,25 +2,75 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+shared_env: &shared_env
+  TEST_QUEUE_WORKERS: 2
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+spec_steps: &spec_steps
+  - checkout
+  - attach_workspace:
+      at: ~/project/tmp
+  - run: bundle install
+  - run:
+      name: Run specs
+      command: |
+        ./tmp/cc-test-reporter before-build
+        bundle exec rake spec
+        ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+  - persist_to_workspace:
+      root: tmp
+      paths:
+        - codeclimate.*.json
+
+jobs:
+  # Ruby 3.1
+  ruby-3.1-spec:
+    docker:
+      - image: cimg/ruby:3.1
+    environment:
+      <<: *shared_env
+    steps:
+      *spec_steps
+
+  circleci-setup:
+    docker:
+      - image: cimg/ruby:3.1
+    environment:
+      <<: *shared_env
+    steps:
+      - run:
+          name: Download Code Climate test-reporter
+          command: |
+            mkdir -p tmp/
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
+            chmod +x ./tmp/cc-test-reporter
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - cc-test-reporter
+
+  circleci-upload:
+    docker:
+      - image: cimg/ruby:3.1
+        environment:
+          CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
+    environment:
+      <<: *shared_env
+    steps:
+      - attach_workspace:
+          at: ~/project/tmp
+      - run:
+          name: Upload coverage results to Code Climate
+          command: |
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 4 --output tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
+
 workflows:
-  say-hello-workflow:
+  build:
     jobs:
-      - say-hello
+      - circleci-setup
+      - ruby-3.1-spec:
+          requires:
+            - circleci-setup
+      - circleci-upload:
+          requires:
+            - ruby-3.1-spec
