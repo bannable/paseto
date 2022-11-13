@@ -18,11 +18,14 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: workspace
+          at: tmp
       - run: bundle install
       - run:
           name: Run specs
           command: |
+            pwd
+            ls -la
+            ls -la tmp/
             ./tmp/cc-test-reporter before-build
             bundle exec rake spec
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
@@ -70,38 +73,16 @@ jobs:
             ls -la tmp/
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 4 --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
-  
-  workspace-dummy:
-    docker:
-      - image: cimg/ruby:3.1
-    steps:
-      - attach_workspace:
-          at: tmp
-      - run:
-          name: Testing out Circle workspaces
-          command: |
-            pwd
-            ls -la
-            ls -la tmp/
-            echo foo > tmp/foo
-            ls -la tmp/
-      - persist_to_workspace:
-          root: tmp
-          paths:
-            - foo
 
 workflows:
   build:
     jobs:
       - circleci-setup
-      # - specs:
-      #     name: "ruby-3.1-specs"
-      #     version: "3.1"
-      #     requires:
-      #       - circleci-setup
-      - workspace-dummy:
+      - specs:
+          name: "ruby-3.1-specs"
+          version: "3.1"
           requires:
             - circleci-setup
-      # - circleci-upload:
-      #     requires:
-      #       - workspace-dummy
+      - circleci-upload:
+          requires:
+            - ruby-3.1-specs
