@@ -8,12 +8,14 @@ gem:
   exclude:
   - flay
   - flog
+  - parlour
   - reek
   - rubocop
   - rubocop-ast
   - rubocop-performance
   - rubocop-rake
   - rubocop-rspec
+  - rubocop-sorbet
 dsl:
   # Add your `dsl` command parameters here:
   #

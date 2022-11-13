@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "ffi", "~> 1"
   spec.add_runtime_dependency "openssl", "~> 3.0.0"
+  spec.add_runtime_dependency "multi_json", "~> 1.15.0"
   spec.add_runtime_dependency "rbnacl", "~> 7.1.1"
   spec.add_runtime_dependency "securerandom"
   spec.add_runtime_dependency "sorbet-runtime"
@@ -42,6 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "debug", ">= 1.0"
   spec.add_development_dependency "parlour"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.38.0"
   spec.add_development_dependency "rubocop-performance", "~> 1.15.0"
