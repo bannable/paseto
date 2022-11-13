@@ -5,22 +5,6 @@ version: 2.1
 shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
 
-spec_steps: &spec_steps
-  - checkout
-  - attach_workspace:
-      at: ~/project/tmp
-  - run: bundle install
-  - run:
-      name: Run specs
-      command: |
-        ./tmp/cc-test-reporter before-build
-        bundle exec rake spec
-        ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
-  - persist_to_workspace:
-      root: tmp
-      paths:
-        - codeclimate.*.json
-
 jobs:
   specs:
     parameters:
@@ -34,7 +18,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/project/tmp
+          at: tmp
       - run: bundle install
       - run:
           name: Run specs
@@ -73,7 +57,7 @@ jobs:
       <<: *shared_env
     steps:
       - attach_workspace:
-          at: ~/project/tmp
+          at: tmp
       - run:
           name: Upload coverage results to Code Climate
           command: |
