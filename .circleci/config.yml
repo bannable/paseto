@@ -18,7 +18,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: tmp
+          at: workspace
       - run: bundle install
       - run:
           name: Run specs
@@ -40,9 +40,13 @@ jobs:
       - run:
           name: Download Code Climate test-reporter
           command: |
+            pwd
+            ls -la
             mkdir -p tmp/
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
             chmod +x ./tmp/cc-test-reporter
+            ls -la
+            ls -la tmp
       - persist_to_workspace:
           root: tmp
           paths:
@@ -61,6 +65,9 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
+            pwd
+            ls -la
+            ls -la tmp/
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 4 --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
@@ -68,9 +75,10 @@ workflows:
   build:
     jobs:
       - circleci-setup
-      - specs:
-          name: "ruby-3.1-specs"
-          version: "3.1"
-      - circleci-upload:
-          requires:
-            - ruby-3.1-specs
+      # - specs:
+      #     name: "ruby-3.1-specs"
+      #     version: "3.1"
+      - circleci-upload
+      # - circleci-upload:
+      #     requires:
+      #       - ruby-3.1-specs
