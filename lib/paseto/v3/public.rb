@@ -61,6 +61,8 @@ module Paseto
 
         payload = message + sig
         Token.new(payload:, purpose:, version:, footer:)
+      rescue Encoding::CompatibilityError
+        raise Paseto::ParseError, 'invalid message encoding, must be UTF-8'
       end
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
@@ -83,7 +85,9 @@ module Paseto
         data = OpenSSL::Digest.digest('SHA384', m2)
         raise InvalidSignature unless key.verify_raw(nil, s, data)
 
-        m
+        m.encode(Encoding::UTF_8)
+      rescue Encoding::UndefinedConversionError
+        raise Paseto::ParseError, 'invalid payload encoding'
       end
 
       # rubocop:enable Metrics/AbcSize

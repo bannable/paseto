@@ -59,14 +59,14 @@ module Paseto
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig { params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: '')
+      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         # OPTIONAL: verify footer is expected, constant-time
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload
         raise ParseError, 'message too short' if m.size < SIGNATURE_BYTES
 
-        s = m.slice!(-SIGNATURE_BYTES, SIGNATURE_BYTES) || ''
+        s = T.must(m.slice!(-SIGNATURE_BYTES, SIGNATURE_BYTES))
         m2 = Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
 
         begin
@@ -75,7 +75,9 @@ module Paseto
           raise InvalidSignature
         end
 
-        m
+        m.encode!(Encoding::UTF_8)
+      rescue Encoding::UndefinedConversionError
+        raise Paseto::ParseError, 'invalid payload encoding'
       end
     end
   end

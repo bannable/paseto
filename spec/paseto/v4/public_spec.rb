@@ -133,5 +133,17 @@ RSpec.describe Paseto::V4::Public do
         expect { verified }.to raise_error(Paseto::InvalidSignature)
       end
     end
+
+    context 'when the payload is not UTF-8 encoded' do
+      # RbNaCl coerces string encodings under the hood during signing operations, but not verification
+
+      let(:token) do
+        Paseto::Token.parse('v4.public.wAmi6msK_S8LX7H8UTl_JmIWyfYkgD9m0g7hlvOn70m2Ho3inqVCGZYdNwYpt84HfMZ0w133Zm0MWGMaA0UWOQw')
+      end
+
+      it 'raises an error' do
+        expect { verified }.to raise_error(Paseto::ParseError, 'invalid payload encoding')
+      end
+    end
   end
 end

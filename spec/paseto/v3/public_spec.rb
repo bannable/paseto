@@ -111,6 +111,16 @@ RSpec.describe Paseto::V3::Public do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
       end
     end
+
+    context 'when message is not UTF-8 encoded' do
+      subject(:token) do
+        crypt.sign(message: "\xC0")
+      end
+
+      it 'raises an error' do
+        expect { token }.to raise_error(Paseto::ParseError, 'invalid message encoding, must be UTF-8')
+      end
+    end
   end
 
   describe '#verify' do
@@ -125,6 +135,20 @@ RSpec.describe Paseto::V3::Public do
 
     it 'returns the plain text' do
       expect(verify).to eq('{"foo":"bar"}')
+    end
+
+    context 'when the payload is not UTF-8 encoded' do
+      let(:token) do
+        # Encodes \xC0, which is never valid in UTF8
+        Paseto::Token.parse(
+          'v3.public.wKEvP26BiSt090iZALN6NcQP3_icpUEx4mkKuEDkGNWEcg07jMY2__dZI1_h7Pnq_fpNJbS1MA' \
+          'JgnC2yTK52s_w3KwgTdo0AAfl76RLuOV53YrMqZ_Cx6qe2ILU1fc25yA'
+        )
+      end
+
+      it 'raises an error' do
+        expect { verify }.to raise_error(Paseto::ParseError, 'invalid payload encoding')
+      end
     end
 
     context 'with an invalid signature' do
