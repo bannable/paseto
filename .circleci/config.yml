@@ -4,6 +4,7 @@ version: 2.1
 
 shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
+  CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
 jobs:
   specs:
@@ -23,9 +24,6 @@ jobs:
       - run:
           name: Run specs
           command: |
-            pwd
-            ls -la
-            ls -la tmp/
             ./tmp/cc-test-reporter before-build
             bundle exec rake spec
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
@@ -37,19 +35,12 @@ jobs:
   circleci-setup:
     docker:
       - image: cimg/ruby:3.1
-    environment:
-      <<: *shared_env
     steps:
       - run:
           name: Download Code Climate test-reporter
           command: |
-            pwd
-            ls -la
-            mkdir -p tmp/
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
             chmod +x ./tmp/cc-test-reporter
-            ls -la
-            ls -la tmp
       - persist_to_workspace:
           root: tmp
           paths:
@@ -58,8 +49,6 @@ jobs:
   circleci-upload:
     docker:
       - image: cimg/ruby:3.1
-        environment:
-          CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
     environment:
       <<: *shared_env
     steps:
@@ -68,9 +57,6 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
-            pwd
-            ls -la
-            ls -la tmp/
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 4 --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
