@@ -7,6 +7,9 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
   Exclude:
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - '.git/**/*'
     - 'spec/paseto/**/test_vectors_spec.rb'
     - 'bin/*'
     - 'paseto.gemspec'
