@@ -73,24 +73,34 @@ And run `bundle install`
 
 ## Usage
 
-### The Paseto::Token
+### Basic Usage
 
-A `Token` is used for (de)serialization of token inputs, and is returned by any `encrypt` or `sign` operation. `Token` instances may be compared with token strings.
+`encode` takes a key instance and a payload, and either encrypts or signs the payload after serializing it to JSON.
+
+`decode` takes a PASETO token and a key instance, and either decrypts or verifies the signature before returning the deserialized payload.
+
+This interface ensures that your token payloads always complies with [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
 ```ruby
-input = "v4.public.eyJmb28iOiJiYXIifb2eGqFF-PysuYUWeXq2FIYVfkuW5qcCuwPE4RpM1qzPCS7vEV9IXzDTwcFroCO-7cFZO1NAI5AU-NOsirny_wM.YmF6"
-token = Paseto::Token.parse(input)
-token.version  # => "v4"
-token.purpose  # => "local"
-token.header   # => "v4.local"
-token.footer   # => "baz"
-token.payload  # => Base64 decoded payload
-token.to_s     # => "v4.public.eyJmb28iOiJiYXIifb2eGqFF-PysuYUWeXq2FIYV..."
-token.inspect  # => "v4.public.eyJmb28iOiJiYXIifb2eGqFF-PysuYUWeXq2FIYV..."
-puts token     # => v4.public.eyJmb28iOiJiYXIifb2eGqFF-PysuYUWeXq2FIYV...
-token == input # => true
-token == "foo" # => false
-input == token # => false, library does not modify String behavior
+signer = Paseto::V3::Public.generate
+encrypter = Paseto::V4::Local.generate
+
+h = { "foo" => "bar", "baz" => 1 }
+signed_token = Paseto.encode(payload: h, key: signer) # => v3.public...
+encrypted_token = Paseto.encode(payload: h, key: encrypter) # => v4.local...
+
+Paseto.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
+Paseto.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
+Paseto.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
+```
+
+This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
+```ruby
+# You may pass JSON adapter options to encode and decode
+Paseto.decode(payload: encrypted_token, key: encrypter, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
+# Or setting default options with Oj
+Oj.default_options = {symbol_keys: true}
+Paseto.decode(payload: encrypted_token, key: encrypter) # => {:foo => "bar", :baz => 1}
 ```
 
 ### PASETO v4, Sodium Modern
@@ -119,6 +129,8 @@ crypt.key # => ikm
 signer = Paseto::V4::Public.generate # => Paseto::V4::Public
 # or initialize from a seed
 signer = Paseto::V4::Public.new(private_key: signer.private_key.to_s)
+# you can not provide both a public and private key
+Paseto::V4::Public.new(private_key: some_private_key, public_key: some_public_key) # => ArgumentError
 
 token = signer.sign(message: '{"foo":"bar"}') # => Token("v4.public....")
 token = signer.sign(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
@@ -159,15 +171,15 @@ crypt.key # => ikm
 
 ```ruby
 signer = Paseto::V3::Public.generate # => Paseto::V4::Public
-# or initialize from a PEM or DER encoded key
-signer = Paseto::V3::Public.new(key: signer.private_key.to_der)
+# or initialize from a PEM or DER encoded key. May be either a public or private key.
+signer = Paseto::V3::Public.new(key: signer.key.private_key.to_der)
 
 token = signer.sign(message: '{"foo":"bar"}') # => Token("v3.public....")
 token = signer.sign(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
 signer.verify(token:) # => '{"foo":"bar"}'
 
 # or initialize only for verification
-verifier = Paseto::V3::Public.new(key: signer.public_key.to_s)
+verifier = Paseto::V3::Public.new(key: signer.key.public_key.to_pem)
 verifier.verify(token:) # => '{"foo":"bar"}'
 verifier.verify(token:, implicit_assertion: '') # same as above
 verifier.sign(message: '{"foo":"bar"}') # => ArgumentError
@@ -179,20 +191,6 @@ signer.key.public_to_der # => DER encoded public key
 signer.key.private_to_der # => DER encoded private key
 ```
 
-### Encoding and Decoding hash objects
-
-```ruby
-signer = Paseto::V3::Public.generate
-encrypter = Paseto::V4::Local.generate
-
-h = { "foo" => "bar", "baz" => 1 }
-signed_token = Paseto.encode(payload: h, key: signer)
-encrypted_token = Paseto.encode(payload: h, key: encrypter)
-
-Paseto.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
-```
 ## Development
 
 This repository includes a [VSCode DevContainer](.devcontainer) configuration which automatically includes extensions for both Sorbet and Solargraph, and configures a docker image with libsodium.
