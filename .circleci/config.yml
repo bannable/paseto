@@ -107,12 +107,15 @@ workflows:
     jobs:
       - circleci-setup
       - typecheck
-      - rubocop
+      - rubocop:
+          requires:
+            - typecheck
       - specs:
           name: "ruby-3.1-specs"
           version: "3.1"
           requires:
             - circleci-setup
+            - typecheck
       - circleci-upload:
           requires:
             - ruby-3.1-specs
