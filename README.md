@@ -86,21 +86,21 @@ signer = Paseto::V3::Public.generate
 encrypter = Paseto::V4::Local.generate
 
 h = { "foo" => "bar", "baz" => 1 }
-signed_token = Paseto.encode(payload: h, key: signer) # => v3.public...
-encrypted_token = Paseto.encode(payload: h, key: encrypter) # => v4.local...
+signed_token = Paseto::Token.encode(payload: h, key: signer) # => v3.public...
+encrypted_token = Paseto::Token.encode(payload: h, key: encrypter) # => v4.local...
 
-Paseto.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
+Paseto::Token.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
+Paseto::Token.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
+Paseto::Token.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
 ```
 
 This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
 ```ruby
 # You may pass JSON adapter options to encode and decode
-Paseto.decode(payload: encrypted_token, key: encrypter, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
+Paseto::Token.decode(payload: encrypted_token, key: encrypter, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
 # Or setting default options with Oj
 Oj.default_options = {symbol_keys: true}
-Paseto.decode(payload: encrypted_token, key: encrypter) # => {:foo => "bar", :baz => 1}
+Paseto::Token.decode(payload: encrypted_token, key: encrypter) # => {:foo => "bar", :baz => 1}
 ```
 
 ### PASETO v4, Sodium Modern
