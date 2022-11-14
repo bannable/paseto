@@ -195,9 +195,7 @@ signer.key.private_to_der # => DER encoded private key
 
 This repository includes a [VSCode DevContainer](.devcontainer) configuration which automatically includes extensions for both Sorbet and Solargraph, and configures a docker image with libsodium.
 
-After checking out the repo, run `bin/setup` to install dependencies.
-
-If you are using the provided DevContainer, this happens automatically after the container image is first created. You may need to restart Solargraph for it to work correctly when first bringing up the container.
+After checking out the repo, run `bin/setup` to install dependencies. If you are using the provided DevContainer, this happens automatically after the container image is first created.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
