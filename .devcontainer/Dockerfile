@@ -18,3 +18,5 @@ RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
         && chown -R $USERNAME \
         /home/$USERNAME/.vscode-server \
         /home/$USERNAME/.vscode-server-insiders
+
+RUN su vscode -c "gem install solargraph"
