@@ -12,7 +12,7 @@ RSpec.describe Paseto::V4::Local do
   let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
   let(:key) { described_class.new(ikm: key_material) }
 
-  include_examples "a token coder"
+  include_examples 'a token coder'
 
   describe '.generate' do
     it 'returns a new instance' do

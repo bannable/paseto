@@ -24,7 +24,7 @@ module Paseto
       footer = Util.decode64(footer)
 
       new(version:, purpose:, payload:, footer:)
-    end 
+    end
 
     sig { params(payload: String, purpose: String, version: String, footer: String).void }
     def initialize(payload:, purpose:, version:, footer: '')

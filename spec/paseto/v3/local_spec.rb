@@ -13,7 +13,7 @@ RSpec.describe Paseto::V3::Local do
       '-sRaWjfLU-yn9OJH1J_B8GKtOQ9gSQlb8yk9Iza9dIejh8Ytookad0Q-TQ2B8MYS2YVAXKEgHIYkKRC6efYSo2T18JEVBj45qJ2fgxA'
   end
 
-  include_examples "a token coder"
+  include_examples 'a token coder'
 
   describe '.generate' do
     it 'returns a new instance' do

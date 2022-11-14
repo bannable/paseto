@@ -18,7 +18,7 @@ RSpec.describe Paseto::V3::Public do
     PKEY
   end
 
-  include_examples "a token coder"
+  include_examples 'a token coder'
 
   describe '.generate' do
     subject(:key) { described_class.generate }

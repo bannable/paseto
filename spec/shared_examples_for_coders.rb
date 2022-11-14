@@ -1,4 +1,7 @@
-RSpec.shared_examples "a token coder" do
+# typed: false
+# frozen_string_literal: true
+
+RSpec.shared_examples 'a token coder' do
   describe '.encode' do
     subject(:coder) { key.encode(payload:, footer: 'foo', implicit_assertion: 'test', n: nonce) }
 
@@ -20,21 +23,17 @@ RSpec.shared_examples "a token coder" do
     it { is_expected.to eq(plain) }
 
     it 'raises an error with some other valid payload type' do
-      if key.purpose == 'local'
-        payload = 'v3.public.payload.footer'
-      else
-        payload = 'v3.local.payload.footer'
-      end
-      expect {
+      payload = key.purpose == 'local' ? 'v3.public.payload.footer' : 'v3.local.payload.footer'
+      expect do
         key.decode(payload:, implicit_assertion: 'test')
-      }.to raise_error(Paseto::ParseError, "incorrect header for key type #{key.header}")
+      end.to raise_error(Paseto::ParseError, "incorrect header for key type #{key.header}")
     end
 
-    context 'with some entirely unknown payload type' do # rubocop:disable RSpec/NestedGroups
+    context 'with some entirely unknown payload type' do
       let(:payload) { 'v0.public.payload.footer' }
 
       it 'raises an error' do
-        expect { decoder }.to raise_error(Paseto::ParseError, "not a valid token")
+        expect { decoder }.to raise_error(Paseto::ParseError, 'not a valid token')
       end
     end
   end

@@ -19,7 +19,7 @@ module Paseto
         json_options: T::Hash[T.untyped, T.untyped]
       ).returns(String)
     end
-    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}) # rubocop:disable Naming/MethodParameterName, Metrics/ParameterLists
+    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}) # rubocop:disable Naming/MethodParameterName
       message = MultiJson.dump(payload, json_options)
       encrypt(message:, footer:, implicit_assertion:, n:).to_s
     end

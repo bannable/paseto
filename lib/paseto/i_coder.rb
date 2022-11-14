@@ -17,7 +17,7 @@ module Paseto
         json_options: T::Hash[T.untyped, T.untyped]
       ).returns(String)
     end
-    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}); end # rubocop:disable Naming/MethodParameterName, Metrics/ParameterLists
+    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}); end # rubocop:disable Naming/MethodParameterName
 
     sig do
       abstract.params(

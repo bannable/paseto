@@ -9,7 +9,7 @@ RSpec.describe Paseto::V4::Public do
   let(:key) { described_class.new(private_key: sk_bytes) }
   let(:key_pub) { described_class.new(public_key: vk_bytes) }
 
-  include_examples "a token coder"
+  include_examples 'a token coder'
 
   describe '.generate' do
     it 'returns a new instance' do

@@ -15,11 +15,11 @@ module Paseto
         payload: T::Hash[T.untyped, T.untyped],
         footer: String,
         implicit_assertion: String,
-        n: T.nilable(String),
+        n: T.untyped,
         json_options: T::Hash[T.untyped, T.untyped]
       ).returns(String)
     end
-    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}) # rubocop:disable Naming/MethodParameterName, Metrics/ParameterLists
+    def encode(payload:, footer: '', implicit_assertion: '', n: nil, json_options: {}) # rubocop:disable Naming/MethodParameterName, Lint/UnusedMethodArgument
       message = MultiJson.dump(payload, json_options)
       sign(message:, footer:, implicit_assertion:).to_s
     end

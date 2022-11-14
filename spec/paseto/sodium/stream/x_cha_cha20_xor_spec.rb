@@ -91,7 +91,7 @@ RSpec.describe Paseto::Sodium::Stream::XChaCha20Xor do
 
     context 'when libsodium fails encryption' do
       before do
-        allow(described_class).to receive(:stream_xchacha20_xor) { false }
+        allow(described_class).to receive(:stream_xchacha20_xor).and_return(false)
       end
 
       it 'raises an error' do
