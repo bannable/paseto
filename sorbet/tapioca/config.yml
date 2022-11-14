@@ -9,6 +9,7 @@ gem:
   - flay
   - flog
   - parlour
+  - oj
   - reek
   - rubocop
   - rubocop-ast
