@@ -36,5 +36,15 @@ RSpec.shared_examples 'a token coder' do
         expect { decoder }.to raise_error(Paseto::ParseError, 'not a valid token')
       end
     end
+
+    context 'with a validator' do
+      subject(:decoder) { key.decode(payload:, implicit_assertion: 'test', validator:) }
+
+      let(:validator) { Paseto::TokenValidator.new(iss: 'someone') }
+
+      it 'raises an error' do
+        expect { decoder }.to raise_error(Paseto::InvalidIssuer)
+      end
+    end
   end
 end

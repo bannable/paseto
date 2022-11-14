@@ -28,13 +28,17 @@ module Paseto
       override.params(
         payload: String,
         implicit_assertion: String,
+        validator: T.nilable(TokenValidator),
         json_options: T::Hash[T.untyped, T.untyped]
       ).returns(T::Hash[T.untyped, T.untyped])
     end
-    def decode(payload:, implicit_assertion: '', json_options: {})
+    def decode(payload:, implicit_assertion: '', validator: nil, json_options: {})
       token = Token.parse(payload)
 
-      MultiJson.load(verify(token:, implicit_assertion:), json_options)
+      result = MultiJson.load(verify(token:, implicit_assertion:), json_options)
+      return result unless validator
+
+      validator.validate(result)
     end
 
     sig { abstract.params(message: String, footer: String, implicit_assertion: String).returns(Token) }

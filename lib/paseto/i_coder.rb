@@ -23,9 +23,10 @@ module Paseto
       abstract.params(
         payload: String,
         implicit_assertion: String,
+        validator: T.nilable(TokenValidator),
         json_options: T::Hash[T.untyped, T.untyped]
       ).returns(T::Hash[T.untyped, T.untyped])
     end
-    def decode(payload:, implicit_assertion: '', json_options: {}); end
+    def decode(payload:, implicit_assertion: '', validator: nil, json_options: {}); end
   end
 end

@@ -15,6 +15,8 @@ require_relative 'paseto/sodium/stream/x_cha_cha20_xor'
 require_relative 'paseto/util'
 require_relative 'paseto/version'
 require_relative 'paseto/token'
+require_relative 'paseto/token_validator'
+
 require_relative 'paseto/key'
 require_relative 'paseto/i_coder'
 require_relative 'paseto/i_symmetric'
@@ -30,6 +32,21 @@ module Paseto
 
   # Deserialized data did not include mandatory fields.
   class ParseError < Error; end
+
+  # Superclass for claim validation errors
+  class ValidationError < Error; end
+
+  # Token is expired
+  class ExpiredToken < ValidationError; end
+
+  # Token has a nbf before the current time
+  class InactiveToken < ValidationError; end
+
+  # Disallowed issuer
+  class InvalidIssuer < ValidationError; end
+
+  # Incorrect audience
+  class InvalidAudience < ValidationError; end
 
   # A cryptographic primitive has failed for any reason,
   # such as attempting to initialize a stream cipher with
