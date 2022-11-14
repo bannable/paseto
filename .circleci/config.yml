@@ -7,20 +7,6 @@ shared_env: &shared_env
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
 commands:
-  bundle-install:
-    description: "bundle install"
-    steps:
-      - restore_cache:
-          keys:
-            - gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-            - gem-cache-v1-{{ arch }}-{{ .Branch }}
-            - gem-cache-v1
-      - run: bundle install --path vendor/bundle
-      - save_cache:
-          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
-
   git-checkout:
     description: "Checkout the repository, with caching"
     steps:
@@ -34,6 +20,25 @@ commands:
           key: source-v1-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
+
+  bundle-install:
+    description: "bundle install"
+    steps:
+      - run:
+          name: Create empty lockfile if not present
+          command: touch Gemfile.lock
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}
+            - gem-cache-v1
+      - run: bundle install
+      - run: bundle clean --force
+      - save_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/.bundle
+            - Gemfile.lock
 
 jobs:
   specs:
