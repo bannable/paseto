@@ -7,25 +7,10 @@ shared_env: &shared_env
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
 commands:
-  git-checkout:
-    description: "Checkout the repository, with caching"
-    steps:
-      - restore_cache:
-          keys:
-            - source-v1-{{ .Branch }}-{{ .Revision }}
-            - source-v1-{{ .Branch }}
-            - source-v1-
-      - checkout
-      - save_cache:
-          key: source-v1-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ".git"
-
   bundle-install:
     description: "bundle install"
     steps:
       - run:
-          name: Create empty lockfile if not present
           command: touch Gemfile.lock
       - restore_cache:
           keys:
@@ -51,7 +36,7 @@ jobs:
     environment:
       <<: *shared_env
     steps:
-      - git-checkout
+      - checkout
       - attach_workspace:
           at: tmp
       - bundle-install
@@ -99,6 +84,7 @@ jobs:
     docker:
       - image: cimg/ruby:3.1
     steps:
+      - checkout
       - bundle-install
       - run:
           name: "Rubocop"
@@ -109,6 +95,7 @@ jobs:
     docker:
       - image: cimg/ruby:3.1
     steps:
+      - checkout
       - bundle-install
       - run:
           name: "Sorbet Typecheck"
