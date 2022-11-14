@@ -6,6 +6,35 @@ shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
+commands:
+  bundle-install:
+    description: "bundle install"
+    steps:
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}
+            - gem-cache-v1
+      - run: bundle install --path vendor/bundle
+      - save_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+  git-checkout:
+    description: "Checkout the repository, with caching"
+    steps:
+      - restore_cache:
+          keys:
+            - source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}
+            - source-v1-
+      - checkout
+      - save_cache:
+          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+
 jobs:
   specs:
     parameters:
@@ -17,10 +46,10 @@ jobs:
     environment:
       <<: *shared_env
     steps:
-      - checkout
+      - git-checkout
       - attach_workspace:
           at: tmp
-      - run: bundle install
+      - bundle-install
       - run:
           name: Run specs
           command: |
@@ -61,10 +90,32 @@ jobs:
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 1 --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
+  rubocop:
+    docker:
+      - image: cimg/ruby:3.1
+    steps:
+      - bundle-install
+      - run:
+          name: "Rubocop"
+          command: |
+            bundle exec rubocop --parallel
+  
+  typecheck:
+    docker:
+      - image: cimg/ruby:3.1
+    steps:
+      - bundle-install
+      - run:
+          name: "Sorbet Typecheck"
+          command: |
+            bundle exec srb tc
+
 workflows:
   build:
     jobs:
       - circleci-setup
+      - typecheck
+      - rubocop
       - specs:
           name: "ruby-3.1-specs"
           version: "3.1"
