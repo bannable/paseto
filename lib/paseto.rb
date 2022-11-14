@@ -54,7 +54,7 @@ module Paseto
       json_options: T.untyped
     ).returns(String)
   end
-  def self.encode(payload:, key:, footer: '', implicit_assertion: '', n: nil, **json_options) # rubocop:disable Naming/MethodParameterName
+  def self.encode(payload:, key:, footer: '', implicit_assertion: '', n: nil, **json_options) # rubocop:disable Naming/MethodParameterName, Metrics/ParameterLists
     message = MultiJson.dump(payload, **json_options)
     case key
     when Paseto::V3::Local, Paseto::V4::Local

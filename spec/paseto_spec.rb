@@ -10,7 +10,6 @@ RSpec.describe Paseto do
     subject(:coder) { described_class.encode(payload:, key:, footer: 'foo', implicit_assertion: 'test', n: nonce) }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
-    let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
     let(:payload) { { 'data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00' } }
     let(:ikm) { Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f)) }
     let(:key) { Paseto::V4::Local.new(ikm:) }
@@ -74,7 +73,7 @@ RSpec.describe Paseto do
     subject(:decoder) { described_class.decode(payload:, key:, implicit_assertion: 'test') }
 
     let(:message) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
-    let(:decoded) { {"data" => "this is a secret message", "exp" => "2022-01-01T00:00:00+00:00"} }
+    let(:decoded) { { 'data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00' } }
 
     context 'with a v3.local key' do
       let(:ikm) { Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f)) }
