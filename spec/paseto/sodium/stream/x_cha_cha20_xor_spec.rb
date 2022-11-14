@@ -88,5 +88,15 @@ RSpec.describe Paseto::Sodium::Stream::XChaCha20Xor do
         stream.encrypt(nonce, nil)
       end.not_to raise_error
     end
+
+    context 'when libsodium fails encryption' do
+      before do
+        allow(described_class).to receive(:stream_xchacha20_xor) { false }
+      end
+
+      it 'raises an error' do
+        expect { stream.encrypt(nonce, nil) }.to raise_error(Paseto::CryptoError, 'Encryption failed')
+      end
+    end
   end
 end

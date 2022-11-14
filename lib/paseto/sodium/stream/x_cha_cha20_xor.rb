@@ -21,7 +21,7 @@ module Paseto
 
         private
 
-        sig { params(ciphertext: String, nonce: String, message: T.nilable(String)).returns(T::Boolean) }
+        sig { override.params(ciphertext: String, nonce: String, message: T.nilable(String)).returns(T::Boolean) }
         def do_encrypt(ciphertext, nonce, message)
           self.class.stream_xchacha20_xor(ciphertext, message, data_len(message), nonce, @key)
         end

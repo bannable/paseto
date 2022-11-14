@@ -8,6 +8,9 @@ module Paseto
       # Abstract base class for Stream ciphers
       class Base
         extend T::Sig
+        extend T::Helpers
+
+        abstract!
 
         # Number of bytes in a valid key
         KEYBYTES = 0
@@ -69,10 +72,8 @@ module Paseto
         sig { returns(String) }
         attr_reader :key
 
-        sig { params(ciphertext: String, nonce: String, message: T.nilable(String)).returns(T::Boolean) }
-        def do_encrypt(ciphertext, nonce, message)
-          raise NotImplementedError
-        end
+        sig { abstract.params(ciphertext: String, nonce: String, message: T.nilable(String)).returns(T::Boolean) }
+        def do_encrypt(ciphertext, nonce, message); end
 
         sig { params(message: T.nilable(String)).returns(Integer) }
         def data_len(message)
