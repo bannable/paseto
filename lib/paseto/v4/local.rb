@@ -5,13 +5,15 @@
 module Paseto
   module V4
     # PASETOv4 `local` token interface providing symmetric encryption of tokens.
-    class Local < Paseto::Key
+    class Local < Key
+      include ISymmetric
+
       # Symmetric encryption key
       sig { returns(String) }
       attr_reader :key
 
       # Create a new Local instance with a randomly generated key.
-      sig { returns(Local) }
+      sig { returns(T.attached_class) }
       def self.generate
         new(ikm: RbNaCl::Random.random_bytes(32))
       end
@@ -26,7 +28,7 @@ module Paseto
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
-      sig { params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
+      sig { override.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
       def encrypt(message:, footer: '', implicit_assertion: '', n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= RbNaCl::Random.random_bytes(32)
 
@@ -44,11 +46,10 @@ module Paseto
       # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.
       # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
       # `token` must be a `v4.local` type Token.
-      sig { params(token: Token, implicit_assertion: String).returns(String) }
+      sig { override.params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
-        # OPTIONAL: verify footer is expected, constant-time
         n, c, t = split_payload(token.payload)
 
         ek, n2, ak = calc_keys(n)

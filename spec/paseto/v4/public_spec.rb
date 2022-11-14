@@ -1,11 +1,15 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'shared_examples_for_coders'
+
 RSpec.describe Paseto::V4::Public do
   let(:sk_bytes) { Paseto::Util.decode_hex('68c16bc05a4d4d2bc537c8695cd562d1d1421a37a95eb3de9bdf8468e0da3448') }
   let(:vk_bytes) { Paseto::Util.decode_hex('f0d2091894bc5ed1cc9fa0ccbb17ce1512c8faa054b4b8f1882740562bacff13') }
   let(:key) { described_class.new(private_key: sk_bytes) }
   let(:key_pub) { described_class.new(public_key: vk_bytes) }
+
+  include_examples "a token coder"
 
   describe '.generate' do
     it 'returns a new instance' do

@@ -52,6 +52,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov", "~> 0.21.2"
   spec.add_development_dependency "sorbet"
   spec.add_development_dependency "tapioca"
+  spec.add_development_dependency "timecop"
   spec.add_development_dependency "unparser"
 
   spec.metadata["rubygems_mfa_required"] = "true"
