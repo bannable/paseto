@@ -10,8 +10,10 @@ commands:
   bundle-install:
     description: "bundle install"
     steps:
+      - restore_cache:
+          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}
       - run:
-          command: touch Gemfile.lock
+          command: touch Gemfile.lock            
       - restore_cache:
           keys:
             - gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
@@ -20,10 +22,13 @@ commands:
       - run: bundle install
       - run: bundle clean --force
       - save_cache:
+          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}
+          paths:
+            - Gemfile.lock
+      - save_cache:
           key: gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
           paths:
             - ~/.bundle
-            - Gemfile.lock
 
 jobs:
   specs:
