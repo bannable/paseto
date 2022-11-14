@@ -22,7 +22,7 @@ commands:
       - run: bundle install
       - run: bundle clean --force
       - save_cache:
-          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}
+          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
           paths:
             - Gemfile.lock
       - save_cache:
