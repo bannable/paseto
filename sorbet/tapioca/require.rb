@@ -4,6 +4,7 @@
 require 'base64'
 require 'fileutils'
 require 'json'
+require 'multi_json'
 require 'openssl'
 require 'rbnacl'
 require 'securerandom'

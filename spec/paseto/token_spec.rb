@@ -114,7 +114,35 @@ RSpec.describe Paseto::Token do
     end
   end
 
-  describe '.to_s' do
+  describe '#type' do
+    subject(:token) { described_class.parse(message).type }
+
+    context 'with a v3.local token' do
+      let(:message) { 'v3.local.YXNkZkFTREY' }
+
+      it { is_expected.to eq Paseto::V3::Local }
+    end
+
+    context 'with a v3.public token' do
+      let(:message) { 'v3.public.YXNkZkFTREY' }
+
+      it { is_expected.to eq Paseto::V3::Public }
+    end
+
+    context 'with a v4.local token' do
+      let(:message) { 'v4.local.YXNkZkFTREY' }
+
+      it { is_expected.to eq Paseto::V4::Local }
+    end
+
+    context 'with a v4.public token' do
+      let(:message) { 'v4.public.YXNkZkFTREY' }
+
+      it { is_expected.to eq Paseto::V4::Public }
+    end
+  end
+
+  describe '#to_s' do
     subject(:token) { described_class.parse(message) }
 
     let(:message) { 'v4.local.YXNkZkFTREY' }
@@ -132,7 +160,7 @@ RSpec.describe Paseto::Token do
     end
   end
 
-  describe '.inspect' do
+  describe '#inspect' do
     subject(:token) { described_class.parse(message) }
 
     let(:message) { 'v4.local.YXNkZkFTREY' }

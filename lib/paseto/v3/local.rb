@@ -43,7 +43,7 @@ module Paseto
         cipher = OpenSSL::Cipher.new('aes-256-ctr').encrypt
         cipher.key = ek
         cipher.iv = n2
-        c = cipher.update(message) + cipher.final
+        c = cipher.update(message.encode(Encoding::UTF_8)) + cipher.final
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
@@ -73,7 +73,10 @@ module Paseto
         cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
         cipher.key = ek
         cipher.iv = n2
-        cipher.update(c) + cipher.final
+        plaintext = cipher.update(c) + cipher.final
+        plaintext.encode(Encoding::UTF_8)
+      rescue Encoding::UndefinedConversionError
+        raise Paseto::ParseError, 'invalid payload encoding'
       end
       # rubocop:enable Metrics/AbcSize
 

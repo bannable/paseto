@@ -3,6 +3,7 @@
 # frozen_string_literal: true
 
 require 'base64'
+require 'multi_json'
 require 'openssl'
 require 'rbnacl'
 require 'securerandom'
@@ -39,5 +40,48 @@ module Paseto
   # A signature was forged or otherwise corrupt
   class InvalidSignature < CryptoError; end
 
+  extend T::Sig
+
   include Version
+
+  sig do
+    params(
+      payload: T::Hash[T.untyped, T.untyped],
+      key: T.any(Paseto::V4::Public, Paseto::V4::Local, Paseto::V3::Public, Paseto::V3::Local),
+      footer: String,
+      implicit_assertion: String,
+      n: T.nilable(String),
+      json_options: T.untyped
+    ).returns(String)
+  end
+  def self.encode(payload:, key:, footer: '', implicit_assertion: '', n: nil, **json_options) # rubocop:disable Naming/MethodParameterName
+    message = MultiJson.dump(payload, **json_options)
+    case key
+    when Paseto::V3::Local, Paseto::V4::Local
+      key.encrypt(message:, footer:, implicit_assertion:, n:).to_s
+    when Paseto::V3::Public, Paseto::V4::Public
+      key.sign(message:, footer:, implicit_assertion:).to_s
+    end
+  end
+
+  sig do
+    params(
+      payload: String,
+      key: T.any(Paseto::V4::Public, Paseto::V4::Local, Paseto::V3::Public, Paseto::V3::Local),
+      implicit_assertion: String,
+      json_options: T.untyped
+    ).returns(T::Hash[T.untyped, T.untyped])
+  end
+  def self.decode(payload:, key:, implicit_assertion: '', **json_options)
+    token = Token.parse(payload)
+
+    raise Paseto::ParseError, 'key not valid for given token type' unless key.is_a?(token.type)
+
+    case key
+    when Paseto::V3::Local, Paseto::V4::Local
+      MultiJson.load(key.decrypt(token:, implicit_assertion:), **json_options)
+    when Paseto::V3::Public, Paseto::V4::Public
+      MultiJson.load(key.verify(token:, implicit_assertion:), **json_options)
+    end
+  end
 end

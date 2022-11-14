@@ -36,6 +36,16 @@ RSpec.describe Paseto::V3::Local do
 
     it { is_expected.to eq(message) }
 
+    context 'when the payload is not UTF-8 encoded' do
+      let(:token_str) do
+        'v3.local.Wc2InH2FYSar98UCqCAIRZS4ux1wy8O7sxkOKiZzDk5ovVOONpRERpHLy3JI1Nb1YA35tT7kz4NV6AuB8db5oE_vtHkQs_BtA_-rBjXMRDHj'
+      end
+
+      it 'raises an error' do
+        expect { plaintext }.to raise_error(Paseto::ParseError, 'invalid payload encoding')
+      end
+    end
+
     context 'when token version is not v3' do
       let(:token) { Paseto::Token.parse(token_str.sub('v3', 'v4')) }
 
