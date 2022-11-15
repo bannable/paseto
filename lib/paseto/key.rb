@@ -5,6 +5,9 @@
 module Paseto
   class Key
     extend T::Sig
+    extend T::Helpers
+
+    abstract!
 
     sig { params(version: String, purpose: String).void }
     def initialize(version:, purpose:)

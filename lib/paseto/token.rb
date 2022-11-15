@@ -32,7 +32,7 @@ module Paseto
       @purpose = purpose
       @payload = payload
       @footer = footer
-      raise ParseError, 'not a valid token' unless valid?
+      ensure_valid_header
     end
 
     sig { returns(String) }
@@ -77,10 +77,10 @@ module Paseto
     private
 
     sig { returns(T::Boolean) }
-    def valid?
+    def ensure_valid_header
       !!type
     rescue StandardError
-      false
+      raise ParseError, 'not a valid token'
     end
   end
 end

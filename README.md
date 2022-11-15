@@ -67,40 +67,48 @@ And run `bundle install`
   - [x] require topmost object to be an object, map, or associative array
 - [x] protect against loading off-curve public keys
 - [ ] support "expected footer" inputs during public#verify and local#decrypt operations
-- [ ] support for [Validators](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/02-Validators.md)
+- [x] support for [Validators](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/02-Validators.md)
 - [ ] protect against arbitrary/invalid data in [Registered Claims](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md)
 - [ ] [Key-ID support](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md#key-id-support)
 
 ## Usage
-
-### Basic Usage
-
-`encode` takes a key instance and a payload, and either encrypts or signs the payload after serializing it to JSON.
-
-`decode` takes a PASETO token and a key instance, and either decrypts or verifies the signature before returning the deserialized payload.
-
-This interface ensures that your token payloads always complies with [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
 ```ruby
 signer = Paseto::V3::Public.generate
 encrypter = Paseto::V4::Local.generate
 
 h = { "foo" => "bar", "baz" => 1 }
-signed_token = Paseto.encode(payload: h, key: signer) # => v3.public...
-encrypted_token = Paseto.encode(payload: h, key: encrypter) # => v4.local...
+signed_token = signer.encode(payload: h) # => v3.public...
+encrypted_token = encrypter.encode(payload: h) # => v4.local...
 
-Paseto.decode(payload: signed_token, key: signer) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: encrypted_token, key: encrypter) # => {"foo"=>"bar", "baz"=>1}
-Paseto.decode(payload: signed_token, key: encrypter) # => Paseto::ParseError
+signer.decode(payload: signed_token) # => {"foo"=>"bar", "baz"=>1}
+encrypter.decode(payload: encrypted_token) # => {"foo"=>"bar", "baz"=>1}
+encrypter.decode(payload: signed_token) # => Paseto::ParseError
 ```
+The `encode` and `decode` interfaces ensure that your token payloads always comply with the [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
 This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
 ```ruby
 # You may pass JSON adapter options to encode and decode
-Paseto.decode(payload: encrypted_token, key: encrypter, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
+encrypter.decode(payload: encrypted_token, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
 # Or setting default options with Oj
 Oj.default_options = {symbol_keys: true}
-Paseto.decode(payload: encrypted_token, key: encrypter) # => {:foo => "bar", :baz => 1}
+encrypter.decode(payload: encrypted_token) # => {:foo => "bar", :baz => 1}
+```
+
+You may optionally enforce validation of `exp`, `nbf`, `iss`, and `aud` claims by passing a `TokenValidator` to `decode`.
+
+If a validator is provided, `exp` and `nbf` claims are ALWAYS enforced. The `iss` and `aud` claims are enforced only if the `TokenValidator` is told to use them.
+
+```ruby
+validator = Paseto::TokenValidator.new(iss: 'my.issuer.com')
+encrypter.decode(payload: encrypted_token, validator:) # => Paseto::InvalidIssuer 
+
+validator = Paseto::TokenValidator.new(aud: 'my.audience.com')
+encrypter.decode(payload: encrypted_token, validator:) # => Paseto::InvalidAudience 
+
+validator = Paseto::TokenValidator.new
+encrypter.decode(payload: encrypted_token, validator:) # => Paseto::ExpiredToken
 ```
 
 ### PASETO v4, Sodium Modern

@@ -6,6 +6,8 @@ module Paseto
   module V4
     # PASETOv4 `public` token interface providing asymmetric signature signing and verification of tokens.
     class Public < Paseto::Key
+      include IAsymmetric
+
       # Number of bytes in an Ed25519 signature
       SIGNATURE_BYTES = 64
 
@@ -45,7 +47,7 @@ module Paseto
 
       # Sign `message` and optional non-empty `footer` and return a Token.
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
-      sig { params(message: String, footer: String, implicit_assertion: String).returns(Token) }
+      sig { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: '', implicit_assertion: '')
         raise ArgumentError, 'no private key available' unless private_key
 
@@ -58,9 +60,8 @@ module Paseto
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
-      sig { params(token: Token, implicit_assertion: String).returns(String) }
+      sig { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
-        # OPTIONAL: verify footer is expected, constant-time
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload

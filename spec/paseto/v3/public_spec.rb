@@ -1,8 +1,10 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'shared_examples_for_coders'
+
 RSpec.describe Paseto::V3::Public do
-  subject(:crypt) { described_class.new(key: key_pem) }
+  subject(:key) { described_class.new(key: key_pem) }
 
   let(:key_pem) do
     # secp384r1 private key
@@ -16,13 +18,15 @@ RSpec.describe Paseto::V3::Public do
     PKEY
   end
 
+  include_examples 'a token coder'
+
   describe '.generate' do
-    subject(:crypt) { described_class.generate }
+    subject(:key) { described_class.generate }
 
     it { is_expected.to be_a(described_class) }
 
     it 'has the expected group' do
-      expect(crypt.key.group.curve_name).to eq('secp384r1')
+      expect(key.key.group.curve_name).to eq('secp384r1')
     end
   end
 
@@ -50,7 +54,7 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { crypt }.to raise_error(Paseto::CryptoError, 'EVP_PKEY_public_check: invalid private key')
+        expect { key }.to raise_error(Paseto::CryptoError, 'EVP_PKEY_public_check: invalid private key')
       end
     end
 
@@ -66,33 +70,33 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { crypt }.to raise_error(Paseto::CryptoError, 'EC_KEY_set_public_key: incompatible objects')
+        expect { key }.to raise_error(Paseto::CryptoError, 'EC_KEY_set_public_key: incompatible objects')
       end
     end
   end
 
   describe '#version' do
-    it { expect(crypt.version).to eq('v3') }
+    it { expect(key.version).to eq('v3') }
   end
 
   describe '#purpose' do
-    it { expect(crypt.purpose).to eq('public') }
+    it { expect(key.purpose).to eq('public') }
   end
 
   describe '#header' do
-    it { expect(crypt.header).to eq('v3.public') }
+    it { expect(key.header).to eq('v3.public') }
   end
 
   describe '#key' do
-    it { expect(crypt.key).to be_a(OpenSSL::PKey::EC) }
+    it { expect(key.key).to be_a(OpenSSL::PKey::EC) }
 
     it 'is the same as the input key' do
-      expect(crypt.key.to_pem).to eq(key_pem)
+      expect(key.key.to_pem).to eq(key_pem)
     end
   end
 
   describe '#sign' do
-    subject(:token) { crypt.sign(message: '{"foo":"bar"}', footer: 'baz', implicit_assertion: 'test') }
+    subject(:token) { key.sign(message: '{"foo":"bar"}', footer: 'baz', implicit_assertion: 'test') }
 
     it { is_expected.to be_a(Paseto::Token) }
 
@@ -114,7 +118,7 @@ RSpec.describe Paseto::V3::Public do
 
     context 'when message is not UTF-8 encoded' do
       subject(:token) do
-        crypt.sign(message: "\xC0")
+        key.sign(message: "\xC0")
       end
 
       it 'raises an error' do
@@ -124,7 +128,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#verify' do
-    subject(:verify) { crypt.verify(token:, implicit_assertion: 'test') }
+    subject(:verify) { key.verify(token:, implicit_assertion: 'test') }
 
     let(:token) do
       Paseto::Token.parse(
