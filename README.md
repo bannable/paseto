@@ -98,7 +98,7 @@ encrypter.decode(payload: encrypted_token) # => {:foo => "bar", :baz => 1}
 
 You may optionally enforce validation of `exp`, `nbf`, `iss`, and `aud` claims by passing a `TokenValidator` to `decode`.
 
-If a validator is provided, `exp` and `nbf` claims are ALWAYS enforced. The `iss` and `aud` claims are enforced only if the `TokenValidator` is told to use them.
+If a validator is provided, `exp`, `iat` and `nbf` claims are ALWAYS enforced. The `iss` and `aud` claims are enforced only if the `TokenValidator` is told to use them.
 
 ```ruby
 validator = Paseto::TokenValidator.new(iss: 'my.issuer.com')

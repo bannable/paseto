@@ -48,6 +48,9 @@ module Paseto
   # Incorrect audience
   class InvalidAudience < ValidationError; end
 
+  # Token issued in the future
+  class FutureTokenError < ValidationError; end
+
   # A cryptographic primitive has failed for any reason,
   # such as attempting to initialize a stream cipher with
   # an invalid nonce.

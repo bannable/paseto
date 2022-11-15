@@ -4,15 +4,17 @@
 RSpec.describe Paseto::TokenValidator do
   let(:iss) { 'ban.paseto.test' }
   let(:aud) { 'test.paseto.ban' }
-  let(:exp) { (Time.now + 60).iso8601 }
-  let(:nbf) { (Time.now - 60).iso8601 }
+  let(:exp) { (Time.now + 5).iso8601 }
+  let(:nbf) { (Time.now - 5).iso8601 }
+  let(:iat) { (Time.now - 120).iso8601 }
 
   let(:claims) do
     {
       'iss' => 'ban.paseto.test',
       'aud' => 'test.paseto.ban',
       'exp' => exp,
-      'nbf' => nbf
+      'nbf' => nbf,
+      'iat' => iat
     }
   end
 
@@ -78,6 +80,14 @@ RSpec.describe Paseto::TokenValidator do
 
       it 'succeeds' do
         expect { validate }.not_to raise_error
+      end
+    end
+
+    context 'when the token is from the future' do
+      let(:iat) { (Time.now + 1).iso8601 }
+
+      it 'raises FutureTokenError' do
+        expect { validate }.to raise_error(Paseto::FutureTokenError)
       end
     end
   end

@@ -21,8 +21,9 @@ module Paseto
 
       exp = T.cast(claims.fetch('exp', ''), String)
       nbf = T.cast(claims.fetch('nbf', ''), String)
+      iat = T.cast(claims.fetch('iat', ''), String)
 
-      validate_active(nbf:, exp:)
+      validate_active(nbf:, exp:, iat:)
       claims
     end
 
@@ -38,11 +39,12 @@ module Paseto
       raise InvalidAudience if aud && audience != aud
     end
 
-    sig { params(nbf: String, exp: String).void }
-    def validate_active(nbf:, exp:)
+    sig { params(nbf: String, exp: String, iat: String).void }
+    def validate_active(nbf:, exp:, iat:)
       now = Time.now
       raise ExpiredToken if now > Time.iso8601(exp)
       raise InactiveToken if now < Time.iso8601(nbf)
+      raise FutureTokenError if now < Time.iso8601(iat)
     rescue ArgumentError => e
       raise ParseError, e.message
     end
