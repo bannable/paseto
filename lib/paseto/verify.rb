@@ -32,7 +32,9 @@ module Paseto
         when Subject then Paseto::Validator::Subject
         when TokenIdentifier then Paseto::Validator::TokenIdentifier
         else
+          # :nocov:
           T.absurd(self)
+          # :nocov:
         end
       end
     end

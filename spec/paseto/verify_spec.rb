@@ -41,24 +41,15 @@ RSpec.describe Paseto::Verify do
   end
 
   it 'returns the claims on success' do
-    expect(verify).to eq claims
+    expect(verify).to eq payload
   end
 
   context 'with the global configuration' do
     let(:options) { {} }
 
     it 'succeeds' do
-      expect { verify }.not_to raise_error
+      expect(verify).to eq payload
     end
-
-    # context 'skips disabled checks' do
-    #   let(:payload) { claims.merge('exp' => (Time.now - 5).iso8601) }
-
-    #   it 'succeeds' do
-    #     Paseto.config.decode.verify_exp = false
-    #     expect { verify }.not_to raise_error
-    #   end
-    # end
   end
 
   context 'when verifying audience' do
@@ -74,7 +65,7 @@ RSpec.describe Paseto::Verify do
       let(:payload) { claims.merge('aud' => ['foo', aud]) }
 
       it 'succeeds' do
-        expect { verify }.not_to raise_error
+        expect(verify).to eq payload
       end
     end
 
@@ -88,11 +79,16 @@ RSpec.describe Paseto::Verify do
   end
 
   context 'when verifying expiration' do
-    context 'with an expired token' do
-      let(:payload) { claims.merge('exp' => (Time.now - 60).iso8601) }
+    let(:payload) { claims.merge('exp' => (Time.now - 60).iso8601) }
 
+    context 'with an expired token' do
       it 'raises ExpiredToken' do
         expect { verify }.to raise_error(Paseto::ExpiredToken, 'Expiry has passed')
+      end
+
+      it 'succeeds when verify_exp is false' do
+        options[:verify_exp] = false
+        expect(verify).to eq payload
       end
     end
 
@@ -155,21 +151,26 @@ RSpec.describe Paseto::Verify do
     context 'with several permitted issuers' do
       it 'succeeds' do
         options[:verify_iss] = ['example.com', iss]
-        expect { verify }.not_to raise_error
+        expect(verify).to eq payload
+      end
+
+      it 'converts symbols to strings' do
+        options[:verify_iss] = iss.to_sym
+        expect(verify).to eq payload
       end
     end
 
     context 'with a regexp' do
       it 'succeeds' do
         options[:verify_iss] = /\Aban.paseto.test\z/
-        expect { verify }.not_to raise_error
+        expect(verify).to eq payload
       end
     end
 
     context 'with a proc' do
       it 'succeeds when the proc is truthy' do
         options[:verify_iss] = ->(v) { v }
-        expect { verify }.not_to raise_error
+        expect(verify).to eq payload
       end
 
       it 'raises InvalidIssuer when the proc is false' do
@@ -193,6 +194,11 @@ RSpec.describe Paseto::Verify do
 
       it 'raises InactiveToken' do
         expect { verify }.to raise_error(Paseto::InactiveToken, 'Not yet active')
+      end
+
+      it 'succeeds when verify_nbf is false' do
+        options[:verify_nbf] = false
+        expect(verify).to eq payload
       end
     end
 
@@ -237,7 +243,7 @@ RSpec.describe Paseto::Verify do
     context 'with a proc' do
       it 'succeeds when truthy' do
         options[:verify_jti] = ->(v) { v }
-        expect { verify }.not_to raise_error
+        expect(verify).to eq payload
       end
 
       it 'raises InvalidTokenIdentifier when the proc is false' do
