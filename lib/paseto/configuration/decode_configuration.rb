@@ -26,9 +26,6 @@ module Paseto
       end
       attr_accessor :verify_jti
 
-      sig { returns(T::Array[String]) }
-      attr_accessor :required_claims
-
       sig { void }
       def initialize # rubocop:disable Metrics/AbcSize
         @verify_exp = T.let(true, T::Boolean)
@@ -48,8 +45,6 @@ module Paseto
                                      T::Boolean,
                                      T.proc.params(jti: String).returns(T::Boolean)
                                    ))
-
-        @required_claims = T.let([], T::Array[String])
       end
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -61,8 +56,7 @@ module Paseto
           verify_iat:,
           verify_jti:,
           verify_aud:,
-          verify_sub:,
-          required_claims:
+          verify_sub:
         }
       end
     end
