@@ -99,7 +99,7 @@ Oj.default_options = {symbol_keys: true}
 encrypter.decode(payload: encrypted_token) # => {:foo => "bar", :baz => 1}
 ```
 
-You may optionally enforce validation of claims by calling `decode!` instead of `decode`. See [Registered Claims](#registered-claims) for more information on configuration validation.
+You may optionally enforce validation of claims by calling `decode!` instead of `decode`. See [Registered Claims](#registered-claims-support) for more information on configuration validation.
 
 ### PASETO v4, Sodium Modern
 
