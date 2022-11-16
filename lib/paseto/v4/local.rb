@@ -62,7 +62,7 @@ module Paseto
 
         Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, c).encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
-        raise Paseto::ParseError, 'invalid payload encoding'
+        raise ParseError, 'invalid payload encoding'
       end
 
       private

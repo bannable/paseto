@@ -1,9 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require 'paseto/configuration/decode_configuration'
-require 'paseto/configuration/box'
-
 module Paseto
   module Configuration
     extend T::Sig

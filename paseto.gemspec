@@ -4,7 +4,7 @@ require_relative "lib/paseto/version"
 
 Gem::Specification.new do |spec|
   spec.name = "paseto"
-  spec.version = Paseto::Version::VERSION
+  spec.version = Paseto::VERSION
   spec.authors = ["Joe Truba"]
   spec.email = ["joe@bannable.net"]
 
@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "rbnacl", "~> 7.1.1"
   spec.add_runtime_dependency "securerandom"
   spec.add_runtime_dependency "sorbet-runtime"
+  spec.add_runtime_dependency "zeitwerk"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "debug", ">= 1.0"

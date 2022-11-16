@@ -77,7 +77,7 @@ module Paseto
         plaintext = cipher.update(c) + cipher.final
         plaintext.encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
-        raise Paseto::ParseError, 'invalid payload encoding'
+        raise ParseError, 'invalid payload encoding'
       end
       # rubocop:enable Metrics/AbcSize
 
