@@ -6,7 +6,7 @@ module Paseto
   module V3
     # PASETOv3 `public` token interface providing asymmetric signature signing and verification of tokens.
     class Public < Paseto::Key
-      include IAsymmetric
+      include Interface::Asymmetric
 
       # Size of (r || s) in an ECDSA secp384r1 signature
       SIGNATURE_BYTE_LEN = 96
