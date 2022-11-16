@@ -6,7 +6,7 @@ module Paseto
     class Box
       extend T::Sig
 
-      sig { returns(DecodeConfiguration)}
+      sig { returns(DecodeConfiguration) }
       attr_accessor :decode
 
       sig { void }
