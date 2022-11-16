@@ -20,7 +20,9 @@ module Paseto
       when V4Local then V4::Local
       when V4Public then V4::Public
       else
+        # :nocov:
         T.absurd(self)
+        # :nocov
       end
     end
   end
