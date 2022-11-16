@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require 'paseto/validator'
-
 module Paseto
   class Verify
     class Verifiers < T::Enum
@@ -33,6 +31,8 @@ module Paseto
         when NotBefore then Paseto::Validator::NotBefore
         when Subject then Paseto::Validator::Subject
         when TokenIdentifier then Paseto::Validator::TokenIdentifier
+        else
+          T.absurd(self)
         end
       end
     end

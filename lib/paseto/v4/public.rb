@@ -78,7 +78,7 @@ module Paseto
 
         m.encode!(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
-        raise Paseto::ParseError, 'invalid payload encoding'
+        raise ParseError, 'invalid payload encoding'
       end
     end
   end

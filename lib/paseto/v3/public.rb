@@ -40,7 +40,7 @@ module Paseto
 
         super(version: 'v3', purpose: 'public')
       rescue OpenSSL::PKey::ECError => e
-        raise Paseto::CryptoError, e.message
+        raise CryptoError, e.message
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -62,7 +62,7 @@ module Paseto
         payload = message + sig
         Token.new(payload:, purpose:, version:, footer:)
       rescue Encoding::CompatibilityError
-        raise Paseto::ParseError, 'invalid message encoding, must be UTF-8'
+        raise ParseError, 'invalid message encoding, must be UTF-8'
       end
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
@@ -86,7 +86,7 @@ module Paseto
 
         m.encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
-        raise Paseto::ParseError, 'invalid payload encoding'
+        raise ParseError, 'invalid payload encoding'
       end
 
       # rubocop:enable Metrics/AbcSize
