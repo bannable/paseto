@@ -12,7 +12,6 @@ AllCops:
     - '.git/**/*'
     - 'spec/paseto/**/test_vectors_spec.rb'
     - 'bin/*'
-    - 'paseto.gemspec'
 
 Layout/LineLength:
   Max: 140
