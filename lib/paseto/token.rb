@@ -57,21 +57,9 @@ module Paseto
       to_s <=> other.to_s
     end
 
-    sig do
-      returns(
-        T.any(
-          T.class_of(V3::Local), T.class_of(V3::Public),
-          T.class_of(V4::Local), T.class_of(V4::Public)
-        )
-      )
-    end
+    sig { returns(T.class_of(Key)) }
     def type
-      {
-        'v3.local' => V3::Local,
-        'v3.public' => V3::Public,
-        'v4.local' => V4::Local,
-        'v4.public' => V4::Public
-      }.fetch(header)
+      TokenTypes.deserialize(header).key_klass
     end
 
     private
@@ -79,7 +67,7 @@ module Paseto
     sig { returns(T::Boolean) }
     def ensure_valid_header
       !!type
-    rescue StandardError
+    rescue KeyError
       raise ParseError, 'not a valid token'
     end
   end
