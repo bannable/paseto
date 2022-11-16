@@ -16,7 +16,13 @@ RSpec.shared_examples 'a token coder' do
     subject(:decoder) { key.decode(payload:, implicit_assertion: 'test') }
 
     let(:payload) { key.encode(payload: plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
-    let(:plain) { { 'data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00' } }
+    let(:plain) do
+      {
+        'exp' => (Time.now + 5).iso8601,
+        'nbf' => (Time.now - 5).iso8601,
+        'data' => 'this is a secret message'
+      }
+    end
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
 
@@ -37,13 +43,25 @@ RSpec.shared_examples 'a token coder' do
       end
     end
 
-    context 'with a validator' do
-      subject(:decoder) { key.decode(payload:, implicit_assertion: 'test', validator:) }
+    context 'with verification' do
+      subject(:decoder) { key.decode!(payload:, implicit_assertion: 'test') }
 
-      let(:validator) { Paseto::TokenValidator.new(iss: 'someone') }
+      it { is_expected.to eq(plain) }
+    end
+
+    context 'when verification fails' do
+      subject(:decoder) { key.decode!(payload:, implicit_assertion: 'test') }
+
+      let(:plain) do
+        {
+          'exp' => (Time.now - 5).iso8601,
+          'nbf' => (Time.now - 10).iso8601,
+          'data' => 'this is a secret message'
+        }
+      end
 
       it 'raises an error' do
-        expect { decoder }.to raise_error(Paseto::InvalidIssuer)
+        expect { decoder }.to raise_error(Paseto::ExpiredToken)
       end
     end
   end

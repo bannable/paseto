@@ -6,7 +6,7 @@ module Paseto
   module V4
     # PASETOv4 `public` token interface providing asymmetric signature signing and verification of tokens.
     class Public < Paseto::Key
-      include IAsymmetric
+      include Interface::Asymmetric
 
       # Number of bytes in an Ed25519 signature
       SIGNATURE_BYTES = 64

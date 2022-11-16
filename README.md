@@ -88,6 +88,9 @@ encrypter.decode(payload: signed_token) # => Paseto::ParseError
 The `encode` and `decode` interfaces ensure that your token payloads always comply with the [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
 This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
+
+If you want to handle serialization and claim verification yourself, you may instead use `encrypt` and `decrypt`.
+
 ```ruby
 # You may pass JSON adapter options to encode and decode
 encrypter.decode(payload: encrypted_token, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
@@ -96,20 +99,7 @@ Oj.default_options = {symbol_keys: true}
 encrypter.decode(payload: encrypted_token) # => {:foo => "bar", :baz => 1}
 ```
 
-You may optionally enforce validation of `exp`, `nbf`, `iss`, and `aud` claims by passing a `TokenValidator` to `decode`.
-
-If a validator is provided, `exp` and `nbf` claims are ALWAYS enforced. The `iss` and `aud` claims are enforced only if the `TokenValidator` is told to use them.
-
-```ruby
-validator = Paseto::TokenValidator.new(iss: 'my.issuer.com')
-encrypter.decode(payload: encrypted_token, validator:) # => Paseto::InvalidIssuer 
-
-validator = Paseto::TokenValidator.new(aud: 'my.audience.com')
-encrypter.decode(payload: encrypted_token, validator:) # => Paseto::InvalidAudience 
-
-validator = Paseto::TokenValidator.new
-encrypter.decode(payload: encrypted_token, validator:) # => Paseto::ExpiredToken
-```
+You may optionally enforce validation of claims by calling `decode!` instead of `decode`. See [Registered Claims](#registered-claims-support) for more information on configuration validation.
 
 ### PASETO v4, Sodium Modern
 
@@ -197,6 +187,141 @@ signer.key.public_to_pem # => PEM encoded public key
 signer.key.private_to_pem # => PEM encoded private key
 signer.key.public_to_der # => DER encoded public key
 signer.key.private_to_der # => DER encoded private key
+```
+
+## Registered Claims Support
+
+PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md) for particular use in the protocol. `paseto` supports verification of all reserved claims through the `decode!` interface. In the default configuration, only `exp` and `iat` claims are verified.
+
+### Audience Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| String | False \| String \| Array[String] | `false` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, aud: 'example.com', data: 'data' }
+payload = crypt.encode(payload: hash)
+
+options = { verify_aud: 'some.example.com' }
+crypt.decode!(payload:, options:) # => Paseto::InvalidAudience
+
+options = { verify_aud: ['some.example.com', 'another.example.com', 'example.com']}
+crypt.decode!(payload:, options:) # => { exp: ... }
+```
+
+### Expiration Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| DateTime | Boolean | `true` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now - 1).iso8601, iat: (Time.now - 5).iso8601, data: 'data' }
+payload = crypt.encode(payload: hash)
+
+crypt.decode!(payload:) # => Paseto::ExpiredToken
+
+options = { verify_exp: false }
+crypt.decode!(payload:, options:) # { exp: ... }
+```
+
+### Issued At Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| DateTime | Boolean | `true` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: (Time.now + 5).iso8601, data: 'data' }
+payload = crypt.encode(payload: hash)
+
+crypt.decode!(payload:) # => Paseto::ImmatureToken
+
+options = { verify_iat: false }
+crypt.decode!(payload:, options:) # { exp: ... }
+```
+
+### Issuer Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| String     | Boolean \| String \| Regexp \| Proc | `false` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, iss: 'example.com', data: 'data' }
+payload = crypt.encode(payload: hash)
+
+options = { verify_issuer: 'not.example.com' }
+crypt.decode!(payload:, options:) # => Pseto::InvalidIssuer
+```
+
+You may also pass a Regexp or Proc with arity 1, and verification will succeed if the regexp matches or the proc returns truthy.
+
+```ruby
+opts = { verify_issuer: /\Aexample\.com\z/}
+crypt.decode!(payload: options: opts) # { exp: ... }
+
+opts = { verify_issuer: ->(iss) { iss.end_with?('example.com') } }
+crypt.decode!(payload:, options: opts) # { exp: ... }
+
+# or verify only presence
+crypt.decode!(payload:, options: { verify_issuer: true }) # { exp: ... }
+```
+
+### Not Before Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| DateTime | Boolean | `false` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, nbf: (Time.now + 5).iso8601, data: 'data' }
+payload = crypt.encode(payload: hash)
+
+crypt.decode!(payload: options: { verify_nbf: true}) # => Paseto::InactiveToken
+```
+
+### Subject Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| String | False \| String | `false` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, sub: 'example.com', data: 'data' }
+payload = crypt.encode(payload: hash)
+
+crypt.decode!(payload: options: { verify_sub: 'example.com'}) # { exp: ... }
+crypt.decode!(payload: options: { verify_sub: 'example.org'}) # => Paseto::InvalidSubject
+```
+
+### Token Identifier Claim
+
+| claim type | config type | default |
+| :--------: | :---------: | :-----: |
+| String | Boolean \| String \| Proc | `false` |
+
+```ruby
+crypt = Paseto::V4::Local.generate
+hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, data: 'data' }
+payload = crypt.encode(payload: hash)
+
+crypt.decode!(payload:, options: { verify_jti: true})) # => Paseto::InvalidTokenIdentifier
+
+hash[:jti] = 'foo'
+payload = crypt.encode(payload: hash)
+crypt.decode!(payload:, options: { verify_jti: 'foo'})) #  # { exp: ... }
+crypt.decode!(payload:, options: { verify_jti: 'bar'})) # Paseto::InvalidTokenIdentifier
+
+options = { verify_jti: ->(jti) { jti == 'bar'} }
+crypt.decode!(payload:, options:)) # Paseto::InvalidTokenIdentifier
 ```
 
 ## Development

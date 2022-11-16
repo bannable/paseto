@@ -5,35 +5,47 @@ detectors:
     enabled: false
   UncommunicativeModuleName:
     enabled: false
-  UncommunicativeMethodName:
-    exclude:
-      - "Paseto::Util"
+  MissingSafeMethod:
+    enabled: false
+  UnusedParameters:
+    enabled: false
   UncommunicativeVariableName:
     enabled: false
   UncommunicativeParameterName:
     enabled: false
+  TooManyStatements:
+    enabled: false
+  UncommunicativeMethodName:
+    enabled: false
+  
+  LongParameterList:
+    max_params: 4
+  UtilityFunction:
+    public_methods_only: true
+
   ControlParameter:
     exclude:
       - "Paseto::Key#valid_for?"
-  TooManyStatements:
-    enabled: false
-  InstanceVariableAssumption:
-    exclude:
-      - "Paseto::Sodium::Stream::XChaCha20Xor"
   FeatureEnvy:
     exclude:
       - "Paseto::V4::Local#decrypt"
   DuplicateMethodCall:
     exclude:
       - "Paseto::Util.constant_compare"
-  UtilityFunction:
+  TooManyConstants:
     exclude:
-      - "Paseto::Sodium::Stream::Base#data_len"
-      - "Paseto::V4::Local#split_payload"
-  LongParameterList:
+      - 'Paseto::Verify::Verifiers'
+  Attribute:
     exclude:
-      - "Paseto::V4::Local#encrypt"
+      - 'Paseto::Configuration'
+  ManualDispatch:
+    exclude:
+      - 'Paseto::Validator::TokenIdentifier#verify'
+  DataClump:
+    exclude:
+      - 'Paseto::Interface'
 
 exclude_paths:
   - spec/generate_vectors.rb
   - spec/**/test_vectors_spec.rb
+  - lib/paseto/configuration/decode_configuration.rb

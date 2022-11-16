@@ -14,10 +14,6 @@ AllCops:
     - 'bin/*'
     - 'paseto.gemspec'
 
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: double_quotes
-
 Layout/LineLength:
   Max: 140
 
@@ -59,3 +55,8 @@ Style/AccessorGrouping:
 Sorbet/ConstantsFromStrings:
   Exclude:
     - 'lib/paseto/sodium/stream/base.rb'
+
+RSpec/MultipleMemoizedHelpers:
+  Exclude:
+    - 'spec/paseto/token_validator_spec.rb'
+    - 'spec/paseto/verify_spec.rb'

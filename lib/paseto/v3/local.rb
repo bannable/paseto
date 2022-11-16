@@ -6,7 +6,7 @@ module Paseto
   module V3
     # PASETOv3 `local` token interface providing symmetric encryption of tokens.
     class Local < Paseto::Key
-      include ISymmetric
+      include Interface::Symmetric
 
       # Size in bytes of a SHA384 digest
       SHA384_DIGEST_LEN = 48
