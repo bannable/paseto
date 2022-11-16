@@ -89,7 +89,7 @@ The `encode` and `decode` interfaces ensure that your token payloads always comp
 
 This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
 
-If you want to handle serialization and claim verification yourself, you may instead use `encrypt` and `decrypt`.
+If you want to handle serialization and claim verification yourself, you may instead use `encrypt`/`decrypt` and `sign`/`verify`.
 
 ```ruby
 # You may pass JSON adapter options to encode and decode
