@@ -16,7 +16,7 @@ module Paseto
           payload: T::Hash[String, T.untyped],
           footer: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
         ).returns(String)
       end
       def encode(payload:, footer: '', implicit_assertion: '', **options)
@@ -28,24 +28,24 @@ module Paseto
         override.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode(payload:, implicit_assertion: '', options: {})
+      def decode(payload:, implicit_assertion: '', **options)
         token = Token.parse(payload)
 
-        MultiJson.load(verify(token:, implicit_assertion:), options)
+        MultiJson.load(verify(token:, implicit_assertion:), **options)
       end
 
       sig do
         override.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode!(payload:, implicit_assertion: '', options: {})
-        result = decode(payload:, implicit_assertion:, options:)
+      def decode!(payload:, implicit_assertion: '', **options)
+        result = decode(**T.unsafe(payload:, implicit_assertion:, **options))
 
         Verify.verify_claims(result, options)
       end

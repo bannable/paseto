@@ -14,28 +14,28 @@ module Paseto
           payload: T::Hash[String, T.untyped],
           footer: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.any(String, Integer, Symbol, T::Boolean)
         ).returns(String)
       end
-      def encode(payload:, footer: '', implicit_assertion: '', options: {}); end
+      def encode(payload:, footer: '', implicit_assertion: '', **options); end
 
       sig do
         abstract.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode(payload:, implicit_assertion: '', options: {}); end
+      def decode(payload:, implicit_assertion: '', **options); end
 
       sig do
         abstract.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode!(payload:, implicit_assertion: '', options: {}); end
+      def decode!(payload:, implicit_assertion: '', **options); end
     end
   end
 end
