@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject do |f|
-      f.match(/^(?:bin|spec|coverage|tmp)/) || # Irrelevant directories
+      f.match(/^(?:bin|spec|coverage|tmp|devcontainers)/) || # Irrelevant directories
         f.match(/^\.+/) || # Anything starting with .
         f.match(/^(Gemfile|Rakefile)$/) # Irrelevant files
     end

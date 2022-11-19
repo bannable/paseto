@@ -1,8 +1,9 @@
 ARG DISTRO="bullseye"
 FROM mcr.microsoft.com/devcontainers/base:${DISTRO}
 
+ARG SODIUM="libsodium23"
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends libsodium23 \
+    && apt-get -y install --no-install-recommends ${SODIUM} \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USERNAME=vscode
