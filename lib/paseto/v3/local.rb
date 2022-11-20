@@ -103,6 +103,8 @@ module Paseto
         c = T.must(payload.slice(32, payload.size - 80))
         t = T.must(payload.slice(-48, 48))
         [n, c, t]
+      rescue TypeError
+        raise ParseError
       end
     end
   end
