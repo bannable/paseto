@@ -59,7 +59,7 @@ module V4
 
     message = begin
                 local.decrypt(token: token, implicit_assertion: ia)
-              rescue Paseto::InvalidAuthenticator, Paseto::ParseError, TypeError
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
                 nil
               end
     expect(message).to be_nil

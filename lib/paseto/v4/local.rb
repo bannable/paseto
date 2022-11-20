@@ -79,6 +79,8 @@ module Paseto
         c = T.must(payload.slice(32, payload.size - 64))
         t = T.must(payload.slice(-32, 32))
         [n, c, t]
+      rescue TypeError
+        raise ParseError
       end
 
       # Derive an encryption key, nonce, and authentication key from an input nonce.
