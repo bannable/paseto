@@ -5,7 +5,10 @@ require 'simplecov'
 SimpleCov.start do
   enable_coverage :branch
 end
+require 'rbnacl'
 require 'paseto'
+
+Zeitwerk::Loader.eager_load_all
 
 require 'timecop'
 

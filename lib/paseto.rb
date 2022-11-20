@@ -5,13 +5,19 @@
 require 'base64'
 require 'multi_json'
 require 'openssl'
-require 'rbnacl'
 require 'securerandom'
 require 'sorbet-runtime'
 require 'time'
 require 'zeitwerk'
 
 loader = Zeitwerk::Loader.for_gem
+unless defined?(RbNaCl)
+  loader.ignore(
+    "#{__dir__}/paseto/v4/local.rb",
+    "#{__dir__}/paseto/sodium/",
+    "#{__dir__}/paseto/sodium.rb"
+  )
+end
 loader.setup
 
 module Paseto
@@ -57,6 +63,12 @@ module Paseto
 
   # A signature was forged or otherwise corrupt
   class InvalidSignature < CryptoError; end
+
+  # A provided key parsed to a different algorithm than expected
+  class IncorrectKeyType < CryptoError; end
+
+  # Key is not valid for algorithm
+  class InvalidKeyPair < CryptoError; end
 end
 
 loader.eager_load

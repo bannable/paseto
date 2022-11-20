@@ -39,7 +39,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'multi_json', '~> 1.15.0'
   spec.add_runtime_dependency 'openssl', '~> 3.0.0'
-  spec.add_runtime_dependency 'rbnacl', '~> 7.1.1'
   spec.add_runtime_dependency 'sorbet-runtime'
   spec.add_runtime_dependency 'zeitwerk'
 

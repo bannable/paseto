@@ -33,6 +33,7 @@ Layout/HeredocIndentation:
     - 'spec/generate_vectors.rb'
 
 Metrics/AbcSize:
+  Max: 20
   Exclude:
     - 'spec/generate_vectors.rb'
 
@@ -59,3 +60,6 @@ RSpec/MultipleMemoizedHelpers:
   Exclude:
     - 'spec/paseto/token_validator_spec.rb'
     - 'spec/paseto/verify_spec.rb'
+
+Naming/VariableNumber:
+  CheckSymbols: false

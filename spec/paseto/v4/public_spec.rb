@@ -4,10 +4,22 @@
 require 'shared_examples_for_coders'
 
 RSpec.describe Paseto::V4::Public do
-  let(:sk_bytes) { Paseto::Util.decode_hex('68c16bc05a4d4d2bc537c8695cd562d1d1421a37a95eb3de9bdf8468e0da3448') }
-  let(:vk_bytes) { Paseto::Util.decode_hex('f0d2091894bc5ed1cc9fa0ccbb17ce1512c8faa054b4b8f1882740562bacff13') }
-  let(:key) { described_class.new(private_key: sk_bytes) }
-  let(:key_pub) { described_class.new(public_key: vk_bytes) }
+  let(:priv_pem) do
+    <<~PRIV
+      -----BEGIN PRIVATE KEY-----
+      MC4CAQAwBQYDK2VwBCIEIGjBa8BaTU0rxTfIaVzVYtHRQho3qV6z3pvfhGjg2jRI
+      -----END PRIVATE KEY-----
+    PRIV
+  end
+  let(:pub_pem) do
+    <<~PUB
+      -----BEGIN PUBLIC KEY-----
+      MCowBQYDK2VwAyEA8NIJGJS8XtHMn6DMuxfOFRLI+qBUtLjxiCdAVius/xM=
+      -----END PUBLIC KEY-----
+    PUB
+  end
+  let(:key) { described_class.new(priv_pem) }
+  let(:key_pub) { described_class.new(pub_pem) }
 
   include_examples 'a token coder'
 
@@ -22,47 +34,25 @@ RSpec.describe Paseto::V4::Public do
       expect(key).to be_a(described_class)
     end
 
-    it 'errors when given both private and public keys' do
-      expect do
-        described_class.new(private_key: sk_bytes, public_key: vk_bytes)
-      end.to raise_error(ArgumentError, 'may not provide both private and public keys')
-    end
-
     it 'errors when provided no keys' do
       expect do
-        described_class.new
-      end.to raise_error(ArgumentError, 'must provide one of private or public key')
+        described_class.new('')
+      end.to raise_error(OpenSSL::PKey::PKeyError)
     end
 
-    context 'when the public key is too long' do
-      let(:vk_bytes) { Paseto::Util.decode_hex('f0d2091894bc5ed1cc9fa0ccbb17ce1512c8faa054b4b8f1882740562bacff1300') }
-
-      it 'raises a CryptoError' do
-        expect { key_pub }.to raise_error(Paseto::CryptoError, 'incorrect key size')
+    context 'when provided the wrong key type' do
+      let(:pub_pem) do
+        <<~P256
+          -----BEGIN PUBLIC KEY-----
+          MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEslrmxS6agPJYJM+FVAPK5E+di6cSl0ye
+          RXHW283RhEyhFXOAkUG4INobjmfiaqpU3L3An3qbWhFOVuYH4cI11jBtfEZb1hKJ
+          GQ+NZuU9kXSHVVq/hKFDMBdSFdjGmlMp
+          -----END PUBLIC KEY-----
+        P256
       end
-    end
-
-    context 'when the public key is too short' do
-      let(:vk_bytes) { Paseto::Util.decode_hex('f0d2091894bc5ed1cc9fa0ccbb17ce1512c8faa054b4b8f1882740562bacff13').chop }
 
       it 'raises a CryptoError' do
-        expect { key_pub }.to raise_error(Paseto::CryptoError, 'incorrect key size')
-      end
-    end
-
-    context 'when the private key is too long' do
-      let(:sk_bytes) { Paseto::Util.decode_hex('68c16bc05a4d4d2bc537c8695cd562d1d1421a37a95eb3de9bdf8468e0da344800') }
-
-      it 'raises a CryptoError' do
-        expect { key }.to raise_error(Paseto::CryptoError, 'incorrect key size')
-      end
-    end
-
-    context 'when the private key is too short' do
-      let(:sk_bytes) { Paseto::Util.decode_hex('68c16bc05a4d4d2bc537c8695cd562d1d1421a37a95eb3de9bdf8468e0da3448').chop }
-
-      it 'raises a CryptoError' do
-        expect { key }.to raise_error(Paseto::CryptoError, 'incorrect key size')
+        expect { key_pub }.to raise_error(Paseto::CryptoError, 'expected Ed25519 key, got id-ecPublicKey')
       end
     end
   end
@@ -82,13 +72,13 @@ RSpec.describe Paseto::V4::Public do
   describe '#public_key' do
     context 'with only a public key' do
       it 'equals to the provided public key' do
-        expect(key_pub.public_key.to_s == vk_bytes).to be true
+        expect(key_pub.key.public_to_pem).to eq pub_pem
       end
     end
 
     context 'with only a private key' do
       it 'equals the calculated public key for the signing key' do
-        expect(key.public_key.to_s == vk_bytes).to be true
+        expect(key.key.public_to_pem).to eq pub_pem
       end
     end
   end
@@ -106,6 +96,28 @@ RSpec.describe Paseto::V4::Public do
       it 'raises an error' do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
       end
+
+      # rubocop:disable RSpec/NestedGroups
+
+      context 'with openssl/libcrypto 3.0.0 - 3.0.7' do
+        it 'raises an error', openssl_3_buggy: true do
+          expect { token }.to raise_error(ArgumentError, 'no private key available')
+        end
+      end
+
+      context 'with openssl/libcrypto 1.1.1' do
+        it 'raises an error', openssl_1_1_1: true do
+          expect { token }.to raise_error(ArgumentError, 'no private key available')
+        end
+      end
+
+      context 'with openssl/libcrypto 3.0.8+' do
+        it 'raises an error', openssl_3_0_8: true do
+          expect { token }.to raise_error(ArgumentError, 'no private key available')
+        end
+      end
+
+      # rubocop:enable RSpec/NestedGroups
     end
   end
 
@@ -139,8 +151,6 @@ RSpec.describe Paseto::V4::Public do
     end
 
     context 'when the payload is not UTF-8 encoded' do
-      # RbNaCl coerces string encodings under the hood during signing operations, but not verification
-
       let(:token) do
         Paseto::Token.parse('v4.public.wAmi6msK_S8LX7H8UTl_JmIWyfYkgD9m0g7hlvOn70m2Ho3inqVCGZYdNwYpt84HfMZ0w133Zm0MWGMaA0UWOQw')
       end

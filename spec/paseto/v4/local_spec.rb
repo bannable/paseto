@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'shared_examples_for_coders'
+require 'paseto/v4/local'
 
 RSpec.describe Paseto::V4::Local do
   let(:key_material) { Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f)) }

@@ -54,7 +54,7 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { key }.to raise_error(Paseto::CryptoError, 'EVP_PKEY_public_check: invalid private key')
+        expect { key }.to raise_error(Paseto::InvalidKeyPair)
       end
     end
 
@@ -70,8 +70,25 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { key }.to raise_error(Paseto::CryptoError, 'EC_KEY_set_public_key: incompatible objects')
+        expect { key }.to raise_error(Paseto::IncorrectKeyType)
       end
+    end
+  end
+
+  context 'when the private key value is 0' do
+    let(:key_pem) do
+      <<~P384_ZERO
+        -----BEGIN EC PRIVATE KEY-----
+        MIGkAgEBBDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAACgBwYFK4EEACKhZANiAAR1NyMo52Luu+S/y8+MiarXkmVYSQiWVATe
+        muQP0HxY7XotJuiG3cVuQyfs9PLyGNkvwE/u5dm+P9tFC+qzFSLSZrjYgxIg6lI+
+        HyV/0Tep3t5rPGXmxevZ3MdjU8HqDsc=
+        -----END EC PRIVATE KEY-----
+      P384_ZERO
+    end
+
+    it 'raises an error' do
+      expect { key }.to raise_error(Paseto::InvalidKeyPair)
     end
   end
 

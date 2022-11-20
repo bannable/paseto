@@ -2,6 +2,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require 'paseto/sodium'
+
 module Paseto
   module V4
     # PASETOv4 `local` token interface providing symmetric encryption of tokens.
@@ -47,7 +49,7 @@ module Paseto
       # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
       # `token` must be a `v4.local` type Token.
       sig { override.params(token: Token, implicit_assertion: String).returns(String) }
-      def decrypt(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
+      def decrypt(token:, implicit_assertion: '')
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         n, c, t = split_payload(token.payload)

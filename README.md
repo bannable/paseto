@@ -7,15 +7,21 @@ Additionally, the library uses [Sorbet](https://sorbet.org) to enforce types at 
 
 ## Installing
 
-### libsodium
+### RbNaCl and libsodium
 
-This gem requires libsodium `1.0.0` or newer. You can find instructions for obtaining libsodium at https://libsodium.org.
+**Optional for v4.local tokens support**: Handling v4.local tokens requires [`RbNaCl`](https://github.com/RubyCrypto/rbnacl) with `libsodium 1.0.0` or newer.
+
+You can find instructions for obtaining libsodium at https://libsodium.org.
+
+If you do not intend to create or parse `v4.local` tokens, feel free to skip this dependency.
 
 ### Using Bundler:
 
 Add the following to your Gemfile:
 ```
 gem 'paseto', git: 'git://github.com/bannable/paseto.git'
+# and optionally:
+gem 'rbnacl', '~> 7.1.1'
 ```
 
 And run `bundle install`.
@@ -106,6 +112,23 @@ You may optionally enforce validation of claims by calling `decode!` instead of 
 [Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version4.md).
 
 #### Encryption and Decryption
+
+V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem. 
+
+To use `v4.local` tokens, do one of the following.
+
+```
+require 'rbnacl'
+require 'paseto'
+```
+
+Alternatively, this will also require RbNaCl.
+
+```
+require 'paseto'
+require 'paseto/v4/local'
+```
+
 
 ```ruby
 crypt = Paseto::V4::Local.generate

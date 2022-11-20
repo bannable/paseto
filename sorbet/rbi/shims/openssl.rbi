@@ -82,6 +82,9 @@ class OpenSSL::PKey::PKey
     ).returns(T::Boolean)
   end
   def verify(digest, signature, data, options = nil); end
+
+  sig { returns(String) }
+  def to_text; end
 end
 
 module OpenSSL
