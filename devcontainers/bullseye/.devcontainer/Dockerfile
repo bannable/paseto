@@ -8,8 +8,9 @@ FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
+ARG SODIUM="libsodium23"
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends libsodium23
+    && apt-get -y install --no-install-recommends ${SODIUM}
 
 ARG USERNAME=vscode
 
@@ -19,4 +20,4 @@ RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
         /home/$USERNAME/.vscode-server \
         /home/$USERNAME/.vscode-server-insiders
 
-RUN su vscode -c "gem install solargraph"
+RUN su vscode -c "gem install solargraph --no-document"

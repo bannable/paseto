@@ -1,0 +1,41 @@
+{
+	"name": "paseto-jammy",
+	"build": {
+		"context": "../../..",
+		"dockerfile": "Dockerfile",
+		"args": {
+			"DISTRO": "jammy",
+			"SODIUM": "libsodium23"
+		}
+	},
+
+	"workspaceFolder": "/workspaces/paseto",
+
+	"features": {
+		"ghcr.io/devcontainers/features/ruby:1": {
+			"version": "3.1"
+		}
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"rebornix.Ruby",
+				"sorbet.sorbet-vscode-extension",
+				"castwide.solargraph",
+				"yzhang.markdown-all-in-one"
+			]
+		}
+	},
+	"mounts": [
+    "source=vscode-extensions-volume,target=/home/vscode/.vscode-server/extensions,type=volume",
+		"source=vscode-insiders-extensions-volume,target=/home/vscode/.vscode-server-insiders/extensions,type=volume"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	"onCreateCommand": "gem install solargraph --no-document",
+	"postCreateCommand": "bin/setup",
+
+	"remoteUser": "vscode"
+}

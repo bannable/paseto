@@ -4,6 +4,8 @@ include:
 exclude:
 - spec/**/*
 - ".bundle/**/*"
+- sorbet/**/*
+- rbi/**/*
 require: []
 domains: []
 reporters:

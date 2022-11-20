@@ -137,8 +137,8 @@ RSpec.describe "PASETO v4 Test Vectors" do
   end
 
   it "4-S-1" do
-    pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2]))
-    priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774]))
+    pub = Paseto::V4::Public.new("-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHrnbu7wEfAP9cGBOAHHwmH4Wsot1ciXBHwBBXQ4gsaI=\n-----END PUBLIC KEY-----")
+    priv = Paseto::V4::Public.new("-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEILTL+0PfTOIQcn2VPkpxMwf6Gbt9n4UEFDjZ4RuUKjd0\n-----END PRIVATE KEY-----")
     tok = %[v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9bg_XBBzds8lTZShVlwwKSgeKpLT3yukTw6JUz3W4h_ExsQV-P0V54zemZDcAxFaSeef1QlXEFtkqxT1ciiQEDA]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[]
@@ -156,8 +156,8 @@ RSpec.describe "PASETO v4 Test Vectors" do
   end
 
   it "4-S-2" do
-    pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2]))
-    priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774]))
+    pub = Paseto::V4::Public.new("-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHrnbu7wEfAP9cGBOAHHwmH4Wsot1ciXBHwBBXQ4gsaI=\n-----END PUBLIC KEY-----")
+    priv = Paseto::V4::Public.new("-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEILTL+0PfTOIQcn2VPkpxMwf6Gbt9n4UEFDjZ4RuUKjd0\n-----END PRIVATE KEY-----")
     tok = %[v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9v3Jt8mx_TdM2ceTGoqwrh4yDFn0XsHvvV_D0DtwQxVrJEBMl0F2caAdgnpKlt4p7xBnx1HcO-SPo8FPp214HDw.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[{"kid":"zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN"}]
@@ -175,8 +175,8 @@ RSpec.describe "PASETO v4 Test Vectors" do
   end
 
   it "4-S-3" do
-    pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2]))
-    priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774]))
+    pub = Paseto::V4::Public.new("-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHrnbu7wEfAP9cGBOAHHwmH4Wsot1ciXBHwBBXQ4gsaI=\n-----END PUBLIC KEY-----")
+    priv = Paseto::V4::Public.new("-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEILTL+0PfTOIQcn2VPkpxMwf6Gbt9n4UEFDjZ4RuUKjd0\n-----END PRIVATE KEY-----")
     tok = %[v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9NPWciuD3d0o5eXJXG5pJy-DiVEoyPYWs1YSTwWHNJq6DZD3je5gf-0M4JR9ipdUSJbIovzmBECeaWmaqcaP0DQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9]
     payload = %[{"data":"this is a signed message","exp":"2022-01-01T00:00:00+00:00"}]
     footer = %[{"kid":"zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN"}]
@@ -194,8 +194,8 @@ RSpec.describe "PASETO v4 Test Vectors" do
   end
 
   it "4-F-1" do
-    pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2]))
-    priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774]))
+    pub = Paseto::V4::Public.new("-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHrnbu7wEfAP9cGBOAHHwmH4Wsot1ciXBHwBBXQ4gsaI=\n-----END PUBLIC KEY-----")
+    priv = Paseto::V4::Public.new("-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEILTL+0PfTOIQcn2VPkpxMwf6Gbt9n4UEFDjZ4RuUKjd0\n-----END PRIVATE KEY-----")
     tok = %[v4.local.vngXfCISbnKgiP6VWGuOSlYrFYU300fy9ijW33rznDYgxHNPwWluAY2Bgb0z54CUs6aYYkIJ-bOOOmJHPuX_34Agt_IPlNdGDpRdGNnBz2MpWJvB3cttheEc1uyCEYltj7wBQQYX.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24]
     payload = nil
     footer = %[arbitrary-string-that-isn't-json]

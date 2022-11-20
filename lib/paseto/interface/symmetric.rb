@@ -16,35 +16,36 @@ module Paseto
           payload: T::Hash[String, T.untyped],
           footer: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
         ).returns(String)
       end
       def encode(payload:, footer: '', implicit_assertion: '', **options)
         message = MultiJson.dump(payload, options)
-        encrypt(message:, footer:, implicit_assertion:, n: options[:nonce]).to_s
+        n = T.cast(options[:nonce], T.nilable(String))
+        encrypt(message:, footer:, implicit_assertion:, n:).to_s
       end
 
       sig do
         override.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
       def decode(payload:, implicit_assertion: '', **options)
         token = Token.parse(payload)
-        MultiJson.load(decrypt(token:, implicit_assertion:), options)
+        MultiJson.load(decrypt(token:, implicit_assertion:), **options)
       end
 
       sig do
         override.params(
           payload: String,
           implicit_assertion: String,
-          options: T.untyped
+          options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode!(payload:, implicit_assertion: '', options: {})
-        result = decode(payload:, implicit_assertion:, options:)
+      def decode!(payload:, implicit_assertion: '', **options)
+        result = decode(**T.unsafe({ payload:, implicit_assertion:, **options }))
 
         Verify.verify_claims(result, options)
       end

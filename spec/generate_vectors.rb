@@ -77,13 +77,13 @@ module V4
   end
 
   class PublicSpec
-    attr_reader :name, :expect_fail, :public_key, :secret_key_seed, :token, :payload, :footer, :implicit_assertion
+    attr_reader :name, :expect_fail, :public_key_pem, :secret_key_pem, :token, :payload, :footer, :implicit_assertion
 
-    def initialize(name:, expect_fail:, public_key:, secret_key_seed:, token:, payload:, footer:, implicit_assertion:, **_unused)
+    def initialize(name:, expect_fail:, public_key_pem:, secret_key_pem:, token:, payload:, footer:, implicit_assertion:, **_unused)
       @name = name
       @expect_fail = expect_fail
-      @public_key = public_key
-      @secret_key_seed = secret_key_seed
+      @public_key_pem = public_key_pem.inspect
+      @secret_key_pem = secret_key_pem.inspect
       @token = token
       @payload = payload
       @footer = footer
@@ -93,8 +93,8 @@ module V4
     def spec
       <<-SPEC
   it "#{name}" do
-    pub = Paseto::V4::Public.new(public_key: Paseto::Util.decode_hex(%[#{public_key}]))
-    priv = Paseto::V4::Public.new(private_key: Paseto::Util.decode_hex(%[#{secret_key_seed}]))
+    pub = Paseto::V4::Public.new(#{public_key_pem})
+    priv = Paseto::V4::Public.new(#{secret_key_pem})
     tok = %[#{token}]
     payload = #{payload_or_nil}
     footer = %[#{footer}]
