@@ -18,7 +18,7 @@ commands:
           default: "3.1"
     steps:
       - restore_cache:
-          key: lockfile-cache-v1-<< parameters.version >>-{{ arch }}-{{checksum "Gemfile.lock" }}
+          key: lockfile-cache-v1-<< parameters.version >>-{{ arch }}
       - run:
           command: |
             touch Gemfile.lock
@@ -33,7 +33,7 @@ commands:
             bundle install
             bundle exec appraisal install
       - save_cache:
-          key: lockfile-cache-v1-<< parameters.version >>-{{ arch }}-{{checksum "Gemfile.lock" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          key: lockfile-cache-v1-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
           paths:
             - Gemfile.lock
             - gemfiles/<< parameters.appraisal >>.gemfile.lock
