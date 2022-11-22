@@ -3,7 +3,7 @@
 
 RSpec.describe Paseto::Token do
   describe '.new' do
-    subject(:token) { described_class.new(version:, purpose:, payload:, footer:) }
+    subject(:token) { described_class.new(version: version, purpose: purpose, payload: payload, footer: footer) }
 
     let(:version) { 'v3' }
     let(:purpose) { 'local' }

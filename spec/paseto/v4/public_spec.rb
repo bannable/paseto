@@ -144,7 +144,7 @@ RSpec.describe 'Paseto::V4::Public' do
   end
 
   describe '#verify' do
-    subject(:verified) { key.verify(token:) }
+    subject(:verified) { key.verify(token: token) }
 
     let(:key) { described_class.new(pub_pem) }
     let(:token) do
