@@ -55,6 +55,12 @@ module Paseto
 
       sig { abstract.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: ''); end
+
+      sig { abstract.returns(String) }
+      def public_to_pem; end
+
+      sig { abstract.returns(String) }
+      def private_to_pem; end
     end
   end
 end

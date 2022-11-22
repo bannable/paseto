@@ -5,13 +5,13 @@ RSpec.describe Paseto::Token do
   describe '.new' do
     subject(:token) { described_class.new(version:, purpose:, payload:, footer:) }
 
-    let(:version) { 'v4' }
+    let(:version) { 'v3' }
     let(:purpose) { 'local' }
     let(:payload) { 'asdfASDF' }
     let(:footer) { '' }
 
     it 'is comparable with a serialized token' do
-      expect(token).to eq('v4.local.YXNkZkFTREY')
+      expect(token).to eq('v3.local.YXNkZkFTREY')
     end
 
     it 'decodes the version' do
@@ -34,7 +34,7 @@ RSpec.describe Paseto::Token do
       let(:version) { 'v0' }
 
       it 'raises an error' do
-        expect { token }.to raise_error(Paseto::ParseError, 'not a valid token')
+        expect { token }.to raise_error(Paseto::UnsupportedToken, 'v0.local')
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Paseto::Token do
       let(:purpose) { 'evilthings' }
 
       it 'raises an error' do
-        expect { token }.to raise_error(Paseto::ParseError, 'not a valid token')
+        expect { token }.to raise_error(Paseto::UnsupportedToken, 'v3.evilthings')
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.describe Paseto::Token do
   describe '.parse' do
     subject(:token) { described_class.parse(message) }
 
-    let(:message) { 'v4.local.YXNkZkFTREY' }
+    let(:message) { 'v3.local.YXNkZkFTREY' }
 
     context 'when the input has no version or purpose' do
       let(:message) { 'YXNkZkFTREY.YXNkZg' }
@@ -82,15 +82,15 @@ RSpec.describe Paseto::Token do
     end
 
     context 'with an unsupported purpose' do
-      let(:message) { 'v4.foobar.YXNkZkFTREY.YXNkZg' }
+      let(:message) { 'v3.foobar.YXNkZkFTREY.YXNkZg' }
 
       it 'raises an error' do
-        expect { token }.to raise_error(Paseto::ParseError, 'not a valid token')
+        expect { token }.to raise_error(Paseto::UnsupportedToken, 'v3.foobar')
       end
     end
 
     context 'with a nil payload' do
-      let(:message) { 'v4.public' }
+      let(:message) { 'v3.public' }
 
       it 'raises an error' do
         expect { token }.to raise_error(Paseto::ParseError, 'not a valid token')
@@ -98,7 +98,7 @@ RSpec.describe Paseto::Token do
     end
 
     context 'with an empty payload' do
-      let(:message) { 'v4.public.' }
+      let(:message) { 'v3.public.' }
 
       it 'raises an error' do
         expect { token }.to raise_error(Paseto::ParseError, 'not a valid token')
@@ -106,7 +106,7 @@ RSpec.describe Paseto::Token do
     end
 
     context 'with a footer' do
-      let(:message) { 'v4.local.YXNkZkFTREY.YXNkZg' }
+      let(:message) { 'v3.local.YXNkZkFTREY.YXNkZg' }
 
       it 'decodes the footer' do
         expect(token.footer).to eq('asdf')
@@ -132,27 +132,33 @@ RSpec.describe Paseto::Token do
     context 'with a v4.local token' do
       let(:message) { 'v4.local.YXNkZkFTREY' }
 
-      it { is_expected.to eq Paseto::V4::Local }
+      it 'is expected to eq Paseto::V4::Local' do
+        skip('requires RbNaCl') unless Paseto.rbnacl?
+        expect(token).to eq Paseto::V4::Local
+      end
     end
 
     context 'with a v4.public token' do
       let(:message) { 'v4.public.YXNkZkFTREY' }
 
-      it { is_expected.to eq Paseto::V4::Public }
+      it 'is expected to eq Paseto::V4::Public' do
+        skip('requires RbNaCl') unless Paseto.rbnacl?
+        expect(token).to eq Paseto::V4::Public
+      end
     end
   end
 
   describe '#to_s' do
     subject(:token) { described_class.parse(message) }
 
-    let(:message) { 'v4.local.YXNkZkFTREY' }
+    let(:message) { 'v3.local.YXNkZkFTREY' }
 
     it 'serializes as expected' do
       expect(token.to_s).to eq(message)
     end
 
     context 'with a footer' do
-      let(:message) { 'v4.local.YXNkZkFTREY.YXNkZg' }
+      let(:message) { 'v3.local.YXNkZkFTREY.YXNkZg' }
 
       it 'serializes as expected' do
         expect(token.to_s).to eq(message)
@@ -163,7 +169,7 @@ RSpec.describe Paseto::Token do
   describe '#inspect' do
     subject(:token) { described_class.parse(message) }
 
-    let(:message) { 'v4.local.YXNkZkFTREY' }
+    let(:message) { 'v3.local.YXNkZkFTREY' }
 
     it 'is the same as the serialized value' do
       expect(token.inspect).to eq(message)

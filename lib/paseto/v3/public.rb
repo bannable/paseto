@@ -14,10 +14,6 @@ module Paseto
       # Size of r | s in an ECDSA secp384r1 signature
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
-      # The ECDSA secp384r1 key underlying the instance.
-      sig { returns(OpenSSL::PKey::EC) }
-      attr_reader :key
-
       # Create a new Public instance with a brand new EC key.
       sig { returns(Public) }
       def self.generate
@@ -44,14 +40,14 @@ module Paseto
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
       sig { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: '', implicit_assertion: '')
-        raise ArgumentError, 'no private key available' unless key.private?
+        raise ArgumentError, 'no private key available' unless @key.private?
 
-        pk = key.public_key.to_octet_string(:compressed)
+        pk = @key.public_key.to_octet_string(:compressed)
 
         m2 = Util.pre_auth_encode(pk, pae_header, message, footer, implicit_assertion)
 
         data = OpenSSL::Digest.digest('SHA384', m2)
-        sig_asn = key.sign_raw(nil, data)
+        sig_asn = @key.sign_raw(nil, data)
         sig = asn1_to_rs(sig_asn)
 
         payload = message + sig
@@ -69,7 +65,7 @@ module Paseto
         m = token.payload.dup.to_s
         raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN
 
-        pk = key.public_key.to_octet_string(:compressed)
+        pk = @key.public_key.to_octet_string(:compressed)
 
         sig = m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN) || ''
         s = rs_to_asn1(sig)
@@ -77,7 +73,7 @@ module Paseto
         m2 = Util.pre_auth_encode(pk, pae_header, m, token.footer, implicit_assertion)
 
         data = OpenSSL::Digest.digest('SHA384', m2)
-        raise InvalidSignature unless key.verify_raw(nil, s, data)
+        raise InvalidSignature unless @key.verify_raw(nil, s, data)
 
         m.encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
@@ -85,6 +81,18 @@ module Paseto
       end
 
       # rubocop:enable Metrics/AbcSize
+
+      sig { override.returns(String) }
+      def public_to_pem
+        @key.public_to_pem
+      end
+
+      sig { override.returns(String) }
+      def private_to_pem
+        raise ArgumentError, 'no private key available' unless @key.private?
+
+        @key.to_pem
+      end
 
       private
 
@@ -96,9 +104,7 @@ module Paseto
         s = signature[-SIGNATURE_PART_LEN, SIGNATURE_PART_LEN] || ''
         OpenSSL::ASN1::Sequence.new(
           [r, s].map do |i|
-            OpenSSL::ASN1::Integer.new(
-              OpenSSL::BN.new(i, 2)
-            )
+            OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(i, 2))
           end
         ).to_der
       end
@@ -135,16 +141,14 @@ module Paseto
       sig { returns(T::Boolean) }
       def custom_check_key
         begin
-          key.check_key
+          @key.check_key
         rescue StandardError
           return false
         end
 
-        return true unless key.private? && Util.openssl?(3)
+        return true unless @key.private? && Util.openssl?(3)
 
-        priv_key = key.private_key
-        pub_key = key.public_key
-        group = key.group
+        priv_key = @key.private_key
 
         # int ossl_ec_key_private_check(const EC_KEY *eckey)
         # {
@@ -159,7 +163,7 @@ module Paseto
         #
         # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L510
         # private keys must be in range [1, order-1]
-        return false if priv_key < OpenSSL::BN.new(1) || priv_key > group.order
+        return false if priv_key < OpenSSL::BN.new(1) || priv_key > @key.group.order
 
         # int ossl_ec_key_pairwise_check(const EC_KEY *eckey, BN_CTX *ctx)
         # {
@@ -177,7 +181,7 @@ module Paseto
         #
         # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L529
         # Check generator * priv_key = pub_key
-        pub_key == group.generator.mul(priv_key)
+        @key.public_key == @key.group.generator.mul(priv_key)
       end
 
       # :nocov:

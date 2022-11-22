@@ -4,5 +4,9 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'oj'
-gem 'rbnacl', '~> 7.1.1'
+gem 'parlour'
+gem 'reek'
+gem 'rubocop-performance', '~> 1.15.0'
+gem 'rubocop-rspec', '~> 2.14.2'
+gem 'rubocop-sorbet', '~> 0.6.11'
+gem 'tapioca'

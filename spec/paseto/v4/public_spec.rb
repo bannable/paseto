@@ -3,7 +3,13 @@
 
 require 'shared_examples_for_coders'
 
-RSpec.describe Paseto::V4::Public do
+RSpec.describe 'Paseto::V4::Public' do
+  before do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
+  end
+
+  let(:described_class) { Paseto::V4::Public }
+
   let(:priv_pem) do
     <<~PRIV
       -----BEGIN PRIVATE KEY-----
@@ -19,7 +25,6 @@ RSpec.describe Paseto::V4::Public do
     PUB
   end
   let(:key) { described_class.new(priv_pem) }
-  let(:key_pub) { described_class.new(pub_pem) }
 
   include_examples 'a token coder'
 
@@ -35,9 +40,7 @@ RSpec.describe Paseto::V4::Public do
     end
 
     it 'errors when provided no keys' do
-      expect do
-        described_class.new('')
-      end.to raise_error(OpenSSL::PKey::PKeyError)
+      expect { described_class.new('') }.to raise_error(Paseto::ParseError)
     end
 
     context 'when provided the wrong key type' do
@@ -50,9 +53,10 @@ RSpec.describe Paseto::V4::Public do
           -----END PUBLIC KEY-----
         P256
       end
+      let(:key) { described_class.new(pub_pem) }
 
       it 'raises a CryptoError' do
-        expect { key_pub }.to raise_error(Paseto::CryptoError, 'expected Ed25519 key, got id-ecPublicKey')
+        expect { key }.to raise_error(Paseto::CryptoError, 'expected Ed25519 key, got id-ecPublicKey')
       end
     end
   end
@@ -69,16 +73,34 @@ RSpec.describe Paseto::V4::Public do
     it { expect(key.header).to eq('v4.public') }
   end
 
-  describe '#public_key' do
-    context 'with only a public key' do
-      it 'equals to the provided public key' do
-        expect(key_pub.key.public_to_pem).to eq pub_pem
+  describe '#public_to_pem' do
+    context 'with a public key' do
+      let(:key) { described_class.new(pub_pem) }
+
+      it 'matches the public PEM' do
+        expect(key.public_to_pem).to eq pub_pem
       end
     end
 
-    context 'with only a private key' do
-      it 'equals the calculated public key for the signing key' do
-        expect(key.key.public_to_pem).to eq pub_pem
+    context 'with a private key' do
+      it 'matches the public PEM' do
+        expect(key.public_to_pem).to eq pub_pem
+      end
+    end
+  end
+
+  describe '#private_to_pem' do
+    context 'with a public key' do
+      let(:key) { described_class.new(pub_pem) }
+
+      it 'raises an ArgumentError' do
+        expect { key.private_to_pem }.to raise_error(ArgumentError, 'no private key available')
+      end
+    end
+
+    context 'with a private key' do
+      it 'matches the private PEM' do
+        expect(key.private_to_pem).to eq priv_pem
       end
     end
   end
@@ -91,7 +113,7 @@ RSpec.describe Paseto::V4::Public do
     end
 
     context 'with only a public key' do
-      let(:key) { key_pub }
+      let(:key) { described_class.new(pub_pem) }
 
       it 'raises an error' do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
@@ -122,8 +144,9 @@ RSpec.describe Paseto::V4::Public do
   end
 
   describe '#verify' do
-    subject(:verified) { key_pub.verify(token:) }
+    subject(:verified) { key.verify(token:) }
 
+    let(:key) { described_class.new(pub_pem) }
     let(:token) do
       Paseto::Token.parse('v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4')
     end

@@ -45,7 +45,7 @@ module Paseto
         ).returns(T::Hash[String, T.untyped])
       end
       def decode!(payload:, implicit_assertion: '', **options)
-        result = decode(**T.unsafe({ payload:, implicit_assertion:, **options }))
+        result = decode(**T.unsafe(payload:, implicit_assertion:, **options))
 
         Verify.verify_claims(result, options)
       end

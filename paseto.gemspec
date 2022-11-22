@@ -42,21 +42,15 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'sorbet-runtime'
   spec.add_runtime_dependency 'zeitwerk'
 
+  spec.add_development_dependency 'appraisal'
   spec.add_development_dependency 'bundler', '~> 2'
   spec.add_development_dependency 'debug', '>= 1.0'
-  spec.add_development_dependency 'parlour'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'reek'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 1.38.0'
-  spec.add_development_dependency 'rubocop-performance', '~> 1.15.0'
-  spec.add_development_dependency 'rubocop-rspec', '~> 2.14.2'
-  spec.add_development_dependency 'rubocop-sorbet', '~> 0.6.11'
   spec.add_development_dependency 'simplecov', '~> 0.21.2'
   spec.add_development_dependency 'sorbet'
-  spec.add_development_dependency 'tapioca'
   spec.add_development_dependency 'timecop'
-  spec.add_development_dependency 'unparser'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

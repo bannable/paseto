@@ -39,7 +39,7 @@ RSpec.shared_examples 'a token coder' do
       let(:payload) { 'v0.public.payload.footer' }
 
       it 'raises an error' do
-        expect { decoder }.to raise_error(Paseto::ParseError, 'not a valid token')
+        expect { decoder }.to raise_error(Paseto::UnsupportedToken, 'v0.public')
       end
     end
 

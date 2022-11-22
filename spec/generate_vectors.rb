@@ -31,6 +31,7 @@ module V4
     def spec
       <<-SPEC
   it "#{name}" do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
     nonce = Paseto::Util.decode_hex(%[#{nonce}])
     key = Paseto::Util.decode_hex(%[#{key}])
     tok = %[#{token}]
@@ -93,6 +94,7 @@ module V4
     def spec
       <<-SPEC
   it "#{name}" do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
     pub = Paseto::V4::Public.new(#{public_key_pem})
     priv = Paseto::V4::Public.new(#{secret_key_pem})
     tok = %[#{token}]
@@ -167,7 +169,14 @@ module V3
     payload = #{payload_or_nil}
     footer = %[#{footer}]
     ia = %[#{implicit_assertion}]
-    token = Paseto::Token.parse(tok)
+    begin
+      token = Paseto::Token.parse(tok)
+    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
+      # :nocov:
+      skip('requires RbNaCl') unless Paseto.rbnacl?
+      raise
+      # :nocov:
+    end
     local = Paseto::V3::Local.new(ikm: key)
 
 #{expectations}
