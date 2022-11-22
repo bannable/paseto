@@ -42,7 +42,7 @@ module Paseto
 
         t = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 
-        Token.new(payload: (n + c + t), version:, purpose:, footer:)
+        Token.new(payload: (n + c + t), version: version, purpose: purpose, footer: footer)
       end
 
       # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.
@@ -86,10 +86,10 @@ module Paseto
       # Derive an encryption key, nonce, and authentication key from an input nonce.
       sig { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
-        tmp = RbNaCl::Hash.blake2b("paseto-encryption-key#{nonce}", key:, digest_size: 56)
+        tmp = RbNaCl::Hash.blake2b("paseto-encryption-key#{nonce}", key: key, digest_size: 56)
         ek = T.must(tmp[0, 32])
         n2 = T.must(tmp[-24, 24])
-        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead#{nonce}", key:, digest_size: 32)
+        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead#{nonce}", key: key, digest_size: 32)
         [ek, n2, ak]
       end
     end

@@ -51,7 +51,7 @@ module Paseto
         sig = asn1_to_rs(sig_asn)
 
         payload = message + sig
-        Token.new(payload:, purpose:, version:, footer:)
+        Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
       rescue Encoding::CompatibilityError
         raise ParseError, 'invalid message encoding, must be UTF-8'
       end

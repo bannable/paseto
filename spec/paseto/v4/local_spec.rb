@@ -38,7 +38,7 @@ RSpec.describe 'Paseto::V4::Local' do
   end
 
   describe '#decrypt' do
-    subject(:plaintext) { key.decrypt(token:) }
+    subject(:plaintext) { key.decrypt(token: token) }
 
     let(:token) { Paseto::Token.parse(token_str) }
 

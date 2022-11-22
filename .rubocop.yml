@@ -4,7 +4,7 @@ require:
   - rubocop-sorbet
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.0
   NewCops: enable
   Exclude:
     - 'tmp/**/*'

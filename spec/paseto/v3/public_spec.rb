@@ -156,7 +156,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#verify' do
-    subject(:verify) { key.verify(token:, implicit_assertion: 'test') }
+    subject(:verify) { key.verify(token: token, implicit_assertion: 'test') }
 
     let(:token) do
       Paseto::Token.parse(

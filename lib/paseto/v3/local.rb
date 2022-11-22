@@ -51,7 +51,7 @@ module Paseto
 
         t = OpenSSL::HMAC.digest('SHA384', ak, pre_auth)
 
-        Token.new(payload: (n + c + t), version:, purpose:, footer:)
+        Token.new(payload: (n + c + t), version: version, purpose: purpose, footer: footer)
       end
 
       # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.

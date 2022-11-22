@@ -21,7 +21,7 @@ module Paseto
       end
       def encode(payload:, footer: '', implicit_assertion: '', **options)
         message = MultiJson.dump(payload, options)
-        sign(message:, footer:, implicit_assertion:).to_s
+        sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
       end
 
       sig do
@@ -34,7 +34,7 @@ module Paseto
       def decode(payload:, implicit_assertion: '', **options)
         token = Token.parse(payload)
 
-        MultiJson.load(verify(token:, implicit_assertion:), **options)
+        MultiJson.load(verify(token: token, implicit_assertion: implicit_assertion), **options)
       end
 
       sig do
@@ -45,7 +45,7 @@ module Paseto
         ).returns(T::Hash[String, T.untyped])
       end
       def decode!(payload:, implicit_assertion: '', **options)
-        result = decode(**T.unsafe(payload:, implicit_assertion:, **options))
+        result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
 
         Verify.verify_claims(result, options)
       end

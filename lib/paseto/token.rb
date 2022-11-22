@@ -23,7 +23,7 @@ module Paseto
       payload = Util.decode64(payload)
       footer = Util.decode64(footer)
 
-      new(version:, purpose:, payload:, footer:)
+      new(version: version, purpose: purpose, payload: payload, footer: footer)
     end
 
     sig { params(payload: String, purpose: String, version: String, footer: String).void }

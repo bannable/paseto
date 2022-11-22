@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   DESCRIPTION
   spec.homepage = 'https://github.com/bannable/paseto'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.1.0'
+  spec.required_ruby_version = '>= 3.0.0'
 
   spec.metadata = {
     'bug_tracker_uri' => 'https://github.com/bannable/paseto/issues',
