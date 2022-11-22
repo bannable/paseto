@@ -51,22 +51,6 @@ module Paseto
     end
     # rubocop:enable Naming/MethodParameterName
 
-    # :nocov:
-
-    # This method is provided for DEBUG PURPOSES ONLY.
-    # RbNaCl::SigningKey.keypair_bytes returns the 32-byte private scalar and group element
-    # as (s || g). This method reencodes that into a structure that OpenSSL understands.
-    sig { params(signing_key: RbNaCl::SigningKey).returns(OpenSSL::PKey::PKey) }
-    def self.ed25519_pkey_nacl_to_ossl(signing_key)
-      kp = signing_key.keypair_bytes
-      dummy = OpenSSL::PKey.generate_key('ed25519')
-      asn1 = OpenSSL::ASN1.decode(dummy.private_to_der)
-      asn1.value[2].value = [4.chr, 32.chr, kp[0, 32]]
-      OpenSSL::PKey.read(asn1.to_der)
-    end
-
-    # :nocov:
-
     # Check if the libcrypto version that's running is actually openssl, and that the version
     # is at least the provided major/minor/fix/patch level.
     sig { params(major: Integer, minor: Integer, fix: Integer, patch: Integer).returns(T::Boolean) }

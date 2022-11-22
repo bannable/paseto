@@ -50,15 +50,7 @@ RSpec.describe Paseto::V3::Local do
       end
     end
 
-    context 'when token version is not v3' do
-      let(:token) { Paseto::Token.parse(token_str.sub('v3', 'v4')) }
-
-      it 'raises an error' do
-        expect { plaintext }.to raise_error(Paseto::ParseError, 'incorrect header for key type v3.local')
-      end
-    end
-
-    context 'when token purpose is not local' do
+    context 'with a mismatched token type' do
       let(:token) { Paseto::Token.parse(token_str.sub('local', 'public')) }
 
       it 'raises an error' do

@@ -9,26 +9,38 @@ shared_env: &shared_env
 commands:
   bundle-install:
     description: "bundle install"
+    parameters:
+      appraisal:
+          type: string
+          default: standalone
     steps:
       - restore_cache:
-          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}
+          key: lockfile-cache-v1-{{ arch }}-{{ .Branch }}
       - run:
-          command: touch Gemfile.lock            
+          command: |
+            touch Gemfile.lock
+            touch gemfiles/<< parameters.appraisal >>.gemfile.lock
       - restore_cache:
           keys:
-            - gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
-            - gem-cache-v2-{{ arch }}-{{ .Branch }}
-            - gem-cache-v2-{{ arch }}
-      - run: bundle install
-      - run: bundle clean --force
+            - gem-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+            - gem-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - gem-cache-v3-{{ arch }}-{{ .Branch }}
+            - gem-cache-v3-{{ arch }}
+      - run:
+          name: "Install gems and appraisals"
+          command : |
+            bundle install
+            bundle exec appraisal install
       - save_cache:
-          key: lockfile-cache-v0-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: lockfile-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
           paths:
             - Gemfile.lock
+            - gemfiles/<< parameters.appraisal >>.gemfile.lock
       - save_cache:
-          key: gem-cache-v2-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          key: gem-cache-v3-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
           paths:
             - ~/.bundle
+            - ~/.rubygems
 
 jobs:
   specs:
@@ -36,6 +48,9 @@ jobs:
       version:
         type: string
         default: "3.1"
+      appraisal:
+        type: string
+        default: standalone
     docker:
       - image: cimg/ruby:<< parameters.version >>
     environment:
@@ -44,12 +59,13 @@ jobs:
       - checkout
       - attach_workspace:
           at: tmp
-      - bundle-install
+      - bundle-install:
+          appraisal: <<parameters.appraisal>>
       - run:
           name: Run specs
           command: |
             ./tmp/cc-test-reporter before-build
-            bundle exec rake spec
+            bundle exec appraisal << parameters.appraisal >> rake spec
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
       - persist_to_workspace:
           root: tmp
@@ -82,7 +98,7 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
-            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 1 --output tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 2 --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
@@ -116,11 +132,17 @@ workflows:
           requires:
             - typecheck
       - specs:
-          name: "ruby-3.1-specs"
-          version: "3.1"
+          name: ruby-3.1-specs-standalone
+          requires:
+            - circleci-setup
+            - typecheck
+      - specs:
+          name: ruby-3.1-specs-rbnacl
+          appraisal: rbnacl
           requires:
             - circleci-setup
             - typecheck
       - circleci-upload:
           requires:
-            - ruby-3.1-specs
+            - ruby-3.1-specs-standalone
+            - ruby-3.1-specs-rbnacl

@@ -12,17 +12,17 @@ module Paseto
       V4Public = new('v4.public')
     end
 
-    sig { returns(T.class_of(Key)) }
+    sig { returns(T.nilable(T.class_of(Key))) }
     def key_klass
       case self
-      when V3Local then V3::Local
-      when V3Public then V3::Public
-      when V4Local then V4::Local
-      when V4Public then V4::Public
+      in V3Local then V3::Local
+      in V3Public then V3::Public
+      in V4Local if Paseto.rbnacl?
+        V4::Local
+      in V4Public if Paseto.rbnacl?
+        V4::Public
       else
-        # :nocov:
-        T.absurd(self)
-        # :nocov
+        nil
       end
     end
   end

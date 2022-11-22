@@ -1,5 +1,6 @@
 # typed: strong
 module Paseto
+  extend T::Sig
   extend Configuration
   VERSION = '0.1.0'
 
@@ -7,6 +8,9 @@ module Paseto
   end
 
   class ParseError < Error
+  end
+
+  class UnsupportedToken < ParseError
   end
 
   class ValidationError < Error
@@ -47,6 +51,9 @@ module Paseto
 
   class InvalidKeyPair < CryptoError
   end
+
+  sig { returns(T::Boolean) }
+  def self.rbnacl?; end
 
   module Configuration
     extend T::Sig
@@ -175,8 +182,11 @@ module Paseto
     sig { returns(T.class_of(Key)) }
     def type; end
 
-    sig { returns(T::Boolean) }
-    def ensure_valid_header; end
+    sig { returns(T.nilable(T.class_of(Key))) }
+    def header_to_class; end
+
+    sig { void }
+    def validate_header; end
   end
 
   class TokenTypes < T::Enum
@@ -189,7 +199,7 @@ module Paseto
 
     extend T::Sig
 
-    sig { returns(T.class_of(Key)) }
+    sig { returns(T.nilable(T.class_of(Key))) }
     def key_klass; end
   end
 
@@ -213,9 +223,6 @@ module Paseto
 
     sig { params(a: String, b: String).returns(T::Boolean) }
     def self.constant_compare(a, b); end
-
-    sig { params(signing_key: RbNaCl::SigningKey).returns(OpenSSL::PKey::PKey) }
-    def self.ed25519_pkey_nacl_to_ossl(signing_key); end
 
     sig do
       params(
@@ -344,6 +351,12 @@ module Paseto
 
       sig { abstract.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: ''); end
+
+      sig { abstract.returns(String) }
+      def public_to_pem; end
+
+      sig { abstract.returns(String) }
+      def private_to_pem; end
     end
 
     module Coder
@@ -495,9 +508,6 @@ module Paseto
       SIGNATURE_BYTE_LEN = 96
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
-      sig { returns(OpenSSL::PKey::EC) }
-      attr_reader :key
-
       sig { returns(Public) }
       def self.generate; end
 
@@ -509,6 +519,12 @@ module Paseto
 
       sig { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: ''); end
+
+      sig { override.returns(String) }
+      def public_to_pem; end
+
+      sig { override.returns(String) }
+      def private_to_pem; end
 
       sig { params(signature: String).returns(String) }
       def rs_to_asn1(signature); end
@@ -560,20 +576,35 @@ module Paseto
       include Interface::Asymmetric
       SIGNATURE_BYTES = 64
 
-      sig { returns(OpenSSL::PKey::PKey) }
+      sig { returns(T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey)) }
       attr_reader :key
 
-      sig(:final) { returns(Public) }
+      sig(:final) { returns(T.attached_class) }
       def self.generate; end
 
-      sig(:final) { params(key_material: String).void }
-      def initialize(key_material); end
+      sig(:final) { params(key: T.any(String, RbNaCl::SigningKey, RbNaCl::VerifyKey)).void }
+      def initialize(key); end
 
       sig(:final) { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: '', implicit_assertion: ''); end
 
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: ''); end
+
+      sig(:final) { override.returns(String) }
+      def public_to_pem; end
+
+      sig(:final) { override.returns(String) }
+      def private_to_pem; end
+
+      sig(:final) { params(verify_key: RbNaCl::VerifyKey).returns(String) }
+      def ed25519_pubkey_nacl_to_pem(verify_key); end
+
+      sig(:final) { params(pem_or_der: String).returns(T.any(RbNaCl::VerifyKey, RbNaCl::SigningKey)) }
+      def ed25519_pkey_ossl_to_nacl(pem_or_der); end
+
+      sig(:final) { params(key: OpenSSL::PKey::PKey).returns(T::Boolean) }
+      def ossl_ed25519_private_key?(key); end
     end
   end
 end

@@ -17,6 +17,15 @@ RSpec.describe Paseto::V3::Public do
       -----END EC PRIVATE KEY-----
     PKEY
   end
+  let(:pub_pem) do
+    <<~PUBLIC_KEY
+      -----BEGIN PUBLIC KEY-----
+      MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEmZZ5XSxUkU31FZSuQ6zzAY4IaGXT6b6f
+      lqQMbw/me7x++1vEufDnSdLEjLCGNY16OWtexCsigBTd6sxblgEKfXUYKZ/L8snJ
+      7RFBJ9CqUU8ZYKRZb7v1gkkLfK2JZb2M
+      -----END PUBLIC KEY-----
+    PUBLIC_KEY
+  end
 
   include_examples 'a token coder'
 
@@ -24,10 +33,6 @@ RSpec.describe Paseto::V3::Public do
     subject(:key) { described_class.generate }
 
     it { is_expected.to be_a(described_class) }
-
-    it 'has the expected group' do
-      expect(key.key.group.curve_name).to eq('secp384r1')
-    end
   end
 
   describe '.new' do
@@ -104,11 +109,25 @@ RSpec.describe Paseto::V3::Public do
     it { expect(key.header).to eq('v3.public') }
   end
 
-  describe '#key' do
-    it { expect(key.key).to be_a(OpenSSL::PKey::EC) }
+  describe '#public_to_pem' do
+    let(:key_pem) { pub_pem }
 
-    it 'is the same as the input key' do
-      expect(key.key.to_pem).to eq(key_pem)
+    it 'equals the input PEM' do
+      expect(key.public_to_pem).to eq key_pem
+    end
+  end
+
+  describe '#private_to_pem' do
+    it 'equals the input PEM' do
+      expect(key.private_to_pem).to eq key_pem
+    end
+
+    context 'with only a public key' do
+      let(:key_pem) { pub_pem }
+
+      it 'raises an ArgumentError' do
+        expect { key.private_to_pem }.to raise_error(ArgumentError, 'no private key available')
+      end
     end
   end
 
@@ -118,15 +137,7 @@ RSpec.describe Paseto::V3::Public do
     it { is_expected.to be_a(Paseto::Token) }
 
     context 'with only a public key' do
-      let(:key_pem) do
-        <<~PUBLIC_KEY
-          -----BEGIN PUBLIC KEY-----
-          MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEmZZ5XSxUkU31FZSuQ6zzAY4IaGXT6b6f
-          lqQMbw/me7x++1vEufDnSdLEjLCGNY16OWtexCsigBTd6sxblgEKfXUYKZ/L8snJ
-          7RFBJ9CqUU8ZYKRZb7v1gkkLfK2JZb2M
-          -----END PUBLIC KEY-----
-        PUBLIC_KEY
-      end
+      let(:key_pem) { pub_pem }
 
       it 'raises an error' do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
@@ -196,7 +207,7 @@ RSpec.describe Paseto::V3::Public do
     context 'with a mismatched token type' do
       let(:token) do
         Paseto::Token.parse(
-          'v4.public.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4'
+          'v3.local.YXNkZtafaHUveQPUAMlk9AWOmx9c1TWXcuE2x8FkhxIGd9iVc-subaSDKVf8nm65HVnen0PUYilrNMbXGlsyv7eyaA4'
         )
       end
 

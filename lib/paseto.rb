@@ -5,6 +5,11 @@
 require 'base64'
 require 'multi_json'
 require 'openssl'
+begin
+  require 'rbnacl'
+rescue LoadError
+  raise if defined?(RbNaCl)
+end
 require 'securerandom'
 require 'sorbet-runtime'
 require 'time'
@@ -13,7 +18,7 @@ require 'zeitwerk'
 loader = Zeitwerk::Loader.for_gem
 unless defined?(RbNaCl)
   loader.ignore(
-    "#{__dir__}/paseto/v4/local.rb",
+    "#{__dir__}/paseto/v4/",
     "#{__dir__}/paseto/sodium/",
     "#{__dir__}/paseto/sodium.rb"
   )
@@ -21,6 +26,7 @@ end
 loader.setup
 
 module Paseto
+  extend T::Sig
   extend Configuration
 
   # Generic superclass for all Paseto errors
@@ -28,6 +34,9 @@ module Paseto
 
   # Deserialized data did not include mandatory fields.
   class ParseError < Error; end
+
+  # Tried to work with a V4 token without RbNaCl loaded
+  class UnsupportedToken < ParseError; end
 
   # Superclass for claim validation errors
   class ValidationError < Error; end
@@ -69,6 +78,11 @@ module Paseto
 
   # Key is not valid for algorithm
   class InvalidKeyPair < CryptoError; end
+
+  sig { returns(T::Boolean) }
+  def self.rbnacl?
+    !!defined?(RbNaCl)
+  end
 end
 
 loader.eager_load

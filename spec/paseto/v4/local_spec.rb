@@ -2,16 +2,20 @@
 # frozen_string_literal: true
 
 require 'shared_examples_for_coders'
-require 'paseto/v4/local'
 
-RSpec.describe Paseto::V4::Local do
-  let(:key_material) { Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f)) }
+RSpec.describe 'Paseto::V4::Local' do
+  before do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
+  end
+
+  let(:described_class) { Paseto::V4::Local }
+
   let(:token_str) do
     'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAr68PS4AXe7If_ZgesdkUMvSwscFlAl1pk5HC0e8kApeaqMfGo_7OpBn' \
       'wJOAbY9V7WU6abu74MmcUE8YWAiaArVI8XJ5hOb_4v9RmDkneN0S92dx0OW4pgy7omxgf3S8c3LlQg'
   end
   let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
-  let(:key) { described_class.new(ikm: key_material) }
+  let(:key) { described_class.new(ikm: Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f))) }
 
   include_examples 'a token coder'
 

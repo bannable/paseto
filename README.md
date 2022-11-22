@@ -115,19 +115,7 @@ You may optionally enforce validation of claims by calling `decode!` instead of 
 
 V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem. 
 
-To use `v4.local` tokens, do one of the following.
-
-```
-require 'rbnacl'
-require 'paseto'
-```
-
-Alternatively, this will also require RbNaCl.
-
-```
-require 'paseto'
-require 'paseto/v4/local'
-```
+To use `v4.local` tokens, ensure that `rbnacl` is installed.
 
 
 ```ruby
@@ -148,10 +136,9 @@ crypt.key # => ikm
 
 ```ruby
 signer = Paseto::V4::Public.generate # => Paseto::V4::Public
-# or initialize from a seed
-signer = Paseto::V4::Public.new(private_key: signer.private_key.to_s)
-# you can not provide both a public and private key
-Paseto::V4::Public.new(private_key: some_private_key, public_key: some_public_key) # => ArgumentError
+# or initialize from a DER- or PEM-encoded input
+pem = File.read('my.pem')
+signer = Paseto::V4::Public.new(key: pem)
 
 token = signer.sign(message: '{"foo":"bar"}') # => Token("v4.public....")
 token = signer.sign(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
@@ -164,8 +151,8 @@ verifier.verify(token:, implicit_assertion: '') # same as above
 verifier.sign(message: '{"foo":"bar"}') # => ArgumentError
 
 # exporting key material
-signer.private_key.to_s # => Ed25519 private key octet string seed
-signer.public_key.to_s  # => Ed25519 public key octet string seed
+signer.public_to_pem # => PEM
+signer.private_to_pem # => PEM
 ```
 
 ### PASETO v3, NIST Modern
@@ -206,10 +193,8 @@ verifier.verify(token:, implicit_assertion: '') # same as above
 verifier.sign(message: '{"foo":"bar"}') # => ArgumentError
 
 # exporting key material
-signer.key.public_to_pem # => PEM encoded public key
-signer.key.private_to_pem # => PEM encoded private key
-signer.key.public_to_der # => DER encoded public key
-signer.key.private_to_der # => DER encoded private key
+signer.public_to_pem # => PEM encoded public key
+signer.private_to_pem # => PEM encoded private key
 ```
 
 ## Registered Claims Support
@@ -365,10 +350,11 @@ You can learn more over at the `sorbet` [documentation](https://sorbet.org/docs/
 
 ### Running Tests
 
+The tests are written with rspec. [Appraisal](https://github.com/thoughtbot/appraisal) is used to ensure compatibility with 3rd party dependencies providing cryptographic features.
+
 ```
-rspec
-rubocop
-srb tc
+bundle install
+bundle exec appraisal rake spec
 ```
 
 ### Updating RBI Files

@@ -1,16 +1,24 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'timecop'
 require 'simplecov'
+
 SimpleCov.start do
+  if ENV['CI']
+    formatter SimpleCov::Formatter::JSONFormatter
+  else
+    formatter SimpleCov::Formatter::SimpleFormatter
+    gemfile = ENV.fetch('BUNDLE_GEMFILE', nil)
+    coverage_dir "coverage/results/#{File.basename(gemfile, '.gemfile')}" if gemfile
+  end
+
   enable_coverage :branch
 end
-require 'rbnacl'
+
 require 'paseto'
 
 Zeitwerk::Loader.eager_load_all
-
-require 'timecop'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

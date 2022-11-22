@@ -32,7 +32,7 @@ module Paseto
       @purpose = purpose
       @payload = payload
       @footer = footer
-      ensure_valid_header
+      validate_header
     end
 
     sig { returns(String) }
@@ -59,16 +59,23 @@ module Paseto
 
     sig { returns(T.class_of(Key)) }
     def type
-      TokenTypes.deserialize(header).key_klass
+      T.must(header_to_class)
     end
 
     private
 
-    sig { returns(T::Boolean) }
-    def ensure_valid_header
-      !!type
+    sig { returns(T.nilable(T.class_of(Key))) }
+    def header_to_class
+      TokenTypes.deserialize(header).key_klass
+    end
+
+    sig { void }
+    def validate_header
+      return if header_to_class
+
+      raise UnsupportedToken, header
     rescue KeyError
-      raise ParseError, 'not a valid token'
+      raise UnsupportedToken, header
     end
   end
 end
