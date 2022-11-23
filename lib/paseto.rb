@@ -23,6 +23,14 @@ unless defined?(RbNaCl)
     "#{__dir__}/paseto/sodium.rb"
   )
 end
+loader.inflector.inflect(
+  'pkcs' => 'PKCS',
+  'pkcs8' => 'PKCS8',
+  'ec_private_key' => 'ECPrivateKey',
+  'ecdsa_sig_value' => 'ECDSASigValue',
+  'ecdsa_signature' => 'ECDSASignature',
+  'ecdsa_full_r' => 'ECDSAFullR'
+)
 loader.setup
 
 module Paseto

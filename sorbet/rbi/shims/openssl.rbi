@@ -21,6 +21,11 @@ class OpenSSL::PKey::EC
   def verify_raw(digest, signature, data, options = nil); end
 end
 
+class OpenSSL::PKey::EC::Point
+  sig { params(conversion_form: Symbol).returns(String) }
+  def to_octet_string(conversion_form); end
+end
+
 module OpenSSL::PKey
   sig { params(string: T.any(String, IO), pwd: T.nilable(String)).returns(OpenSSL::PKey::PKey) }
   def self.read(string, pwd = nil); end

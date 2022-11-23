@@ -48,7 +48,7 @@ module Paseto
 
         data = OpenSSL::Digest.digest('SHA384', m2)
         sig_asn = @key.sign_raw(nil, data)
-        sig = asn1_to_rs(sig_asn)
+        sig = PKCS::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
 
         payload = message + sig
         Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
@@ -67,8 +67,8 @@ module Paseto
 
         pk = @key.public_key.to_octet_string(:compressed)
 
-        sig = m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN) || ''
-        s = rs_to_asn1(sig)
+        sig = T.must(m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
+        s = PKCS::ECDSASignature.from_rs(sig, SIGNATURE_PART_LEN).to_der
 
         m2 = Util.pre_auth_encode(pk, pae_header, m, token.footer, implicit_assertion)
 
@@ -84,39 +84,17 @@ module Paseto
 
       sig { override.returns(String) }
       def public_to_pem
-        @key.public_to_pem
+        @key.public_to_pem.chomp
       end
 
       sig { override.returns(String) }
       def private_to_pem
         raise ArgumentError, 'no private key available' unless @key.private?
 
-        @key.to_pem
+        @key.to_pem.chomp
       end
 
       private
-
-      # Convert a string consisting of `(r || s)`` to a DER-encoded `ECDSA_SIG` structure
-      # that can be used by OpenSSL.
-      sig { params(signature: String).returns(String) }
-      def rs_to_asn1(signature)
-        r = signature[0, SIGNATURE_PART_LEN] || ''
-        s = signature[-SIGNATURE_PART_LEN, SIGNATURE_PART_LEN] || ''
-        OpenSSL::ASN1::Sequence.new(
-          [r, s].map do |i|
-            OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(i, 2))
-          end
-        ).to_der
-      end
-
-      # Convert a DER-encoded `ECDSA_SIG` structure to a binary string `(r || s)`
-      # which can be encoded into our tokens.
-      sig { params(signature: String).returns(String) }
-      def asn1_to_rs(signature)
-        OpenSSL::ASN1.decode(signature).value.map do |v|
-          v.value.to_s(2).rjust(SIGNATURE_PART_LEN, "\x00")
-        end.join
-      end
 
       # TODO: Figure out how to get SimpleCov to cover this consistently. With OSSL1.1.1, most of
       # this doesn't run. With OSSL3, check_key never raises...

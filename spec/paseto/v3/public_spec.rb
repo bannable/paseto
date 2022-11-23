@@ -89,7 +89,7 @@ RSpec.describe Paseto::V3::Public do
         muQP0HxY7XotJuiG3cVuQyfs9PLyGNkvwE/u5dm+P9tFC+qzFSLSZrjYgxIg6lI+
         HyV/0Tep3t5rPGXmxevZ3MdjU8HqDsc=
         -----END EC PRIVATE KEY-----
-      P384_ZERO
+P384_ZERO
     end
 
     it 'raises an error' do
@@ -113,13 +113,13 @@ RSpec.describe Paseto::V3::Public do
     let(:key_pem) { pub_pem }
 
     it 'equals the input PEM' do
-      expect(key.public_to_pem).to eq key_pem
+      expect(key.public_to_pem).to eq key_pem.chomp
     end
   end
 
   describe '#private_to_pem' do
     it 'equals the input PEM' do
-      expect(key.private_to_pem).to eq key_pem
+      expect(key.private_to_pem).to eq key_pem.chomp
     end
 
     context 'with only a public key' do
