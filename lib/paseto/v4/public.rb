@@ -102,6 +102,13 @@ module Paseto
         PEM
       end
 
+      sig(:final) { override.returns(String) }
+      def to_bytes
+        raise ArgumentError, 'no private key available' unless @key.is_a? RbNaCl::SigningKey
+
+        @key.keypair_bytes
+      end
+
       private
 
       sig(:final) { params(verify_key: RbNaCl::VerifyKey).returns(String) }

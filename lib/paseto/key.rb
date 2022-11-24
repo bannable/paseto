@@ -43,7 +43,5 @@ module Paseto
     def wrap(wrapping_key, nonce: nil)
       Paserk.wrap(key: self, wrapping_key: wrapping_key, nonce: nonce)
     end
-
-    private
   end
 end

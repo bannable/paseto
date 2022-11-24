@@ -18,9 +18,10 @@ module Paseto
       sig { params(key: Key, wrapping_key: String, nonce: T.nilable(String)).returns(String) }
       def self.wrap(key, wrapping_key:, nonce: nil)
         version = key.version.sub('v', 'k')
-        if key.purpose == 'public'
+        case key.purpose
+        when 'public'
           type = 'secret-wrap'
-        elsif key.purpose == 'local'
+        when 'local'
           type = 'local-wrap'
         else
           raise

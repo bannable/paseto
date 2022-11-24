@@ -67,6 +67,11 @@ module Paseto
         raise ParseError, 'invalid payload encoding'
       end
 
+      sig { override.returns(String) }
+      def to_bytes
+        key
+      end
+
       private
 
       # Separate a token payload into:
