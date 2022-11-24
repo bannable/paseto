@@ -49,8 +49,7 @@ And run `bundle install`
 
 ## Support for PASERK types
 
-`paseto` does not yet support [PASERK (Platform-Agnostic Serialized Keys)](https://github.com/paseto-standard/paserk), but will in the future!
-<!--
+[PASERK (Platform-Agnostic Serialized Keys)](https://github.com/paseto-standard/paserk), support is a Work In Progress.
 
 |               |  v4  |  v3  |
 | ------------- | ---- | ---- |
@@ -61,11 +60,11 @@ And run `bundle install`
 | `secret`      |  ❌  |  ❌  |
 | `public`      |  ❌  |  ❌  |
 | `seal`        |  ❌  |  ❌  |
-| `local-wrap`  |  ❌  |  ❌  |
-| `secret-wrap` |  ❌  |  ❌  |
+| `local-wrap`  |  ❌  |  ✅  |
+| `secret-wrap` |  ❌  |  ✅  |
 | `local-pw`    |  ❌  |  ❌  |
 | `secret-pw`   |  ❌  |  ❌  |
--->
+
 ## Implementation Guideline compliance
 
 - [x] require payload to be UTF-8 encoded
@@ -113,7 +112,7 @@ You may optionally enforce validation of claims by calling `decode!` instead of 
 
 #### Encryption and Decryption
 
-V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem. 
+V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem.
 
 To use `v4.local` tokens, ensure that `rbnacl` is installed.
 
