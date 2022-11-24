@@ -81,6 +81,11 @@ module Paseto
       end
       # rubocop:enable Metrics/AbcSize
 
+      sig { override.returns(String) }
+      def to_bytes
+        key
+      end
+
       private
 
       # Derive an encryption key, nonce, and authentication key from an input nonce.
