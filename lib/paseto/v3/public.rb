@@ -48,7 +48,7 @@ module Paseto
 
         data = OpenSSL::Digest.digest('SHA384', m2)
         sig_asn = @key.sign_raw(nil, data)
-        sig = PKCS::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
+        sig = ASN1::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
 
         payload = message + sig
         Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
@@ -68,7 +68,7 @@ module Paseto
         pk = @key.public_key.to_octet_string(:compressed)
 
         sig = T.must(m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
-        s = PKCS::ECDSASignature.from_rs(sig, SIGNATURE_PART_LEN).to_der
+        s = ASN1::ECDSASignature.from_rs(sig, SIGNATURE_PART_LEN).to_der
 
         m2 = Util.pre_auth_encode(pk, pae_header, m, token.footer, implicit_assertion)
 

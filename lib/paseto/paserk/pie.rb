@@ -47,7 +47,7 @@ module Paseto
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
         ptk = pie_crypt(nonce: n, payload: c)
-        ptk = PKCS.p384_scalar_bytes_to_pkcs8_der(ptk) if @type == 'secret-wrap'
+        ptk = ASN1.p384_scalar_bytes_to_oak_der(ptk) if @type == 'secret-wrap'
 
         PaserkTypes.deserialize(header).generate(ptk)
       end

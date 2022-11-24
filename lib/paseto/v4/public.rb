@@ -88,12 +88,7 @@ module Paseto
         # RbNaCl::SigningKey.keypair_bytes returns the 32-byte private scalar and group element
         # as (s || g), so we repack that into an ASN1 structure and then Base64 the resulting DER
         # to get a PEM.
-        kp = @key.keypair_bytes
-        der = OpenSSL::ASN1::Sequence.new([
-                                            OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(0)),
-                                            OpenSSL::ASN1::Sequence.new([OpenSSL::ASN1::ObjectId.new('ED25519')]),
-                                            OpenSSL::ASN1::OctetString.new([4.chr, 32.chr, kp[0, 32]].join)
-                                          ]).to_der
+        der = ASN1.ed25519_rs_to_oak_der(@key.keypair_bytes)
 
         <<~PEM
           -----BEGIN PRIVATE KEY-----
