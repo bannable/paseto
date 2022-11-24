@@ -332,7 +332,7 @@ def generate_specs(version:, path:)
     t.transform_keys! { |k| k.tr('-', '_').to_sym }
   end
 
-  file_path = File.join('paseto', version, 'test_vectors_spec.rb')
+  file_path = File.join('paseto', version, version + '_test_vectors_spec.rb')
   FileUtils.mkdir_p File.dirname(file_path)
   FileUtils.rm file_path, force: true
   file = File.new(file_path, 'w')

@@ -8,7 +8,7 @@ RSpec.describe Paseto::Paserk do
 
     let(:wrapping_key) { Paseto::Util.decode_hex('707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f') }
 
-    context 'with secret-wrap.pie' do
+    context 'when unwrapping secret-wrap.pie' do
       let(:unwrapped) do
         <<~UNWRAPPED
           -----BEGIN PUBLIC KEY-----
@@ -35,7 +35,7 @@ RSpec.describe Paseto::Paserk do
       end
     end
 
-    context 'with local-wrap.pie' do
+    context 'when unwrapping local-wrap.pie' do
       let(:unwrapped) { Paseto::Util.decode_hex('0000000000000000000000000000000000000000000000000000000000000000') }
       let(:paserk) do
         'k3.local-wrap.pie.cLJLT84tUuU-ZLPqKWfhlDw4c2Fhk896z97sK2eM2-HYB3dk_NrHsSS340sJPsBsb7VeFpDBQMzzqRXr4Oylrp' \
@@ -54,7 +54,7 @@ RSpec.describe Paseto::Paserk do
       end
     end
 
-    context 'with an unrecognized protocol' do
+    context 'when unwrapping an unrecognized protocol' do
       let(:paserk) { 'k3.local-wrap.TESTFOO.AAAAAAAAAAAAAAAAAAAAAAAA' }
 
       it 'raises an error' do
