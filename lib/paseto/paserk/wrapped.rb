@@ -7,6 +7,9 @@ module Paseto
     class Wrapped
       extend T::Sig
 
+      DOMAIN_SEPARATOR_AUTH = "\x81"
+      DOMAIN_SEPARATOR_ENCRYPT = "\x80"
+
       sig { params(version: String, type: String, wrapping_key: String, data: String).returns(Key) }
       def self.unwrap(version, type, wrapping_key, data)
         new(version, type, wrapping_key, data).unwrap
@@ -24,7 +27,7 @@ module Paseto
       def unwrap
         decoded = decode_and_split
 
-        ak = OpenSSL::HMAC.digest('SHA384', @wrapping_key, "\x81#{decoded[:n]}").byteslice(0, 32)
+        ak = OpenSSL::HMAC.digest('SHA384', @wrapping_key, (DOMAIN_SEPARATOR_AUTH + decoded[:n])).byteslice(0, 32)
         t2 = OpenSSL::HMAC.digest('SHA384', ak, (pie_header + decoded[:n] + decoded[:c]))
 
         raise InvalidAuthenticator unless Util.constant_compare(decoded[:t], t2)
@@ -59,7 +62,7 @@ module Paseto
 
       sig { params(nonce: String, ciphertext: String).returns(String) }
       def decrypt_local(nonce:, ciphertext:)
-        x = OpenSSL::HMAC.digest('SHA384', @wrapping_key, "\x80#{nonce}")
+        x = OpenSSL::HMAC.digest('SHA384', @wrapping_key, DOMAIN_SEPARATOR_ENCRYPT + nonce)
         ek = x[0, 32]
         n2 = x[32..]
 

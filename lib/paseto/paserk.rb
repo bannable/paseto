@@ -34,6 +34,7 @@ module Paseto
       in [String => version, String => type, String => data] if unsealing_key
         # seal
       else
+        raise UnrecognizedProtocol
       end
     end
   end
