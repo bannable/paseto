@@ -1,0 +1,39 @@
+  it '<%= name %>' do
+    nonce = Paseto::Util.decode_hex('<%= nonce %>')
+    key = Paseto::Util.decode_hex('<%= key %>')
+    tok = %[<%= token %>]
+    <%- if payload -%>
+    payload = %[<%= payload %>]
+    <%- else -%>
+    payload = nil
+    <%- end -%>
+    footer = %[<%= footer %>]
+    ia = %[<%= implicit_assertion %>]
+
+    begin
+      token = Paseto::Token.parse(tok)
+    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
+      # :nocov:
+      skip('requires RbNaCl') unless Paseto.rbnacl?
+      raise
+      # :nocov:
+    end
+    local = Paseto::V3::Local.new(ikm: key)
+
+    <%- if expect_fail -%>
+    expect do
+      local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce)
+    end.to raise_error(TypeError)
+
+    message = begin
+                local.decrypt(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidAuthenticator, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+    <%- else -%>
+    expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
+
+    expect(local.decrypt(token: token, implicit_assertion: ia)).to eq(payload)
+    <%- end -%>
+  end

@@ -1,0 +1,36 @@
+  it '<%= name %>' do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
+    pub = Paseto::V4::Public.new(<%= public_key_pem %>)
+    priv = Paseto::V4::Public.new(<%= secret_key_pem %>)
+    tok = %[<%= token %>]
+    <%- if payload -%>
+    payload = %[<%= payload %>]
+    <%- else -%>
+    payload = nil
+    <%- end -%>
+    footer = %[<%= footer %>]
+    ia = %[<%= implicit_assertion %>]
+    token = Paseto::Token.parse(tok)
+
+    <%- if expect_fail -%>
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
+
+    message = begin
+                pub.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+    <%- else -%>
+    signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    expect(signed).to eq(tok)
+
+    verify = pub.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = pub.verify(token: signed, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+    <%- end -%>
+  end

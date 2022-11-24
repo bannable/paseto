@@ -1,0 +1,44 @@
+  it '<%= name %>' do
+    pub = Paseto::V3::Public.new(key: <%= public_key_pem %>)
+    priv = Paseto::V3::Public.new(key: <%= secret_key_pem %>)
+    tok = %[<%= token %>]
+    <%- if payload -%>
+    payload = %[<%= payload %>]
+    <%- else -%>
+    payload = nil
+    <%- end -%>
+    footer = %[<%= footer %>]
+    ia = %[<%= implicit_assertion %>]
+    token = Paseto::Token.parse(tok)
+
+    <%- if expect_fail -%>
+    expect do
+      priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+    end.to raise_error(TypeError)
+
+    message = begin
+                pub.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+
+    message = begin
+                priv.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+    <%- else -%>
+    signed = priv.sign(message: payload, footer: footer, implicit_assertion: ia)
+
+    verify = pub.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = pub.verify(token: signed, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = priv.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+    <%- end -%>
+  end
