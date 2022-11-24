@@ -29,7 +29,8 @@ loader.inflector.inflect(
   'ec_private_key' => 'ECPrivateKey',
   'ecdsa_sig_value' => 'ECDSASigValue',
   'ecdsa_signature' => 'ECDSASignature',
-  'ecdsa_full_r' => 'ECDSAFullR'
+  'ecdsa_full_r' => 'ECDSAFullR',
+  'pie' => 'PIE'
 )
 loader.setup
 

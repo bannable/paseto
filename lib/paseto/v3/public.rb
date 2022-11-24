@@ -94,6 +94,13 @@ module Paseto
         @key.to_pem.chomp
       end
 
+      sig { override.returns(String) }
+      def to_bytes
+        raise ArgumentError, 'no private key available' unless @key.private?
+
+        @key.private_key.to_s(2).rjust(48, "\x00")
+      end
+
       private
 
       # TODO: Figure out how to get SimpleCov to cover this consistently. With OSSL1.1.1, most of

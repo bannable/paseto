@@ -28,7 +28,7 @@ module Paseto
         # https://github.com/paseto-standard/paserk/blob/master/operations/Wrap.md
         raise Paserk::UnrecognizedProtocol unless protocol == 'pie'
 
-        Wrapped.unwrap(version, type, T.must(wrapping_key), data)
+        PIE.unwrap(version, type, T.must(wrapping_key), data)
       in [String => version, String => type, String => data] if password
         # local/secret-pw
       in [String => version, String => type, String => data] if unsealing_key
@@ -36,6 +36,11 @@ module Paseto
       else
         raise UnrecognizedProtocol
       end
+    end
+
+    sig { params(key: Key, wrapping_key: String, nonce: T.nilable(String)).returns(String) }
+    def self.wrap(key:, wrapping_key:, nonce: nil)
+      PIE.wrap(key, wrapping_key: wrapping_key, nonce: nonce)
     end
   end
 end
