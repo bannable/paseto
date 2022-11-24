@@ -24,8 +24,7 @@ unless defined?(RbNaCl)
   )
 end
 loader.inflector.inflect(
-  'pkcs' => 'PKCS',
-  'pkcs8' => 'PKCS8',
+  'asn1' => 'ASN1',
   'ec_private_key' => 'ECPrivateKey',
   'ecdsa_sig_value' => 'ECDSASigValue',
   'ecdsa_signature' => 'ECDSASignature',

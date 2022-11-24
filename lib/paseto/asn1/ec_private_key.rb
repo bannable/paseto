@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Paseto
-  module PKCS
+  module ASN1
     class ECPrivateKey < T::Struct
       extend T::Sig
 

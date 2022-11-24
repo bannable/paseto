@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Paseto
-  module PKCS
+  module ASN1
     class ECDSASignature < T::Struct
       extend T::Sig
 
@@ -34,9 +34,9 @@ module Paseto
       sig { params(part_len: Integer).returns(String) }
       def to_rs(part_len)
         case signature
-        when Paseto::PKCS::ECDSASigValue
+        when ECDSASigValue
           r = T.cast(signature.r, OpenSSL::BN).to_s(2).rjust(part_len, "\x00")
-        when Paseto::PKCS::ECDSAFullR
+        when ECDSAFullR
           r = T.cast(signature.r, OpenSSL::PKey::EC::Point).to_octet_string(:compressed).rjust(part_len, "\x00")
         end
         s = signature.s.to_s(2).rjust(part_len, "\x00")

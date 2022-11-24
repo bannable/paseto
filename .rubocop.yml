@@ -67,4 +67,4 @@ Naming/VariableNumber:
 
 Naming/MethodParameterName:
   Exclude:
-    - 'lib/paseto/pkcs'
+    - 'lib/paseto/asn1'

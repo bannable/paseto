@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Paseto
-  module PKCS
+  module ASN1
     class ECDSAFullR < T::Struct
       extend T::Sig
 
@@ -11,12 +11,15 @@ module Paseto
 
       sig { returns(OpenSSL::ASN1::Sequence) }
       def build
+        # Unsupported by OpenSSL 3.0
+        # :nocov:
         OpenSSL::ASN1::Sequence.new(
           [
             OpenSSL::ASN1::OctetString.new(r.to_octet_string(:compressed)),
             OpenSSL::ASN1::Integer.new(s)
           ]
         )
+        # :nocov:
       end
     end
   end
