@@ -84,14 +84,14 @@ module Paseto
 
       sig { override.returns(String) }
       def public_to_pem
-        @key.public_to_pem.chomp
+        @key.public_to_pem
       end
 
       sig { override.returns(String) }
       def private_to_pem
         raise ArgumentError, 'no private key available' unless @key.private?
 
-        @key.to_pem.chomp
+        @key.to_pem
       end
 
       sig { override.returns(String) }

@@ -30,7 +30,7 @@ module Paseto
 
         PIE.unwrap(version, type, T.must(wrapping_key), data)
       in [String => version, String => type, String => data] if password
-        # local/secret-pw
+      # local/secret-pw
       in [String => version, String => type, String => data] if unsealing_key
         # seal
       else
