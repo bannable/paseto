@@ -87,6 +87,35 @@ module V4
   end
 end
 
+module K3
+  class LocalWrapPieSpec < Spec
+    attr_reader :name, :expect_fail, :unwrapped, :wrapping_key, :paserk
+
+    def initialize(name:, expect_fail:, unwrapped:, wrapping_key:, paserk:, **unused)
+      @name = name
+      @expect_fail = expect_fail
+      @unwrapped = unwrapped
+      @wrapping_key = wrapping_key
+      @paserk = paserk
+      @template = erb_for('k3_local-wrap_pie')
+    end
+  end
+
+  class SecretWrapPieSpec < Spec
+    attr_reader :name, :expect_fail, :unwrapped, :wrapping_key, :public_key, :paserk
+
+    def initialize(name:, expect_fail:, unwrapped:, wrapping_key:, paserk:, public_key: nil, **unused)
+      @name = name
+      @expect_fail = expect_fail
+      @unwrapped = unwrapped
+      @wrapping_key = wrapping_key
+      @public_key = public_key
+      @paserk = paserk
+      @template = erb_for('k3_secret-wrap_pie')
+    end
+  end
+end
+
 module SpecFactory
   def self.build(name, **test)
     klass = case name
@@ -96,7 +125,7 @@ module SpecFactory
               elsif test.include?(:public_key)
                 V4::PublicSpec
               else
-                raise ArgumentError, "unrecognized test type: #{test}"
+                raise ArgumentError, "unrecognized vector: #{name}"
               end
             when 'v3'
               if test.include?(:key)
@@ -104,10 +133,14 @@ module SpecFactory
               elsif test.include?(:public_key)
                 V3::PublicSpec
               else
-                raise ArgumentError, "unrecognized test type: #{test}"
+                raise ArgumentError, "unrecognized vector: #{name}"
               end
+            when 'k3_local-wrap_pie'
+              K3::LocalWrapPieSpec
+            when 'k3_secret-wrap_pie'
+              K3::SecretWrapPieSpec
             else
-              raise ArgumentError, "unrecognized version: #{version}"
+              raise ArgumentError, "unrecognized vector: #{name}"
             end
     klass.new(**test)
   end
@@ -136,9 +169,10 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   TEST_VECTORS = [
-    { json_filename: 'v4.json', name: 'v4' },
+    { json_filename: 'k3.local-wrap.pie.json', name: 'k3_local-wrap_pie' },
+    { json_filename: 'k3.secret-wrap.pie.json', name: 'k3_secret-wrap_pie' },
     { json_filename: 'v3.json', name: 'v3' },
-    # { json_filename: 'k3.local-wrap.pie.json', name: 'k3_local-wrap_pie' }
+    { json_filename: 'v4.json', name: 'v4' }
   ]
 
   TEST_VECTORS.each { |tv| generate(**tv) }
