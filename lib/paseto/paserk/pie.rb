@@ -39,7 +39,9 @@ module Paseto
 
       sig { params(data: String).returns(Key) }
       def unwrap(data)
+        # :nocov:
         decode_and_split(data) => {n:, c:, t:}
+        # :nocov:
 
         ak = OpenSSL::HMAC.digest('SHA384', @wrapping_key, (DOMAIN_SEPARATOR_AUTH + n)).byteslice(0, 32)
         t2 = OpenSSL::HMAC.digest('SHA384', ak, (pie_header + n + c))

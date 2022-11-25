@@ -1,0 +1,16 @@
+  it '<%= name %>' do
+    <%- if unwrapped -%>
+    unwrapped = Paseto::Util.decode_hex('<%= unwrapped %>')
+    <%- end -%>
+    wrapping_key = Paseto::Util.decode_hex('<%= wrapping_key %>')
+    paserk = '<%= paserk %>'
+
+    <%- if expect_fail -%>
+    expect do
+      Paseto::Key.unwrap(paserk: paserk, wrapping_key: wrapping_key)
+    end.to raise_error(Paseto::InvalidAuthenticator)
+    <%- else -%>
+    key = Paseto::Key.unwrap(paserk: paserk, wrapping_key: wrapping_key)
+    expect(key.key).to eq(unwrapped)
+    <%- end -%>
+  end

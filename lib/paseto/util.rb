@@ -17,7 +17,7 @@ module Paseto
       # but the PASETO test vectors do.
       return '' if str.include?('=')
 
-      Base64.urlsafe_decode64(str)
+      Base64.urlsafe_decode64(str).b
     rescue ArgumentError
       ''
     end
