@@ -6,17 +6,20 @@ gem:
   # doc: true
   # workers: 5
   exclude:
-  - flay
-  - flog
+  - appraisal
   - parlour
-  - oj
+  - parser
+  - paseto
+  - rbi
   - reek
   - rubocop
   - rubocop-ast
   - rubocop-performance
-  - rubocop-rake
   - rubocop-rspec
   - rubocop-sorbet
+  - spoom
+  - tapioca
+  - unparser
 dsl:
   # Add your `dsl` command parameters here:
   #

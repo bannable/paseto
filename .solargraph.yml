@@ -3,7 +3,7 @@ include:
 - "**/*.rb"
 exclude:
 - spec/**/*
-- ".bundle/**/*"
+- .bundle/**/*
 - sorbet/**/*
 - rbi/**/*
 require: []

@@ -692,6 +692,10 @@ class Diff::LCS::DefaultCallbacks
     #
     # source://diff-lcs//lib/diff/lcs/callbacks.rb#17
     def match(event); end
+
+    private
+
+    def new(*_arg0); end
   end
 end
 

@@ -15763,6 +15763,10 @@ class YARD::Tags::TypesExplainer
     #
     # source://yard//lib/yard/tags/types_explainer.rb#17
     def explain!(*types); end
+
+    private
+
+    def new(*_arg0); end
   end
 end
 

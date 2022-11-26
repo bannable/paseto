@@ -1344,6 +1344,10 @@ class RSpec::Mocks::ArgumentMatchers::SingletonMatcher
     #
     # source://rspec-mocks//lib/rspec/mocks/argument_matchers.rb#136
     def inherited(subklass); end
+
+    private
+
+    def new(*_arg0); end
   end
 end
 
