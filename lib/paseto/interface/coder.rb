@@ -36,6 +36,9 @@ module Paseto
         ).returns(T::Hash[String, T.untyped])
       end
       def decode!(payload:, implicit_assertion: '', **options); end
+
+      sig { abstract.returns(String) }
+      def purpose; end
     end
   end
 end

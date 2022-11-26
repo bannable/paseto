@@ -5,7 +5,10 @@
 module Paseto
   module V3
     # PASETOv3 `public` token interface providing asymmetric signature signing and verification of tokens.
-    class Public < Paseto::Key
+    class Public < Key
+      extend T::Sig
+
+      include Version
       include Interface::Asymmetric
 
       # Size of (r || s) in an ECDSA secp384r1 signature
@@ -26,10 +29,8 @@ module Paseto
       def initialize(key:)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
 
-        raise InvalidKeyPair unless custom_check_key
         raise IncorrectKeyType unless @key.group.curve_name == 'secp384r1'
-
-        super(version: 'v3', purpose: 'public')
+        raise InvalidKeyPair unless custom_check_key
       rescue OpenSSL::PKey::ECError => e
         raise CryptoError, e.message
       end

@@ -5,7 +5,10 @@
 module Paseto
   module V3
     # PASETOv3 `local` token interface providing symmetric encryption of tokens.
-    class Local < Paseto::Key
+    class Local < Key
+      extend T::Sig
+
+      include Version
       include Interface::Symmetric
 
       # Size in bytes of a SHA384 digest
@@ -28,7 +31,6 @@ module Paseto
       sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
-        super(version: 'v3', purpose: 'local')
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -45,7 +47,7 @@ module Paseto
         cipher = OpenSSL::Cipher.new('aes-256-ctr').encrypt
         cipher.key = ek
         cipher.iv = n2
-        c = cipher.update(message.encode(Encoding::UTF_8)) + cipher.final
+        c = cipher.update(message) + cipher.final
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 

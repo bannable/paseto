@@ -5,7 +5,11 @@
 module Paseto
   module V4
     # PASETOv4 `public` token interface providing asymmetric signature signing and verification of tokens.
-    class Public < Paseto::Key
+    class Public < Key
+      extend T::Sig
+      extend T::Helpers
+
+      include Version
       include Interface::Asymmetric
 
       final!
@@ -28,8 +32,6 @@ module Paseto
         key = ed25519_pkey_ossl_to_nacl(key) if key.is_a?(String)
 
         @key = T.let(key, T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey))
-
-        super(version: 'v4', purpose: 'public')
       end
 
       # Sign `message` and optional non-empty `footer` and return a Token.
@@ -48,7 +50,7 @@ module Paseto
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
         m = token.payload
@@ -58,13 +60,11 @@ module Paseto
         m2 = Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
 
         case @key
-        when RbNaCl::VerifyKey
-          @key.verify(s, m2)
-        when RbNaCl::SigningKey
-          @key.verify_key.verify(s, m2)
+        when RbNaCl::VerifyKey then @key.verify(s, m2)
+        when RbNaCl::SigningKey then @key.verify_key.verify(s, m2)
         end
 
-        m.encode!(Encoding::UTF_8)
+        m.encode(Encoding::UTF_8)
       rescue RbNaCl::BadSignatureError
         raise InvalidSignature
       rescue Encoding::UndefinedConversionError

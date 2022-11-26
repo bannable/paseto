@@ -2,12 +2,13 @@
 # typed: strict
 # frozen_string_literal: true
 
-require 'paseto/sodium'
-
 module Paseto
   module V4
     # PASETOv4 `local` token interface providing symmetric encryption of tokens.
     class Local < Key
+      extend T::Sig
+
+      include Version
       include Interface::Symmetric
 
       # Symmetric encryption key
@@ -24,7 +25,6 @@ module Paseto
       sig { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
-        super(version: 'v4', purpose: 'local')
       end
 
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
@@ -36,7 +36,7 @@ module Paseto
 
         ek, n2, ak = calc_keys(n)
 
-        c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message.encode(Encoding::UTF_8))
+        c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message.encode(Encoding::UTF_8)).b
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 

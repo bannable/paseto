@@ -1,8 +1,9 @@
   it '<%= name %>' do
+    skip('requires RbNaCl') unless Paseto.rbnacl?
     <%- if unwrapped -%>
-    unwrapped = '<%= unwrapped %>'
+    unwrapped = Paseto::Util.decode_hex('<%= unwrapped %>')
     <%- end -%>
-    wrapping_key = Paseto::V3::Local.new(ikm: Paseto::Util.decode_hex('<%= wrapping_key %>'))
+    wrapping_key = Paseto::V4::Local.new(ikm: Paseto::Util.decode_hex('<%= wrapping_key %>'))
     paserk = '<%= paserk %>'
 
     <%- if expect_fail -%>
@@ -15,7 +16,7 @@
     expect(passed).to be true
     <%- else -%>
     key = wrapping_key.unwrap(paserk)
-    expect(key.key.unpack1('H*')).to eq(unwrapped)
-    expect(wrapping_key.wrap(key)).to start_with('k3.local-wrap.pie')
+    expect(key.key).to eq(unwrapped)
+    expect(wrapping_key.wrap(key)).to start_with('k4.local-wrap.pie')
     <%- end -%>
   end

@@ -9,9 +9,11 @@ module Paseto
 
       include Coder
 
+      requires_ancestor { Key }
+
       abstract!
 
-      sig do
+      sig(:final) do
         override.params(
           payload: T::Hash[String, T.untyped],
           footer: String,
@@ -24,7 +26,7 @@ module Paseto
         sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
       end
 
-      sig do
+      sig(:final) do
         override.params(
           payload: String,
           implicit_assertion: String,
@@ -37,7 +39,7 @@ module Paseto
         MultiJson.load(verify(token: token, implicit_assertion: implicit_assertion), **options)
       end
 
-      sig do
+      sig(:final) do
         override.params(
           payload: String,
           implicit_assertion: String,
@@ -48,6 +50,11 @@ module Paseto
         result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
 
         Verify.verify_claims(result, options)
+      end
+
+      sig(:final) { override.returns(String) }
+      def purpose
+        'public'
       end
 
       sig { abstract.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
