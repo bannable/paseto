@@ -60,8 +60,8 @@ And run `bundle install`
 | `secret`      |  ❌  |  ❌  |
 | `public`      |  ❌  |  ❌  |
 | `seal`        |  ❌  |  ❌  |
-| `local-wrap`  |  ❌  |  ✅  |
-| `secret-wrap` |  ❌  |  ✅  |
+| `local-wrap`  |  ✅  |  ✅  |
+| `secret-wrap` |  ✅  |  ✅  |
 | `local-pw`    |  ❌  |  ❌  |
 | `secret-pw`   |  ❌  |  ❌  |
 
