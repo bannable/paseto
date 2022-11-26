@@ -23,7 +23,9 @@
 				"rebornix.Ruby",
 				"sorbet.sorbet-vscode-extension",
 				"castwide.solargraph",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"eamodio.gitlens",
+				"KoichiSasada.vscode-rdbg"
 			]
 		}
 	},
