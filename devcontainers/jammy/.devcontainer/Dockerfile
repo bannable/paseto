@@ -1,4 +1,4 @@
-ARG DISTRO="bullseye"
+ARG DISTRO="jammy"
 FROM mcr.microsoft.com/devcontainers/base:${DISTRO}
 
 ARG SODIUM="libsodium23"
