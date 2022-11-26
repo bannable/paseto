@@ -250,6 +250,13 @@ class Timecop
 
     private
 
+    def allocate; end
+
+    # source://singleton/0.1.1/singleton.rb#123
+    def instance; end
+
+    def new(*_arg0); end
+
     # source://timecop//lib/timecop/timecop.rb#130
     def send_travel(mock_type, *args, &block); end
   end

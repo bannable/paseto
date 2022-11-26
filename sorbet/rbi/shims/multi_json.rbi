@@ -1,8 +1,6 @@
 # typed: true
 
 module MultiJson
-  class ParseError < StandardError; end
-
   sig do
     params(
       source: T.untyped,
