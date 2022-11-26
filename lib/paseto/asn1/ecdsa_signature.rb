@@ -37,7 +37,9 @@ module Paseto
         when ECDSASigValue
           r = T.cast(signature.r, OpenSSL::BN).to_s(2).rjust(part_len, "\x00")
         when ECDSAFullR
+          # :nocov:
           r = T.cast(signature.r, OpenSSL::PKey::EC::Point).to_octet_string(:compressed).rjust(part_len, "\x00")
+          # :nocov:
         end
         s = signature.s.to_s(2).rjust(part_len, "\x00")
         r + s

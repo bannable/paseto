@@ -34,7 +34,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	"onCreateCommand": "gem install solargraph --no-document",
+	"onCreateCommand": "rvm get head && gem install solargraph --no-document",
 	"postCreateCommand": "bin/setup",
 
 	"remoteUser": "vscode"

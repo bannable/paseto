@@ -105,6 +105,16 @@ RSpec.describe 'Paseto::V4::Public' do
     end
   end
 
+  describe '#to_bytes' do
+    context 'with only a public key' do
+      subject(:bytes) { described_class.new(pub_pem).to_bytes }
+
+      it 'raises an error' do
+        expect { bytes }.to raise_error(ArgumentError, 'no private key available')
+      end
+    end
+  end
+
   describe '#sign' do
     subject(:token) { key.sign(message: 'asdf', footer: '', implicit_assertion: '').to_s }
 

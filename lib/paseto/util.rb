@@ -45,9 +45,7 @@ module Paseto
     # rubocop:disable Naming/MethodParameterName
     sig { params(a: String, b: String).returns(T::Boolean) }
     def self.constant_compare(a, b)
-      return false unless a.bytesize == b.bytesize
-
-      OpenSSL.fixed_length_secure_compare(a, b)
+      OpenSSL.secure_compare(a, b)
     end
     # rubocop:enable Naming/MethodParameterName
 

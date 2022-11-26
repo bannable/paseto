@@ -10,7 +10,7 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
     - '.git/**/*'
-    - 'spec/paseto/**/test_vectors_spec.rb'
+    - 'spec/vectors/**/*'
     - 'bin/*'
     - 'gemfiles/**/*'
 
@@ -68,3 +68,6 @@ Naming/VariableNumber:
 Naming/MethodParameterName:
   Exclude:
     - 'lib/paseto/asn1'
+
+Lint/MissingSuper:
+  Enabled: false

@@ -59,19 +59,19 @@ module Paseto
 
     sig { returns(T.class_of(Key)) }
     def type
-      T.must(header_to_class)
+      T.must(header_to_klass)
     end
 
     private
 
     sig { returns(T.nilable(T.class_of(Key))) }
-    def header_to_class
+    def header_to_klass
       TokenTypes.deserialize(header).key_klass
     end
 
     sig { void }
     def validate_header
-      return if header_to_class
+      return if header_to_klass
 
       raise UnsupportedToken, header
     rescue KeyError

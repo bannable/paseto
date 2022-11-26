@@ -9,9 +9,11 @@ module Paseto
 
       include Coder
 
+      requires_ancestor { Key }
+
       abstract!
 
-      sig do
+      sig(:final) do
         override.params(
           payload: T::Hash[String, T.untyped],
           footer: String,
@@ -25,7 +27,7 @@ module Paseto
         encrypt(message: message, footer: footer, implicit_assertion: implicit_assertion, n: n).to_s
       end
 
-      sig do
+      sig(:final) do
         override.params(
           payload: String,
           implicit_assertion: String,
@@ -37,7 +39,7 @@ module Paseto
         MultiJson.load(decrypt(token: token, implicit_assertion: implicit_assertion), **options)
       end
 
-      sig do
+      sig(:final) do
         override.params(
           payload: String,
           implicit_assertion: String,
@@ -48,6 +50,28 @@ module Paseto
         result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
 
         Verify.verify_claims(result, options)
+      end
+
+      sig(:final) { override.returns(String) }
+      def purpose
+        'local'
+      end
+
+      sig(:final) { params(paserk: String).returns(Key) }
+      def unwrap(paserk)
+        Paserk.from_paserk(
+          paserk: paserk,
+          wrapping_key: T.cast(self, T.all(Paseto::Key, Interface::Symmetric))
+        )
+      end
+
+      sig(:final) { params(key: Key, nonce: T.nilable(String)).returns(String) }
+      def wrap(key, nonce: nil)
+        Paserk.wrap(
+          key: key,
+          wrapping_key: T.cast(self, T.all(Paseto::Key, Interface::Symmetric)),
+          nonce: nonce
+        )
       end
 
       sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
