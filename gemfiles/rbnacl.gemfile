@@ -2,12 +2,8 @@
 
 source "https://rubygems.org"
 
-gem "rubocop", "~> 1.38.0"
-gem "simplecov", "~> 0.21.2"
-gem "rubocop-performance", "~> 1.15.0"
-gem "rubocop-rspec", "~> 2.14.2"
-gem "rubocop-sorbet", "~> 0.6.11"
-gem "tapioca"
+gem "debug", ">= 1.0"
+gem "tapioca", "~> 0.10.3"
 gem "rbnacl", "~> 7.1.1"
 
 gemspec path: "../"

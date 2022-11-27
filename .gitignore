@@ -10,7 +10,4 @@
 
 .rspec_status
 
-Gemfile.lock
-gemfiles/*.lock
-
 sorbet/rbi/hidden-definitions/errors.txt

@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject do |f|
       f.match(/^(?:bin|spec|coverage|tmp|devcontainers|gemfiles)/) || # Irrelevant directories
         f.match(/^\.+/) || # Anything starting with .
-        f.match(/^(Gemfile|Rakefile|Appraisals)$/) # Irrelevant files
+        f.match(/^(Gemfile|Gemfile\.lock|Rakefile|Appraisals)$/) # Irrelevant files
     end
   end
   spec.require_paths = ['lib']
@@ -44,9 +44,13 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'appraisal'
   spec.add_development_dependency 'bundler', '~> 2'
-  spec.add_development_dependency 'debug', '>= 1.0'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'rubocop', '~> 1.38.0'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.15.0'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.14.2'
+  spec.add_development_dependency 'rubocop-sorbet', '~> 0.6.11'
+  spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'sorbet'
   spec.add_development_dependency 'timecop'
 
