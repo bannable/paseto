@@ -18,48 +18,22 @@ module Paseto
           @wrapping_key = wrapping_key
         end
 
-        sig { override.params(header: String, data: String).returns(String) }
-        def decode(header, data)
-          # :nocov:
-          decode_and_split(data) => {t:, n:, c:}
-          # :nocov:
-
-          ak = RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_AUTH + n, key: @wrapping_key.to_bytes, digest_size: 32)
-          t2 = RbNaCl::Hash.blake2b((header + n + c), key: ak, digest_size: 32)
-
-          raise InvalidAuthenticator unless Util.constant_compare(t, t2)
-
-          crypt(nonce: n, payload: c)
+        sig { override.params(nonce: String).returns(String) }
+        def authentication_key(nonce:)
+          RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_AUTH + nonce, key: @wrapping_key.to_bytes, digest_size: 32)
         end
 
-        sig { override.params(key: T.all(Paseto::Key, Paseto::V4::Version), nonce: T.nilable(String)).returns(String) }
-        def encode(key, nonce)
-          nonce ||= RbNaCl::Random.random_bytes(32)
-
-          h = pie_header(key)
-          c = crypt(nonce: nonce, payload: key.to_bytes)
-
-          ak = RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_AUTH + nonce, key: @wrapping_key.to_bytes, digest_size: 32)
-          t = RbNaCl::Hash.blake2b((h + nonce + c), key: ak, digest_size: 32)
-
-          h + Util.encode64(t + nonce + c)
+        sig { override.params(payload: String, auth_key: String).returns(String) }
+        def authentication_tag(payload:, auth_key:)
+          RbNaCl::Hash.blake2b(payload, key: auth_key, digest_size: 32)
         end
 
-        private
-
-        sig { params(key: Key).returns(String) }
-        def pie_header(key)
-          case key
-          when Interface::Symmetric then 'k4.local-wrap.pie.'
-          when Interface::Asymmetric then 'k4.secret-wrap.pie.'
-          else
-            # :nocov:
-            raise ArgumentError, 'not a valid type of key'
-            # :nocov:
-          end
+        sig { override.returns(String) }
+        def random_nonce
+          RbNaCl::Random.random_bytes(32)
         end
 
-        sig { params(data: String).returns({ t: String, n: String, c: String }) }
+        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
         def decode_and_split(data)
           b = Util.decode64(data)
           {
@@ -69,7 +43,7 @@ module Paseto
           }
         end
 
-        sig { params(nonce: String, payload: String).returns(String) }
+        sig { override.params(nonce: String, payload: String).returns(String) }
         def crypt(nonce:, payload:)
           x = RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_ENCRYPT + nonce, key: @wrapping_key.to_bytes, digest_size: 56)
           ek = T.must(x[0, 32])
