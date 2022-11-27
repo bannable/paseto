@@ -7,6 +7,8 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
+      requires_ancestor { Paseto::Key }
+
       interface!
 
       sig { abstract.returns(String) }
