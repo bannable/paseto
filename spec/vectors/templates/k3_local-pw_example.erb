@@ -1,0 +1,33 @@
+  it '<%= name %>' do
+    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+    <%- if unwrapped -%>
+    unwrapped = '<%= unwrapped %>'
+    unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
+    <%- end -%>
+    password = '<%= password %>'
+    options = <%= options.transform_keys(&:to_sym) %>
+    paserk = '<%= paserk %>'
+    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
+
+    <%- if expect_fail -%>
+    <%- if options['iterations'] -%>
+    expect do
+      pbkw.decode(paserk)
+    end.to raise_error(Paseto::InvalidAuthenticator)
+    <%- else -%>
+    expect do
+      pbkw.decode(paserk)
+    end.to raise_error(Paseto::LucidityError)
+
+    if Paseto.rbnacl?
+      expect do
+        pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
+      end.to raise_error(Paseto::LucidityError)
+    end
+    <%- end -%>
+    <%- else -%>
+    key = pbkw.decode(paserk)
+    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
+    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    <%- end -%>
+  end

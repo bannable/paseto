@@ -99,3 +99,8 @@ module OpenSSL
   sig { params(a: String, b: String).returns(T::Boolean) }
   def self.fixed_length_secure_compare(a, b); end
 end
+
+class OpenSSL::Digest
+  sig { params(hash: String, data: String).returns(String) }
+  def self.digest(hash, data); end
+end

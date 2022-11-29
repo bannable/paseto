@@ -12,6 +12,7 @@ rescue LoadError
 end
 require 'securerandom'
 require 'sorbet-runtime'
+T::Configuration.enable_final_checks_on_hooks
 require 'time'
 require 'zeitwerk'
 
@@ -29,7 +30,9 @@ loader.inflector.inflect(
   'ecdsa_sig_value' => 'ECDSASigValue',
   'ecdsa_signature' => 'ECDSASignature',
   'ecdsa_full_r' => 'ECDSAFullR',
-  'pie' => 'PIE'
+  'pie' => 'PIE',
+  'pbkw' => 'PBKW',
+  'pbkd' => 'PBKD'
 )
 loader.setup
 
@@ -39,6 +42,11 @@ module Paseto
 
   class Error < StandardError; end
 
+  class AlgorithmError < Error; end
+  # An algorithm assertion was violated, such as attempting to wrap a
+  # v4 key with a v3 key, or providing an EC key other than secp384 to v3.
+  class LucidityError < AlgorithmError; end
+
   # A cryptographic primitive has failed for any reason,
   # such as attempting to initialize a stream cipher with
   # an invalid nonce.
@@ -47,8 +55,6 @@ module Paseto
   class InvalidAuthenticator < CryptoError; end
   # A signature was forged or otherwise corrupt
   class InvalidSignature < CryptoError; end
-  # A provided key parsed to a different algorithm than expected
-  class IncorrectKeyType < CryptoError; end
   # Key is not valid for algorithm
   class InvalidKeyPair < CryptoError; end
 

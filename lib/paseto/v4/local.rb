@@ -8,21 +8,27 @@ module Paseto
     class Local < Key
       extend T::Sig
 
-      include Version
       include Interface::Symmetric
 
+      final!
+
       # Symmetric encryption key
-      sig { returns(String) }
+      sig(:final) { returns(String) }
       attr_reader :key
 
       # Create a new Local instance with a randomly generated key.
-      sig { returns(T.attached_class) }
+      sig(:final) { returns(T.attached_class) }
       def self.generate
         new(ikm: RbNaCl::Random.random_bytes(32))
       end
 
+      sig(:final) { override.returns(Protocol::Version4) }
+      def protocol
+        Protocol::Version4.new
+      end
+
       # `ikm` must be a 32-byte string
-      sig { params(ikm: String).void }
+      sig(:final) { params(ikm: String).void }
       def initialize(ikm:)
         @key = ikm
       end
@@ -30,7 +36,7 @@ module Paseto
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
-      sig { override.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
+      sig(:final) { override.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
       def encrypt(message:, footer: '', implicit_assertion: '', n: nil) # rubocop:disable Naming/MethodParameterName
         n ||= RbNaCl::Random.random_bytes(32)
 
@@ -42,13 +48,13 @@ module Paseto
 
         t = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
 
-        Token.new(payload: (n + c + t), version: version, purpose: purpose, footer: footer)
+        Token.new(payload: "#{n}#{c}#{t}", version: version, purpose: purpose, footer: footer)
       end
 
       # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.
       # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
       # `token` must be a `v4.local` type Token.
-      sig { override.params(token: Token, implicit_assertion: String).returns(String) }
+      sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: '')
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
@@ -67,7 +73,7 @@ module Paseto
         raise ParseError, 'invalid payload encoding'
       end
 
-      sig { override.returns(String) }
+      sig(:final) { override.returns(String) }
       def to_bytes
         key
       end
@@ -78,7 +84,7 @@ module Paseto
       # - nonce, 32 leftmost bytes
       # - tag, 32 rightmost bytes
       # - ciphertext, everything in between
-      sig { params(payload: String).returns([String, String, String]) }
+      sig(:final) { params(payload: String).returns([String, String, String]) }
       def split_payload(payload)
         n = T.must(payload.slice(0, 32))
         c = T.must(payload.slice(32, payload.size - 64))
@@ -89,7 +95,7 @@ module Paseto
       end
 
       # Derive an encryption key, nonce, and authentication key from an input nonce.
-      sig { params(nonce: String).returns([String, String, String]) }
+      sig(:final) { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
         tmp = RbNaCl::Hash.blake2b("paseto-encryption-key#{nonce}", key: key, digest_size: 56)
         ek = T.must(tmp[0, 32])

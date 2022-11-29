@@ -193,7 +193,9 @@ RSpec.describe Paseto::Verify do
       let(:payload) { claims.merge('nbf' => (Time.now + 1).iso8601) }
 
       it 'raises InactiveToken' do
-        expect { verify }.to raise_error(Paseto::InactiveToken, 'Not yet active')
+        Timecop.freeze do
+          expect { verify }.to raise_error(Paseto::InactiveToken, 'Not yet active')
+        end
       end
 
       it 'succeeds when verify_nbf is false' do

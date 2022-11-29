@@ -17,14 +17,6 @@ AllCops:
 Layout/LineLength:
   Max: 140
 
-Style/Documentation:
-  Enabled: false
-
-Metrics/MethodLength:
-  Max: 15
-  Exclude:
-    - 'spec/generate_vectors.rb'
-
 Layout/ClosingHeredocIndentation:
   Exclude:
     - 'spec/generate_vectors.rb'
@@ -33,16 +25,16 @@ Layout/HeredocIndentation:
   Exclude:
     - 'spec/generate_vectors.rb'
 
+Lint/MissingSuper:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'spec/generate_vectors.rb'
+
 Metrics/AbcSize:
   Max: 20
-  Exclude:
-    - 'spec/generate_vectors.rb'
-
-Metrics/ParameterLists:
-  Exclude:
-    - 'spec/generate_vectors.rb'
-
-Style/MutableConstant:
   Exclude:
     - 'spec/generate_vectors.rb'
 
@@ -50,24 +42,32 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 
-Style/AccessorGrouping:
-  Enabled: false
-
-Sorbet/ConstantsFromStrings:
+Metrics/ParameterLists:
   Exclude:
-    - 'lib/paseto/sodium/stream/base.rb'
+    - 'spec/generate_vectors.rb'
+
+Naming/MethodParameterName:
+  Exclude:
+    - 'lib/paseto/asn1'
+
+Naming/VariableNumber:
+  CheckSymbols: false
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:
     - 'spec/paseto/token_validator_spec.rb'
     - 'spec/paseto/verify_spec.rb'
 
-Naming/VariableNumber:
-  CheckSymbols: false
-
-Naming/MethodParameterName:
+Sorbet/ConstantsFromStrings:
   Exclude:
-    - 'lib/paseto/asn1'
+    - 'lib/paseto/sodium/stream/base.rb'
 
-Lint/MissingSuper:
+Style/AccessorGrouping:
   Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/MutableConstant:
+  Exclude:
+    - 'spec/generate_vectors.rb'

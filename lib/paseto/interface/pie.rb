@@ -24,6 +24,12 @@ module Paseto
 
       sig { abstract.params(data: String).returns({ t: String, n: String, c: String }) }
       def decode_and_split(data); end
+
+      sig { abstract.returns(String) }
+      def local_header; end
+
+      sig { abstract.returns(String) }
+      def secret_header; end
     end
   end
 end

@@ -12,10 +12,10 @@ module Paseto
     sig { params(str: String).returns(Token) }
     def self.parse(str)
       case str.split('.')
-      in [String => version, String => purpose, String => payload]
-        footer = ''
       in [String => version, String => purpose, String => payload, String => footer]
         nil
+      in [String => version, String => purpose, String => payload]
+        footer = ''
       else
         raise ParseError, 'not a valid token'
       end

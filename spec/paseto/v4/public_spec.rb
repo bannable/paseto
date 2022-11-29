@@ -55,8 +55,8 @@ RSpec.describe 'Paseto::V4::Public' do
       end
       let(:key) { described_class.new(pub_pem) }
 
-      it 'raises a CryptoError' do
-        expect { key }.to raise_error(Paseto::CryptoError, 'expected Ed25519 key, got id-ecPublicKey')
+      it 'raises a LucidityError' do
+        expect { key }.to raise_error(Paseto::LucidityError, 'expected Ed25519 key, got id-ecPublicKey')
       end
     end
   end

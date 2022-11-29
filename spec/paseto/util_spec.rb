@@ -51,7 +51,7 @@ RSpec.describe Paseto::Util do
 
     it 'raises on negative inputs' do
       expect { described_class.le64(-1) }
-        .to raise_error(ArgumentError, 'num must not be negative')
+        .to raise_error(ArgumentError, 'num must not be signed')
     end
   end
 

@@ -59,7 +59,7 @@ RSpec.describe Paseto::Paserk do
       let(:paserk) { 'k1.secret-wrap.pie.foo' }
 
       it 'raises an error' do
-        expect { key }.to raise_error(Paseto::IncorrectKeyType)
+        expect { key }.to raise_error(Paseto::LucidityError)
       end
     end
 

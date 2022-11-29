@@ -42,7 +42,7 @@ module Paseto
           # :nocov:
         end
         s = signature.s.to_s(2).rjust(part_len, "\x00")
-        r + s
+        [r, s].join
       end
     end
   end

@@ -75,7 +75,7 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { key }.to raise_error(Paseto::IncorrectKeyType)
+        expect { key }.to raise_error(Paseto::LucidityError)
       end
     end
   end

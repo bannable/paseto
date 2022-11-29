@@ -6,6 +6,7 @@ require 'simplecov'
 
 SimpleCov.start do
   if ENV['CI']
+    require 'simplecov_json_formatter'
     formatter SimpleCov::Formatter::JSONFormatter
   else
     formatter SimpleCov::Formatter::SimpleFormatter
