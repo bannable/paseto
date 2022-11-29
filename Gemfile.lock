@@ -144,6 +144,7 @@ DEPENDENCIES
   rubocop-rspec (~> 2.14.2)
   rubocop-sorbet (~> 0.6.11)
   simplecov
+  simplecov_json_formatter
   sorbet
   tapioca (~> 0.10.3)
   timecop
