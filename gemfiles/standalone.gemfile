@@ -3,6 +3,7 @@
 source "https://rubygems.org"
 
 gem "debug", ">= 1.0"
+gem "simplecov_json_formatter"
 gem "tapioca", "~> 0.10.3"
 
 gemspec path: "../"
