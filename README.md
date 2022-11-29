@@ -62,8 +62,8 @@ And run `bundle install`
 | `seal`        |  ❌  |  ❌  |
 | `local-wrap`  |  ✅  |  ✅  |
 | `secret-wrap` |  ✅  |  ✅  |
-| `local-pw`    |  ❌  |  ❌  |
-| `secret-pw`   |  ❌  |  ❌  |
+| `local-pw`    |  ✅  |  ✅  |
+| `secret-pw`   |  ✅  |  ✅  |
 
 ## Implementation Guideline compliance
 

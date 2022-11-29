@@ -2,14 +2,12 @@
 # frozen_string_literal: true
 
 module Paseto
-  module V4
-    module Version
+  module Protocol
+    class Version4
       extend T::Sig
       extend T::Helpers
 
       include Interface::Version
-
-      abstract!
 
       sig(:final) { override.returns(String) }
       def version

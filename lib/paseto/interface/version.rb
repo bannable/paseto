@@ -7,15 +7,27 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
-      requires_ancestor { Paseto::Key }
+      include Comparable
 
-      interface!
+      abstract!
 
       sig { abstract.returns(String) }
       def version; end
 
       sig { abstract.returns(String) }
       def paserk_version; end
+
+      sig(:final) { params(other: T.untyped).returns(T.nilable(Integer)) }
+      def <=>(other)
+        case other
+        in Interface::Version
+          version <=> other.version
+        in String
+          version <=> other
+        else
+          nil
+        end
+      end
     end
   end
 end

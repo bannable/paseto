@@ -5,13 +5,23 @@
 module Paseto
   module Operations
     class PIE
-      class Version4
+      class PieV4
         extend T::Sig
 
         include Interface::PIE
 
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
+
+        sig { override.returns(String) }
+        def local_header
+          'k4.local-wrap.pie.'
+        end
+
+        sig { override.returns(String) }
+        def secret_header
+          'k4.secret-wrap.pie.'
+        end
 
         sig { params(wrapping_key: T.all(Key, Interface::Symmetric)).void }
         def initialize(wrapping_key)
@@ -20,7 +30,7 @@ module Paseto
 
         sig { override.params(nonce: String).returns(String) }
         def authentication_key(nonce:)
-          RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_AUTH + nonce, key: @wrapping_key.to_bytes, digest_size: 32)
+          RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_AUTH}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 32)
         end
 
         sig { override.params(payload: String, auth_key: String).returns(String) }
@@ -45,7 +55,7 @@ module Paseto
 
         sig { override.params(nonce: String, payload: String).returns(String) }
         def crypt(nonce:, payload:)
-          x = RbNaCl::Hash.blake2b(DOMAIN_SEPARATOR_ENCRYPT + nonce, key: @wrapping_key.to_bytes, digest_size: 56)
+          x = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 56)
           ek = T.must(x[0, 32])
           n2 = T.must(x[32..])
 

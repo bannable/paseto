@@ -7,9 +7,11 @@ module Paseto
     # PASETOv3 `public` token interface providing asymmetric signature signing and verification of tokens.
     class Public < Key
       extend T::Sig
+      extend T::Helpers
 
-      include Version
       include Interface::Asymmetric
+
+      final!
 
       # Size of (r || s) in an ECDSA secp384r1 signature
       SIGNATURE_BYTE_LEN = 96
@@ -18,18 +20,23 @@ module Paseto
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
       # Create a new Public instance with a brand new EC key.
-      sig { returns(Public) }
+      sig(:final) { returns(Public) }
       def self.generate
         new(key: OpenSSL::PKey::EC.generate('secp384r1').to_der)
       end
 
+      sig(:final) { override.returns(Protocol::Version3) }
+      def protocol
+        Protocol::Version3.new
+      end
+
       # `key` must be either a DER or PEM encoded secp384r1 key.
       # Encrypted PEM inputs are not supported.
-      sig { params(key: String).void }
+      sig(:final) { params(key: String).void }
       def initialize(key:)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
 
-        raise IncorrectKeyType unless @key.group.curve_name == 'secp384r1'
+        raise LucidityError unless @key.group.curve_name == 'secp384r1'
         raise InvalidKeyPair unless custom_check_key
       rescue OpenSSL::PKey::ECError => e
         raise CryptoError, e.message
@@ -39,7 +46,7 @@ module Paseto
 
       # Sign `message` and optional non-empty `footer` and return a Token.
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
-      sig { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
+      sig(:final) { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: '', implicit_assertion: '')
         raise ArgumentError, 'no private key available' unless @key.private?
 
@@ -51,7 +58,7 @@ module Paseto
         sig_asn = @key.sign_raw(nil, data)
         sig = ASN1::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
 
-        payload = message + sig
+        payload = "#{message}#{sig}"
         Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
       rescue Encoding::CompatibilityError
         raise ParseError, 'invalid message encoding, must be UTF-8'
@@ -59,7 +66,7 @@ module Paseto
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
-      sig { override.params(token: Token, implicit_assertion: String).returns(String) }
+      sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: '')
         raise ParseError, "incorrect header for key type #{header}" unless header == token.header
 
@@ -83,19 +90,19 @@ module Paseto
 
       # rubocop:enable Metrics/AbcSize
 
-      sig { override.returns(String) }
+      sig(:final) { override.returns(String) }
       def public_to_pem
         @key.public_to_pem
       end
 
-      sig { override.returns(String) }
+      sig(:final) { override.returns(String) }
       def private_to_pem
         raise ArgumentError, 'no private key available' unless @key.private?
 
         @key.to_pem
       end
 
-      sig { override.returns(String) }
+      sig(:final) { override.returns(String) }
       def to_bytes
         raise ArgumentError, 'no private key available' unless @key.private?
 
@@ -124,7 +131,7 @@ module Paseto
       # BUG: https://github.com/ruby/openssl/issues/563
       # https://www.openssl.org/docs/man1.1.1/man3/EVP_PKEY_public_check.html
       # https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_public_check.html
-      sig { returns(T::Boolean) }
+      sig(:final) { returns(T::Boolean) }
       def custom_check_key
         begin
           @key.check_key

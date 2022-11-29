@@ -30,24 +30,67 @@ module Paseto
     sig { params(num: Integer).returns(String) }
     def self.le64(num)
       raise ArgumentError, 'num too large' if num.bit_length > 64
-      raise ArgumentError, 'num must not be negative' unless num == num.abs
+      raise ArgumentError, 'num must not be signed' if num.negative?
 
       [num].pack('Q<')
+    end
+
+    sig { params(num: Integer).returns(String) }
+    def self.int_to_be32(num)
+      raise ArgumentError, 'num too large' if num.bit_length > 32
+      raise ArgumentError, 'num must not be signed' if num.negative?
+
+      [num].pack('N')
+    end
+
+    sig { params(num: Integer).returns(String) }
+    def self.int_to_be64(num)
+      raise ArgumentError, 'num too large' if num.bit_length > 64
+      raise ArgumentError, 'num must not be signed' if num.negative?
+
+      [num].pack('Q>')
+    end
+
+    sig { params(val: String).returns(Integer) }
+    def self.be64_to_int(val)
+      raise ArgumentError, 'input size incorrect' unless val.bytesize == 8
+
+      val.unpack1('Q>')
+    end
+
+    sig { params(val: String).returns(Integer) }
+    def self.be32_to_int(val)
+      raise ArgumentError, 'input size incorrect' unless val.bytesize == 4
+
+      val.unpack1('N')
     end
 
     sig { params(parts: String).returns(String) }
     def self.pre_auth_encode(*parts)
       parts.inject(le64(parts.size)) do |memo, part|
-        memo + le64(part.bytesize) + part
+        "#{memo}#{le64(part.bytesize)}#{part}"
       end
     end
 
-    # rubocop:disable Naming/MethodParameterName
-    sig { params(a: String, b: String).returns(T::Boolean) }
-    def self.constant_compare(a, b)
-      OpenSSL.secure_compare(a, b)
+    # rubocop:disable Naming/MethodParameterName, Style/IdenticalConditionalBranches
+    # Moving the sig out of the conditional triggers a bug in rubocop-sorbet
+
+    # Use a faster comparison when RbNaCl is available
+    if Paseto.rbnacl?
+      sig { params(a: String, b: String).returns(T::Boolean) }
+      def self.constant_compare(a, b)
+        h_a = RbNaCl::Hash.blake2b(a)
+        h_b = RbNaCl::Hash.blake2b(b)
+        RbNaCl::Util.verify64(h_a, h_b)
+      end
+    else
+      sig { params(a: String, b: String).returns(T::Boolean) }
+      def self.constant_compare(a, b)
+        OpenSSL.secure_compare(a, b)
+      end
     end
-    # rubocop:enable Naming/MethodParameterName
+
+    # rubocop:enable Naming/MethodParameterName, Style/IdenticalConditionalBranches
 
     # Check if the libcrypto version that's running is actually openssl, and that the version
     # is at least the provided major/minor/fix/patch level.

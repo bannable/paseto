@@ -9,7 +9,6 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
-      include Version
       include Interface::Asymmetric
 
       final!
@@ -26,6 +25,11 @@ module Paseto
         new(RbNaCl::SigningKey.generate)
       end
 
+      sig(:final) { override.returns(Protocol::Version4) }
+      def protocol
+        Protocol::Version4.new
+      end
+
       # If `key` is a String, it must be a PEM- or DER- encoded ED25519 key.
       sig(:final) { params(key: T.any(String, RbNaCl::SigningKey, RbNaCl::VerifyKey)).void }
       def initialize(key)
@@ -40,10 +44,9 @@ module Paseto
       def sign(message:, footer: '', implicit_assertion: '')
         raise ArgumentError, 'no private key available' unless @key.is_a?(RbNaCl::SigningKey)
 
-        m = message
-        m2 = Util.pre_auth_encode(pae_header, m, footer, implicit_assertion)
+        m2 = Util.pre_auth_encode(pae_header, message, footer, implicit_assertion)
         sig = @key.sign(m2)
-        payload = m + sig
+        payload = "#{message}#{sig}"
         Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
       end
 
@@ -125,12 +128,10 @@ module Paseto
         key = OpenSSL::PKey.read(pem_or_der)
 
         if ossl_ed25519_private_key?(key)
-          asn1 = OpenSSL::ASN1.decode(key.private_to_der)
-          bytes = asn1.value[2].value[2..]
+          bytes = OpenSSL::ASN1.decode(key.private_to_der).value[2].value[2..]
           RbNaCl::SigningKey.new(bytes)
         else
-          asn1 = OpenSSL::ASN1.decode(key.public_to_der)
-          bytes = asn1.value[1].value
+          bytes = OpenSSL::ASN1.decode(key.public_to_der).value[1].value
           RbNaCl::VerifyKey.new(bytes)
         end
       rescue OpenSSL::PKey::PKeyError => e
@@ -140,7 +141,7 @@ module Paseto
       # ruby/openssl doesn't give us any API to detect if a PKey has a private component
       sig(:final) { params(key: OpenSSL::PKey::PKey).returns(T::Boolean) }
       def ossl_ed25519_private_key?(key)
-        raise CryptoError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
+        raise LucidityError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
 
         return false if !Util.openssl?(3, 0, 8) && Util.openssl?(3) && key.to_text.start_with?('ED25519 Public-Key')
         return false if Util.openssl?(1, 1, 1) && key.to_text == "<INVALID PRIVATE KEY>\n"

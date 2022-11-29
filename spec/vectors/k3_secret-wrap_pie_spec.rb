@@ -36,7 +36,7 @@ RSpec.describe "PASERK k3.secret-wrap.pie Test Vectors" do
     passed = false
     begin
       wrapping_key.unwrap(paserk)
-    rescue Paseto::InvalidAuthenticator, Paseto::IncorrectKeyType
+    rescue Paseto::InvalidAuthenticator, Paseto::LucidityError
       passed = true
     end
     expect(passed).to be true
@@ -50,7 +50,7 @@ RSpec.describe "PASERK k3.secret-wrap.pie Test Vectors" do
     passed = false
     begin
       wrapping_key.unwrap(paserk)
-    rescue Paseto::InvalidAuthenticator, Paseto::IncorrectKeyType
+    rescue Paseto::InvalidAuthenticator, Paseto::LucidityError
       passed = true
     end
     expect(passed).to be true

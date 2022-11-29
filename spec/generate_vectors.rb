@@ -83,6 +83,39 @@ class SecretWrapPieSpec
   end
 end
 
+class LocalPWSpec
+  include Spec
+
+  attr_reader :name, :expect_fail, :unwrapped, :password, :options, :paserk
+
+  def initialize(template_name, name:, expect_fail:, unwrapped:, password:, options:, paserk:, **_unused)
+    @name = name
+    @expect_fail = expect_fail
+    @unwrapped = unwrapped
+    @password = password
+    @options = options
+    @paserk = paserk
+    @template = erb_for(template_name)
+  end
+end
+
+class SecretPWSpec
+  include Spec
+
+  attr_reader :name, :expect_fail, :unwrapped, :password, :options, :paserk
+
+  def initialize(template_name, name:, expect_fail:, unwrapped:, password:, options:, public_key: nil, paserk:, **_unused)
+    @name = name
+    @expect_fail = expect_fail
+    @unwrapped = unwrapped
+    @password = password
+    @options = options
+    @public_key = public_key
+    @paserk = paserk
+    @template = erb_for(template_name)
+  end
+end
+
 module SpecFactory
   def self.build(name, **test)
     klass = case name
@@ -96,6 +129,8 @@ module SpecFactory
               end
             when 'k3_local-wrap_pie', 'k4_local-wrap_pie' then LocalWrapPieSpec
             when 'k3_secret-wrap_pie', 'k4_secret-wrap_pie' then SecretWrapPieSpec
+            when 'k3_local-pw', 'k4_local-pw' then LocalPWSpec
+            when 'k3_secret-pw', 'k4_secret-pw' then SecretPWSpec
             else
               raise ArgumentError, "unrecognized vector: #{name}"
             end
@@ -131,7 +166,11 @@ if __FILE__ == $PROGRAM_NAME
     { json_filename: 'k3.local-wrap.pie.json', name: 'k3_local-wrap_pie' },
     { json_filename: 'k3.secret-wrap.pie.json', name: 'k3_secret-wrap_pie' },
     { json_filename: 'k4.local-wrap.pie.json', name: 'k4_local-wrap_pie' },
-    { json_filename: 'k4.secret-wrap.pie.json', name: 'k4_secret-wrap_pie' }
+    { json_filename: 'k4.secret-wrap.pie.json', name: 'k4_secret-wrap_pie' },
+    { json_filename: 'k3.local-pw.json', name: 'k3_local-pw' },
+    { json_filename: 'k3.secret-pw.json', name: 'k3_secret-pw' },
+    { json_filename: 'k4.local-pw.json', name: 'k4_local-pw' },
+    { json_filename: 'k4.secret-pw.json', name: 'k4_secret-pw' }
   ]
 
   TEST_VECTORS.each { |tv| generate(**tv) }

@@ -11,13 +11,13 @@ module Paseto
 
       sig { params(wrapping_key: T.all(Key, Interface::Symmetric)).void }
       def initialize(wrapping_key)
-        case wrapping_key
-        when V3::Version
-          coder = PIE::Version3
-        when V4::Version
-          coder = PIE::Version4
+        case wrapping_key.protocol
+        in Protocol::Version3
+          coder = PIE::PieV3
+        in Protocol::Version4 if Paseto.rbnacl?
+          coder = PIE::PieV4
         else
-          raise ArgumentError, 'not a valid type of key'
+          raise UnknownProtocol, 'not a valid version'
         end
         @wrapping_key = wrapping_key
         @coder = T.let(coder.new(wrapping_key), Interface::PIE)
@@ -25,7 +25,7 @@ module Paseto
 
       sig { override.params(key: Key, nonce: T.nilable(String)).returns(String) }
       def encode(key, nonce: nil)
-        raise IncorrectKeyType unless key.version == @wrapping_key.version
+        raise LucidityError unless key.version == @wrapping_key.version
 
         nonce ||= @coder.random_nonce
         header = pie_header(key)
@@ -33,9 +33,9 @@ module Paseto
         c = @coder.crypt(nonce: nonce, payload: key.to_bytes)
 
         ak = @coder.authentication_key(nonce: nonce)
-        t = @coder.authentication_tag(payload: (header + nonce + c), auth_key: ak)
+        t = @coder.authentication_tag(payload: "#{header}#{nonce}#{c}", auth_key: ak)
 
-        header + Util.encode64(t + nonce + c)
+        [header, Util.encode64("#{t}#{nonce}#{c}")].join
       end
 
       sig { override.params(paserk: [String, String, String, String]).returns(Key) }
@@ -43,7 +43,7 @@ module Paseto
         paserk => [version, type, protocol, data]
         raise UnknownProtocol, 'payload does not use PIE' unless protocol == 'pie'
         raise ParseError, 'not a valid PIE PASERK' if data.empty?
-        raise IncorrectKeyType unless version == @wrapping_key.paserk_version
+        raise LucidityError unless version == @wrapping_key.paserk_version
 
         header = "#{version}.#{type}.pie."
 
@@ -52,7 +52,7 @@ module Paseto
         # :nocov:
 
         ak = @coder.authentication_key(nonce: n)
-        t2 = @coder.authentication_tag(payload: (header + n + c), auth_key: ak)
+        t2 = @coder.authentication_tag(payload: "#{header}#{n}#{c}", auth_key: ak)
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
@@ -66,8 +66,8 @@ module Paseto
       sig { params(key: Key).returns(String) }
       def pie_header(key)
         case key
-        when Interface::Symmetric then "#{key.paserk_version}.local-wrap.pie."
-        when Interface::Asymmetric then "#{key.paserk_version}.secret-wrap.pie."
+        when Interface::Symmetric then @coder.local_header
+        when Interface::Asymmetric then @coder.secret_header
         else
           # :nocov:
           raise ArgumentError, 'not a valid type of key'
