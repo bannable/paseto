@@ -33,15 +33,9 @@ module Paseto
         # Create a new Stream.
         #
         # Sets up Stream with a secret key for encrypting and decrypting messages.
-        #
-        # @param key [String] The key to encrypt and decrypt with
-        #
-        # @raise [RbNaCl::LengthError] on invalid keys
-        #
-        # @return [RbNaCL::Stream::Base] The new Stream construct, ready to use
         sig { params(key: String).void }
         def initialize(key)
-          @key = T.let(RbNaCl::Util.check_string(key, key_bytes, 'Secret key'), String)
+          @key = key
         end
 
         sig { params(nonce: String, message: T.nilable(String)).returns(String) }
