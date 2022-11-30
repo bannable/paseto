@@ -17,19 +17,21 @@ commands:
           type: string
           default: "3.1"
     steps:
-      - restore_cache:
-          keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}
+      # - restore_cache:
+      #     keys:
+      #       - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+      #       - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - run:
           name: "Install gems and appraisals"
           command : |
-            bundle install --path=vendor/bundle
-            bundle exec appraisal install --path=vendor/bundle
-      - save_cache:
-          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-          paths:
-            - vendor/bundle
+            bundle install
+            bundle exec appraisal install
+            gem list openssl
+            gem list sorbet
+      # - save_cache:
+      #     key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+      #     paths:
+      #       - vendor/bundle
 
 jobs:
   specs:
@@ -123,29 +125,29 @@ workflows:
       - rubocop:
           requires:
             - typecheck
-      - specs:
-          name: ruby-3.0-specs-standalone
-          requires:
-            - typecheck
-          version: "3.0"
+      # - specs:
+      #     name: ruby-3.0-specs-standalone
+      #     requires:
+      #       - typecheck
+      #     version: "3.0"
       - specs:
           name: ruby-3.0-specs-rbnacl
           appraisal: rbnacl
           requires:
             - typecheck
           version: "3.0"
-      - specs:
-          name: ruby-3.1-specs-standalone
-          requires:
-            - typecheck
+      # - specs:
+      #     name: ruby-3.1-specs-standalone
+      #     requires:
+      #       - typecheck
       - specs:
           name: ruby-3.1-specs-rbnacl
           appraisal: rbnacl
           requires:
             - typecheck
-      - circleci-upload:
-          requires:
-            - ruby-3.1-specs-standalone
-            - ruby-3.1-specs-rbnacl
-            - ruby-3.0-specs-standalone
-            - ruby-3.0-specs-rbnacl
+      # - circleci-upload:
+      #     requires:
+      #       - ruby-3.1-specs-standalone
+      #       - ruby-3.1-specs-rbnacl
+      #       - ruby-3.0-specs-standalone
+      #       - ruby-3.0-specs-rbnacl
