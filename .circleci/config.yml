@@ -6,9 +6,14 @@ shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
+all_jobs_matrix: &all_jobs_matrix
+    parameters:
+      version: ["3.0", "3.1"]
+      appraisal: [standalone, rbnacl]
+
 commands:
-  bundle-install:
-    description: "bundle install"
+  install-dependencies:
+    description: "Install gems with bundler and appraisal"
     parameters:
       appraisal:
           type: string
@@ -19,18 +24,48 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - gem-cache-v3-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v3-<< parameters.version >>-{{ arch }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - run:
-          name: "Install gems and appraisals"
+          name: "Install bundler"
           command : |
+            #!/usr/bin/env bash
+
+            TARGET_GEMFILE="./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
+
+            APP_BUNDLER_VERSION=$(tail -1 $TARGET_GEMFILE | tr -d " ")
+            if [ -z "$APP_BUNDLER_VERSION" ]; then
+              echo "Could not find bundler version from lockfile."
+              exit 1
+            else
+              echo "Lock file detected bundler version $APP_BUNDLER_VERSION"
+            fi
+
+            if ! bundle version | grep -q $APP_BUNDLER_VERSION; then
+              echo "Installing bundler $APP_BUNDLER_VERSION"
+              gem install bundler:$APP_BUNDLER_VERSION
+            else
+              echo "bundler $APP_BUNDLER_VERSION is already installed."
+            fi
+          environment:
+            PARAM_APPRAISAL: << parameters.appraisal >>
+      - run:
+          name: "Bundle/Appraisal Install"
+          command : |
+            #!/usr/bin/env bash
+
+            bundle config set deployment 'true'
+            bundle config set path "./vendor/bundle"
+
             bundle install
             bundle exec appraisal install
+          environment:
+            PARAM_APPRAISAL: << parameters.appraisal >>
       - save_cache:
-          key: gem-cache-v3-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
           paths:
-            - ~/.bundle
-            - ~/.rubygems
+            - ./vendor/bundle
 
 jobs:
   specs:
@@ -49,15 +84,19 @@ jobs:
       - checkout
       - attach_workspace:
           at: tmp
-      - bundle-install:
+      - install-dependencies:
           appraisal: << parameters.appraisal >>
           version: << parameters.version >>
       - run:
           name: Run specs
           command: |
+            mkdir -p ~/rspec
+
             ./tmp/cc-test-reporter before-build
-            bundle exec appraisal << parameters.appraisal >> rake spec
+            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+      # - store_test_results:
+      #     path: /tmp/test-results/rspec
       - persist_to_workspace:
           root: tmp
           paths:
@@ -97,7 +136,7 @@ jobs:
       - image: cimg/ruby:3.1
     steps:
       - checkout
-      - bundle-install
+      - install-dependencies
       - run:
           name: "Rubocop"
           command: |
@@ -108,7 +147,7 @@ jobs:
       - image: cimg/ruby:3.1
     steps:
       - checkout
-      - bundle-install
+      - install-dependencies
       - run:
           name: "Sorbet Typecheck"
           command: |
@@ -118,35 +157,13 @@ workflows:
   build:
     jobs:
       - circleci-setup
-      - typecheck:
+      - typecheck
+      - specs:
+          matrix:
+            <<: *all_jobs_matrix
           requires:
             - circleci-setup
-      - rubocop:
-          requires:
-            - typecheck
-      - specs:
-          name: ruby-3.0-specs-standalone
-          requires:
-            - typecheck
-          version: "3.0"
-      - specs:
-          name: ruby-3.0-specs-rbnacl
-          appraisal: rbnacl
-          requires:
-            - typecheck
-          version: "3.0"
-      - specs:
-          name: ruby-3.1-specs-standalone
-          requires:
-            - typecheck
-      - specs:
-          name: ruby-3.1-specs-rbnacl
-          appraisal: rbnacl
-          requires:
-            - typecheck
+      - rubocop
       - circleci-upload:
           requires:
-            - ruby-3.1-specs-standalone
-            - ruby-3.1-specs-rbnacl
-            - ruby-3.0-specs-standalone
-            - ruby-3.0-specs-rbnacl
+            - specs
