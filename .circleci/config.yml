@@ -87,7 +87,7 @@ jobs:
       - install-dependencies:
           appraisal: << parameters.appraisal >>
           version: << parameters.version >>
-      - - run:
+      - run:
           name: Run specs
           command: |
             #!/usr/bin/env bash
