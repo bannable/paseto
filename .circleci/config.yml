@@ -112,10 +112,10 @@ jobs:
             mkdir -p ~/rspec
 
             ./tmp/cc-test-reporter before-build
-            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
-      - store_test_results:
-          path: /tmp/test-results/rspec
+      # - store_test_results:
+      #     path: /tmp/test-results/rspec
       - persist_to_workspace:
           root: tmp
           paths:
