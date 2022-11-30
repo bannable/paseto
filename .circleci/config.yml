@@ -26,8 +26,9 @@ commands:
           command : |
             bundle install
             bundle exec appraisal install
-            gem list openssl
-            gem list sorbet
+            gem info openssl
+            bundle exec appraisal standalone gem info openssl
+            bundle exec appraisal rbnacl gem info openssl
       # - save_cache:
       #     key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
       #     paths:
