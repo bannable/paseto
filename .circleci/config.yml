@@ -82,6 +82,7 @@ jobs:
     docker:
       - image: cimg/ruby:<< parameters.version >>
     steps:
+      - checkout
       - install-dependencies:
           appraisal: << parameters.appraisal >>
           version: << parameters.version >>
