@@ -104,7 +104,7 @@ class SecretPWSpec
 
   attr_reader :name, :expect_fail, :unwrapped, :password, :options, :paserk
 
-  def initialize(template_name, name:, expect_fail:, unwrapped:, password:, options:, public_key: nil, paserk:, **_unused)
+  def initialize(template_name, name:, expect_fail:, unwrapped:, password:, options:, paserk:, public_key: nil, **_unused)
     @name = name
     @expect_fail = expect_fail
     @unwrapped = unwrapped
@@ -120,13 +120,7 @@ module SpecFactory
   def self.build(name, **test)
     klass = case name
             when 'v3', 'v4'
-              if test.include?(:key)
-                LocalSpec
-              elsif test.include?(:public_key)
-                PublicSpec
-              else
-                raise ArgumentError, "unrecognized vector: #{name}"
-              end
+              test.include?(:key) ? LocalSpec : PublicSpec
             when 'k3_local-wrap_pie', 'k4_local-wrap_pie' then LocalWrapPieSpec
             when 'k3_secret-wrap_pie', 'k4_secret-wrap_pie' then SecretWrapPieSpec
             when 'k3_local-pw', 'k4_local-pw' then LocalPWSpec
