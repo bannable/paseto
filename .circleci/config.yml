@@ -6,9 +6,14 @@ shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
+all_jobs_matrix: &all_jobs_matrix
+    parameters:
+      version: ["3.0", "3.1"]
+      appraisal: [standalone, rbnacl]
+
 commands:
-  bundle-install:
-    description: "bundle install"
+  install-dependencies:
+    description: "Install gems with bundler and appraisal"
     parameters:
       appraisal:
           type: string
@@ -17,24 +22,66 @@ commands:
           type: string
           default: "3.1"
     steps:
-      # - restore_cache:
-      #     keys:
-      #       - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-      #       - gem-cache-v4-<< parameters.version >>-{{ arch }}
+      - restore_cache:
+          keys:
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - run:
-          name: "Install gems and appraisals"
+          name: "Install bundler"
           command : |
-            bundle install
+              #!/usr/bin/env bash
+
+              if test -f "./gemfiles/$APPRAISAL.gemfile.lock"; then
+                APP_BUNDLER_VERSION=$(cat "./gemfiles/$APPRAISAL.gemfile.lock" | tail -1 | tr -d " ")
+                if [ -z "$APP_BUNDLER_VERSION" ]; then
+                  echo "Could not find bundler version from lockfile. Please use bundler-version parameter"
+                else
+                  echo "Lock file detected bundler version $APP_BUNDLER_VERSION"
+                fi
+              fi
+
+              if ! bundle version | grep -q $APP_BUNDLER_VERSION; then
+                echo "Installing bundler $APP_BUNDLER_VERSION"
+                gem install bundler:$APP_BUNDLER_VERSION
+              else
+                echo "bundler $APP_BUNDLER_VERSION is already installed."
+              fi
+          environment:
+            PARAM_APPRAISAL: << parameters.appraisal >>
+      - run:
+          name: "Bundle/Appraisal Install"
+          command : |
+            #!/usr/bin/env bash
+
+            bundle config set deployment 'true'
+            bundle config set path "./vendor/bundle"
+
+            bundle install && bundle clean --force
             bundle exec appraisal install
-            gem info openssl
-            bundle exec appraisal standalone gem info openssl
-            bundle exec appraisal rbnacl gem info openssl
-      # - save_cache:
-      #     key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-      #     paths:
-      #       - vendor/bundle
+          environment:
+            PARAM_APPRAISAL: << parameters.appraisal >>
+      - save_cache:
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          paths:
+            - ./vendor/bundle
 
 jobs:
+  prepare-deps:
+    parameters:
+      version:
+        type: string
+        default: "3.1"
+      appraisal:
+        type: string
+        default: standalone
+    docker:
+      - image: cimg/ruby:<< parameters.version >>
+    steps:
+      - install-dependencies:
+          appraisal: << parameters.appraisal >>
+          version: << parameters.version >>
+
   specs:
     parameters:
       version:
@@ -51,15 +98,19 @@ jobs:
       - checkout
       - attach_workspace:
           at: tmp
-      - bundle-install:
+      - install-dependencies:
           appraisal: << parameters.appraisal >>
           version: << parameters.version >>
       - run:
           name: Run specs
           command: |
+            mkdir -p ~/rspec
+
             ./tmp/cc-test-reporter before-build
-            bundle exec appraisal << parameters.appraisal >> rake spec
+            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+      - store_test_results:
+          path: /tmp/test-results/rspec
       - persist_to_workspace:
           root: tmp
           paths:
@@ -99,7 +150,7 @@ jobs:
       - image: cimg/ruby:3.1
     steps:
       - checkout
-      - bundle-install
+      - install-dependencies
       - run:
           name: "Rubocop"
           command: |
@@ -110,7 +161,7 @@ jobs:
       - image: cimg/ruby:3.1
     steps:
       - checkout
-      - bundle-install
+      - install-dependencies
       - run:
           name: "Sorbet Typecheck"
           command: |
@@ -119,36 +170,22 @@ jobs:
 workflows:
   build:
     jobs:
+      - prepare-deps:
+          matrix:
+            <<: *all_jobs_matrix
       - circleci-setup
       - typecheck:
           requires:
+            - prepare-deps
+      - specs:
+          matrix:
+            <<: *all_jobs_matrix
+          requires:
+            - prepare-deps
             - circleci-setup
       - rubocop:
           requires:
-            - typecheck
-      # - specs:
-      #     name: ruby-3.0-specs-standalone
-      #     requires:
-      #       - typecheck
-      #     version: "3.0"
-      - specs:
-          name: ruby-3.0-specs-rbnacl
-          appraisal: rbnacl
-          requires:
-            - typecheck
-          version: "3.0"
-      # - specs:
-      #     name: ruby-3.1-specs-standalone
-      #     requires:
-      #       - typecheck
-      - specs:
-          name: ruby-3.1-specs-rbnacl
-          appraisal: rbnacl
-          requires:
-            - typecheck
+            - prepare-deps
       # - circleci-upload:
       #     requires:
-      #       - ruby-3.1-specs-standalone
-      #       - ruby-3.1-specs-rbnacl
-      #       - ruby-3.0-specs-standalone
-      #       - ruby-3.0-specs-rbnacl
+      #       - specs
