@@ -34,8 +34,8 @@ commands:
 
             set -x
 
-            if test -f "./gemfiles/$APPRAISAL.gemfile.lock"; then
-              APP_BUNDLER_VERSION=$(cat "./gemfiles/$APPRAISAL.gemfile.lock" | tail -1 | tr -d " ")
+            if test -f "./gemfiles/$PARAM_APPRAISAL.gemfile.lock"; then
+              APP_BUNDLER_VERSION=$(cat "./gemfiles/$PARAM_APPRAISAL.gemfile.lock" | tail -1 | tr -d " ")
               if [ -z "$APP_BUNDLER_VERSION" ]; then
                 echo "Could not find bundler version from lockfile. Please use bundler-version parameter"
               else
