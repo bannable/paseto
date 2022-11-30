@@ -37,8 +37,8 @@ commands:
             TARGET_GEMFILE="./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
             echo $TARGET_GEMFILE
 
-            if test -f "./gemfiles/$TARGET_GEMFILE.gemfile.lock"; then
-              APP_BUNDLER_VERSION=$(cat "./gemfiles/$TARGET_GEMFILE.gemfile.lock" | tail -1 | tr -d " ")
+            if test -f "$TARGET_GEMFILE"; then
+              APP_BUNDLER_VERSION=$(cat "$TARGET_GEMFILE" | tail -1 | tr -d " ")
               if [ -z "$APP_BUNDLER_VERSION" ]; then
                 echo "Could not find bundler version from lockfile. Please use bundler-version parameter"
               else
