@@ -30,23 +30,25 @@ commands:
       - run:
           name: "Install bundler"
           command : |
-              #!/usr/bin/env bash
+            #!/usr/bin/env bash
 
-              if test -f "./gemfiles/$APPRAISAL.gemfile.lock"; then
-                APP_BUNDLER_VERSION=$(cat "./gemfiles/$APPRAISAL.gemfile.lock" | tail -1 | tr -d " ")
-                if [ -z "$APP_BUNDLER_VERSION" ]; then
-                  echo "Could not find bundler version from lockfile. Please use bundler-version parameter"
-                else
-                  echo "Lock file detected bundler version $APP_BUNDLER_VERSION"
-                fi
-              fi
+            set -x
 
-              if ! bundle version | grep -q $APP_BUNDLER_VERSION; then
-                echo "Installing bundler $APP_BUNDLER_VERSION"
-                gem install bundler:$APP_BUNDLER_VERSION
+            if test -f "./gemfiles/$APPRAISAL.gemfile.lock"; then
+              APP_BUNDLER_VERSION=$(cat "./gemfiles/$APPRAISAL.gemfile.lock" | tail -1 | tr -d " ")
+              if [ -z "$APP_BUNDLER_VERSION" ]; then
+                echo "Could not find bundler version from lockfile. Please use bundler-version parameter"
               else
-                echo "bundler $APP_BUNDLER_VERSION is already installed."
+                echo "Lock file detected bundler version $APP_BUNDLER_VERSION"
               fi
+            fi
+
+            if ! bundle version | grep -q $APP_BUNDLER_VERSION; then
+              echo "Installing bundler $APP_BUNDLER_VERSION"
+              gem install bundler:$APP_BUNDLER_VERSION
+            else
+              echo "bundler $APP_BUNDLER_VERSION is already installed."
+            fi
           environment:
             PARAM_APPRAISAL: << parameters.appraisal >>
       - run:
