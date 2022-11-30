@@ -34,7 +34,7 @@ commands:
 
             set -x
 
-            TARGET_GEMFILE=""./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
+            TARGET_GEMFILE="./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
             echo $TARGET_GEMFILE
 
             if test -f "./gemfiles/$TARGET_GEMFILE.gemfile.lock"; then
