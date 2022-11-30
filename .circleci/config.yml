@@ -19,18 +19,17 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - gem-cache-v3-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v3-<< parameters.version >>-{{ arch }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - run:
           name: "Install gems and appraisals"
           command : |
-            bundle install
-            bundle exec appraisal install
+            bundle install --path=vendor/bundle
+            bundle exec appraisal install --path=vendor/bundle
       - save_cache:
-          key: gem-cache-v3-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
           paths:
-            - ~/.bundle
-            - ~/.rubygems
+            - vendor/bundle
 
 jobs:
   specs:
