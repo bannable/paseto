@@ -87,16 +87,22 @@ jobs:
       - install-dependencies:
           appraisal: << parameters.appraisal >>
           version: << parameters.version >>
-      - run:
+      - - run:
           name: Run specs
           command: |
-            mkdir -p ~/rspec
+            #!/usr/bin/env bash
+
+
+            if ! mkdir -p "/tmp/test-results/rspec"; then
+              printf '%s\n' "Failed to create output directory: /tmp/test-results/rspec"
+              exit 1
+            fi
 
             ./tmp/cc-test-reporter before-build
-            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random
+            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
-      # - store_test_results:
-      #     path: /tmp/test-results/rspec
+      - store_test_results:
+          path: /tmp/test-results/rspec
       - persist_to_workspace:
           root: tmp
           paths:

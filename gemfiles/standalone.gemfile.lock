@@ -54,6 +54,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.0)
+    rspec_junit_formatter (0.6.0)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (1.38.0)
       json (~> 2.3)
       parallel (~> 1.10)
@@ -124,6 +126,7 @@ DEPENDENCIES
   paseto!
   rake
   rspec
+  rspec_junit_formatter
   rubocop (~> 1.38.0)
   rubocop-performance (~> 1.15.0)
   rubocop-rspec (~> 2.14.2)
