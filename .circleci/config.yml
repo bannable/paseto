@@ -68,22 +68,6 @@ commands:
             - ./vendor/bundle
 
 jobs:
-  prepare-deps:
-    parameters:
-      version:
-        type: string
-        default: "3.1"
-      appraisal:
-        type: string
-        default: standalone
-    docker:
-      - image: cimg/ruby:<< parameters.version >>
-    steps:
-      - checkout
-      - install-dependencies:
-          appraisal: << parameters.appraisal >>
-          version: << parameters.version >>
-
   specs:
     parameters:
       version:
@@ -172,22 +156,14 @@ jobs:
 workflows:
   build:
     jobs:
-      - prepare-deps:
-          matrix:
-            <<: *all_jobs_matrix
       - circleci-setup
-      - typecheck:
-          requires:
-            - prepare-deps
+      - typecheck
       - specs:
           matrix:
             <<: *all_jobs_matrix
           requires:
-            - prepare-deps
             - circleci-setup
-      - rubocop:
-          requires:
-            - prepare-deps
+      - rubocop
       - circleci-upload:
           requires:
             - specs
