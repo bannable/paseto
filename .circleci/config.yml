@@ -32,10 +32,7 @@ commands:
           command : |
             #!/usr/bin/env bash
 
-            set -x
-
             TARGET_GEMFILE="./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
-            echo $TARGET_GEMFILE
 
             APP_BUNDLER_VERSION=$(tail -1 $TARGET_GEMFILE | tr -d " ")
             if [ -z "$APP_BUNDLER_VERSION" ]; then
