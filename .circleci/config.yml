@@ -61,7 +61,7 @@ commands:
             bundle config set deployment 'true'
             bundle config set path "./vendor/bundle"
 
-            bundle install && bundle clean --force
+            bundle install
             bundle exec appraisal install
           environment:
             PARAM_APPRAISAL: << parameters.appraisal >>
@@ -191,6 +191,6 @@ workflows:
       - rubocop:
           requires:
             - prepare-deps
-      # - circleci-upload:
-      #     requires:
-      #       - specs
+      - circleci-upload:
+          requires:
+            - specs
