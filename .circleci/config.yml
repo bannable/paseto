@@ -119,7 +119,7 @@ jobs:
           paths:
             - codeclimate.*.json
 
-  circleci-setup:
+  codeclimate-setup:
     docker:
       - image: cimg/ruby:3.1
     steps:
@@ -134,7 +134,7 @@ jobs:
           paths:
             - cc-test-reporter
 
-  circleci-upload:
+  codeclimate-upload:
     docker:
       - image: cimg/ruby:3.1
     environment:
@@ -145,7 +145,11 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
-            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts 4 --output tmp/codeclimate.total.json
+            #!/usr/bin/env bash
+
+            PART_COUNT=$(find /tmp/ -name codeclimate.\*.json -type f | wc -l)
+            echo "Found ($PART_COUNT) parts"
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts $PART_COUNT --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
@@ -173,14 +177,14 @@ jobs:
 workflows:
   build:
     jobs:
-      - circleci-setup
+      - codeclimate-setup
       - typecheck
       - specs:
           matrix:
             <<: *all_jobs_matrix
           requires:
-            - circleci-setup
+            - codeclimate-setup
       - rubocop
-      - circleci-upload:
+      - codeclimate-upload:
           requires:
             - specs
