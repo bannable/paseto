@@ -112,6 +112,7 @@ jobs:
             bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+            ls -l /tmp/
       - store_test_results:
           path: /tmp/test-results/rspec
       - persist_to_workspace:
