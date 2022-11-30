@@ -98,8 +98,18 @@ jobs:
               exit 1
             fi
 
+            readonly o_ifs="$IFS"
+            IFS=","
+            read -ra specs \<<< "spec/**/*_spec.rb"
+            circle_split=$(circleci tests glob "${specs[@]}" | circleci tests split --split-by=timings)
+            while IFS= read -r line; do spec_files+=("$line"); done \<<< "$circle_split"
+
+            IFS="$o_ifs"
+
             ./tmp/cc-test-reporter before-build
-            bundle exec appraisal << parameters.appraisal >> rspec --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            set -x
+            bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            set +x
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
       - store_test_results:
           path: /tmp/test-results/rspec
