@@ -5,45 +5,48 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     skip('requires RbNaCl') unless Paseto.rbnacl?
     # skip('slow tests run only on command in CI') if false && ENV['CI'] && !ENV['SLOW_CI']
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
-    unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>67108864, :opslimit=>2}
     paserk = 'k4.local-pw.9VvzoqE_i23NOqsP9xoijQAAAAAEAAAAAAAAAgAAAAG_uxDZC-NsYyOW8OUOqISJqgHN8xIfAXiPfmFTfB4GPidUzm4aKzMGJmZtRPeyZCV11MxEJS3VMIRHXxYsfUQsmWLALpFwqUhxZdk_ymFcK2Nk0-N7CVp-'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k4.local-pw-2' do
     skip('requires RbNaCl') unless Paseto.rbnacl?
     # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
-    unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.local-pw.cyacmXuslYEP8Xyheh9i-AAAAAAQAAAAAAAAAwAAAAEJh5jS-CAQP9grqo6xhuNMwmjcs6yTAvBjOW2HwZyBrBd0NNs6btknqo-6e-tyXJebU5S5918-es1Y9jhF1dOjMW0gDrsWkPoWT3Vy_poNxjIQHxHOHXaa'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k4.local-pw-3' do
     skip('requires RbNaCl') unless Paseto.rbnacl?
     # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
-    unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = 'correct horse battery staple'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.local-pw.1zXpYe7LSsL95YKf92kkJAAAAAAQAAAAAAAAAwAAAAG9WUsB_V2gVnTE1cCAs7RrS9-j22y2rcNixSycUw4_cryOPztPM8vASZw_BYHlQHxXqCl7wBS9NkUnMLa6b8e3ZNeaGiqaGFxRpmOK1Hal4GpHys6lC2Jw'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k4.local-pw-fail-1' do
@@ -55,8 +58,12 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
 
     expect do
-      pbkw.decode(paserk)
+      Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
+
+    expect do
+      pbkw.encode(Paseto::V3::Local.new(ikm: 0.chr * 32), options)
+    end.to raise_error(Paseto::LucidityError)
   end
 
   it 'k4.local-pw-fail-2' do
@@ -68,8 +75,12 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
 
     expect do
-      pbkw.decode(paserk)
+      Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
+
+    expect do
+      pbkw.encode(Paseto::V3::Local.new(ikm: 0.chr * 32), options)
+    end.to raise_error(Paseto::LucidityError)
   end
 
   it 'k4.local-pw-fail-3' do

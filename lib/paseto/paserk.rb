@@ -20,12 +20,14 @@ module Paseto
       parts = paserk.split('.')
       case parts
       in [String => version, String => type, String => protocol, String => data] if wrapping_key
-        # Symmetric Key Wrapping
-        # local/secret-wrap
+        # Symmetric Key Wrapping, local/secret-wrap
         # https://github.com/paseto-standard/paserk/blob/master/operations/Wrap.md
         Operations::Wrap.unwrap(T.must(wrapping_key), [version, type, protocol, data])
       in [String => version, String => type, String => data] if password
-      # local/secret-pw
+        # Password-Based Key Wrapping, local/secret-pw
+        # https://github.com/paseto-standard/paserk/blob/master/operations/PBKW.md
+        version = Versions.deserialize(version).instance
+        Operations::PBKW.new(version, T.must(password)).decode(paserk)
       in [String => version, String => type, String => data] if unsealing_key
         # seal
       else
@@ -36,6 +38,11 @@ module Paseto
     sig { params(key: Key, wrapping_key: T.all(Key, Interface::Symmetric), nonce: T.nilable(String)).returns(String) }
     def self.wrap(key:, wrapping_key:, nonce: nil)
       Operations::Wrap.wrap(key, wrapping_key: wrapping_key, nonce: nonce)
+    end
+
+    sig { params(key: Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+    def self.pbkw(key:, password:, options: {})
+      Operations::PBKW.pbkw(key, password, options)
     end
   end
 end
