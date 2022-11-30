@@ -3,7 +3,6 @@
     # skip('slow tests run only on command in CI') if <%= options['opslimit'].to_i > 2 %> && ENV['CI'] && !ENV['SLOW_CI']
     <%- if unwrapped -%>
     unwrapped = '<%= unwrapped %>'
-    unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     <%- end -%>
     password = '<%= password %>'
     options = <%= options.transform_keys(&:to_sym) %>
@@ -15,18 +14,20 @@
     expect do
       pbkw.decode(paserk)
     end.to raise_error(Paseto::LucidityError)
+    <%- else -%>
+    expect do
+      Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    end.to raise_error(Paseto::InvalidAuthenticator)
+    <%- end -%>
 
     expect do
       pbkw.encode(Paseto::V3::Local.new(ikm: 0.chr * 32), options)
     end.to raise_error(Paseto::LucidityError)
     <%- else -%>
-    expect do
-      pbkw.decode(paserk)
-    end.to raise_error(Paseto::InvalidAuthenticator)
-    <%- end -%>
-    <%- else -%>
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
     <%- end -%>
   end

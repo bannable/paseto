@@ -7,10 +7,14 @@ module Paseto
     class PBKW
       extend T::Sig
 
+      sig { params(key: Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+      def self.pbkw(key, password, options = {})
+        new(key.protocol, password).encode(key, options)
+      end
+
       sig { params(version: Interface::Version, password: String).void }
       def initialize(version, password)
-        @version = version
-        case @version
+        case version
         in Protocol::Version3
           coder = PBKD::PBKDv3
         in Protocol::Version4 if Paseto.rbnacl?

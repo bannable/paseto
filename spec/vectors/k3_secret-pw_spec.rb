@@ -10,9 +10,11 @@ RSpec.describe "PASERK k3.secret-pw Test Vectors" do
     paserk = 'k3.secret-pw.kgGHkPhCK_nclk8kpCqJuTPM7BYfGxSwdeXETNnRglIAAAPonBRPeN3eNgUEMZAY9mLaQPXmg6zMls48IjN4429EoIyS2No-EGpKv6eRb_Zh65PdEec1pq0SaMWb434A2eqd4vt4_wcTfdobxiNovASIgyry03qnjx29FmuZ2bIvNzh-YExE_AA7UFDzs6BHom8F9Q'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k3.secret-pw-2' do
@@ -24,9 +26,11 @@ RSpec.describe "PASERK k3.secret-pw Test Vectors" do
     paserk = 'k3.secret-pw.LajP_XFziwwUW8t0xppL3ecIgaOzfSEx-5-UQG36jJ8AACcQUeD46ydUwIkMOqkXWFvacyf_eaH1BTMlJsdCy6ZhemmaFMZTclOD9LrOwCVnmhlCDQEePilxQEfvPsRM5cL_yxx1bWL0wjS4GAQABQiCvGyQTi_LGlbMnYuiZfxWgpqNJpAI6jx71m6s3f6wZIg68Q'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k3.secret-pw-3' do
@@ -38,9 +42,11 @@ RSpec.describe "PASERK k3.secret-pw Test Vectors" do
     paserk = 'k3.secret-pw._67v-WS5Jcez0HggRU2WqRDQewjO2cTKfLwsv2smSd0AACcQC-kvhegUybh2VVNQ4TU68Uqlg9ZOlPzmT36bpDsFc1vF2Lw5Jg8WRRuX1Bg3KT6GN1sUoAW95iuc2OnyIXNpDKXIA6FRPKkpztCVHiWFhEtiIUeGOg8hh11eueUNz4GmfCH91TNz2KtbAvy1TXT5Lw'
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
 
-    key = pbkw.decode(paserk)
-    expect(key.to_bytes.unpack1('H*')).to eq(unwrapped)
-    expect(pbkw.decode(pbkw.encode(key, options)).to_bytes.unpack1('H*')).to eq(unwrapped)
+    key = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+    repacked = Paseto::Paserk.pbkw(key: key, password: password, options: options)
+    unpacked = Paseto::Paserk.from_paserk(paserk: paserk, password: password)
+
+    expect(unpacked).to eq(key)
   end
 
   it 'k3.secret-pw-fail-1' do
@@ -51,8 +57,14 @@ RSpec.describe "PASERK k3.secret-pw Test Vectors" do
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
 
     expect do
-      pbkw.decode(paserk)
+      Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
+
+    if Paseto.rbnacl?
+      expect do
+        pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
+      end.to raise_error(Paseto::LucidityError)
+    end
   end
 
   it 'k3.secret-pw-fail-2' do
@@ -63,8 +75,14 @@ RSpec.describe "PASERK k3.secret-pw Test Vectors" do
     pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
 
     expect do
-      pbkw.decode(paserk)
+      Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
+
+    if Paseto.rbnacl?
+      expect do
+        pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
+      end.to raise_error(Paseto::LucidityError)
+    end
   end
 
   it 'k3.secret-pw-fail-3' do

@@ -40,5 +40,11 @@ module Paseto
     def pae_header
       "#{header}."
     end
+
+    sig(:final) { params(other: T.untyped).returns(T::Boolean) }
+    def ==(other)
+      self.class == other.class &&
+        to_bytes == other.to_bytes
+    end
   end
 end
