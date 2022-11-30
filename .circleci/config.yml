@@ -93,7 +93,7 @@ jobs:
             #!/usr/bin/env bash
 
 
-            if ! mkdir -p "/tmp/test-results/rspec"; then
+            if ! mkdir -p "/tmp/test-results/"; then
               printf '%s\n' "Failed to create output directory: /tmp/test-results/rspec"
               exit 1
             fi
