@@ -147,7 +147,8 @@ jobs:
           command: |
             #!/usr/bin/env bash
 
-            PART_COUNT=$(find /tmp/ -name codeclimate.\*.json -type f | wc -l)
+            ls -l /tmp/
+            PART_COUNT=$(find /tmp/ -name codeclimate.*.json -type f | wc -l)
             echo "Found ($PART_COUNT) parts"
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts $PART_COUNT --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
