@@ -80,6 +80,7 @@ jobs:
       - image: cimg/ruby:<< parameters.version >>
     environment:
       <<: *shared_env
+    parallelism: 4
     steps:
       - checkout
       - attach_workspace:
