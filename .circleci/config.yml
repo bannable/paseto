@@ -107,11 +107,12 @@ jobs:
 
             IFS="$o_ifs"
 
+
             ./tmp/cc-test-reporter before-build
             set -x
             bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
-            ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB.json
+            ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB-$CIRCLE_NODE_INDEX.json
       - store_test_results:
           path: /tmp/test-results/rspec
       - persist_to_workspace:
@@ -147,7 +148,7 @@ jobs:
           command: |
             #!/usr/bin/env bash
 
-            PART_COUNT=$(find /tmp/ -name codeclimate.\*.json -type f | wc -l)
+            PART_COUNT=$(find tmp/ -name codeclimate.*.json -type f | wc -l)
             echo "Found ($PART_COUNT) parts"
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json --parts $PART_COUNT --output tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
