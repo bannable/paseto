@@ -33,7 +33,13 @@ executors:
 commands:
   load-dependencies:
     description: "Load gems into workspace and configure bundler"
+    parameters:
+      appraisal:
+        type: string
+        default: standalone
     steps:
+      - install-bundler:
+          appraisal: << parameters.appraisal >>
       - attach_workspace:
           at: vendor
       - run:
@@ -44,26 +50,12 @@ commands:
             bundle config set deployment 'true'
             bundle config set path "./vendor/bundle"
 
-jobs:
-  install-dependencies:
-    description: "Install gems with bundler and appraisal"
+  install-bundler:
+    description: "Install the appropriate bundler version for an appraisal lockfile"
     parameters:
       appraisal:
-          type: string
-          default: standalone
-      version:
-          type: string
-          default: "3.1"
-    executor:
-      name: ruby
-      version: << parameters.version >>
-      size: small
+        type: string
     steps:
-      - restore_cache:
-          keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - run:
           name: "Install bundler"
           command : |
@@ -87,6 +79,30 @@ jobs:
             fi
           environment:
             PARAM_APPRAISAL: << parameters.appraisal >>
+
+jobs:
+  install-dependencies:
+    description: "Install gems with bundler and appraisal"
+    parameters:
+      appraisal:
+          type: string
+          default: standalone
+      version:
+          type: string
+          default: "3.1"
+    executor:
+      name: ruby
+      version: << parameters.version >>
+      size: small
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}
+      - install-bundler:
+          appraisal: << parameters.appraisal >>
       - run:
           name: "Bundle/Appraisal Install"
           command : |
@@ -121,7 +137,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: tmp
-      - load-dependencies
+      - load-dependencies:
+          appraisal: << parameters.appraisal >>
       - run:
           name: Run specs
           command: |
