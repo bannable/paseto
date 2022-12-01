@@ -5,11 +5,9 @@
 module Paseto
   module V4
     # PASETOv4 `public` token interface providing asymmetric signature signing and verification of tokens.
-    class Public < Key
+    class Public < AsymmetricKey
       extend T::Sig
       extend T::Helpers
-
-      include Interface::Asymmetric
 
       final!
 
@@ -105,6 +103,21 @@ module Paseto
         raise ArgumentError, 'no private key available' unless @key.is_a? RbNaCl::SigningKey
 
         @key.keypair_bytes
+      end
+
+      sig(:final) { override.returns(T::Boolean) }
+      def private?
+        @key.is_a? RbNaCl::SigningKey
+      end
+
+      sig(:final) { override.returns(String) }
+      def public_bytes
+        case @key
+        when RbNaCl::SigningKey
+          @key.verify_key.to_bytes
+        when RbNaCl::VerifyKey
+          @key.to_bytes
+        end
       end
 
       private

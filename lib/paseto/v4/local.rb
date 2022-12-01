@@ -5,10 +5,8 @@
 module Paseto
   module V4
     # PASETOv4 `local` token interface providing symmetric encryption of tokens.
-    class Local < Key
+    class Local < SymmetricKey
       extend T::Sig
-
-      include Interface::Symmetric
 
       final!
 

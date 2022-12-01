@@ -7,7 +7,7 @@ module Paseto
     class PBKW
       extend T::Sig
 
-      sig { params(key: Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+      sig { params(key: Interface::Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
       def self.pbkw(key, password, options = {})
         new(key.protocol, password).encode(key, options)
       end
@@ -25,7 +25,7 @@ module Paseto
         @coder = T.let(coder.new(password), Interface::PBKD)
       end
 
-      sig { params(key: Key, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+      sig { params(key: Interface::Key, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
       def encode(key, options)
         raise LucidityError unless key.version == @coder.version
 
@@ -33,7 +33,7 @@ module Paseto
         @coder.wrap(key, **opts)
       end
 
-      sig { params(paserk: String).returns(Key) }
+      sig { params(paserk: String).returns(Interface::Key) }
       def decode(paserk)
         paserk.split('.') => [version, type, data]
         raise LucidityError unless version == @coder.paserk_version

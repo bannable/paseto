@@ -57,14 +57,14 @@ module Paseto
       to_s <=> other.to_s
     end
 
-    sig { returns(T.class_of(Key)) }
+    sig { returns(T.class_of(Interface::Key)) }
     def type
       T.must(header_to_klass)
     end
 
     private
 
-    sig { returns(T.nilable(T.class_of(Key))) }
+    sig { returns(T.nilable(T.class_of(Interface::Key))) }
     def header_to_klass
       TokenTypes.deserialize(header).key_klass
     end

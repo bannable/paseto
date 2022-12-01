@@ -11,7 +11,7 @@ module Paseto
     sig do
       params(
         paserk: String,
-        wrapping_key: T.nilable(T.all(Key, Interface::Symmetric)),
+        wrapping_key: T.nilable(SymmetricKey),
         password: T.nilable(String),
         unsealing_key: T.nilable(String)
       ).returns(T.untyped)
@@ -35,12 +35,12 @@ module Paseto
       end
     end
 
-    sig { params(key: Key, wrapping_key: T.all(Key, Interface::Symmetric), nonce: T.nilable(String)).returns(String) }
+    sig { params(key: Interface::Key, wrapping_key: SymmetricKey, nonce: T.nilable(String)).returns(String) }
     def self.wrap(key:, wrapping_key:, nonce: nil)
       Operations::Wrap.wrap(key, wrapping_key: wrapping_key, nonce: nonce)
     end
 
-    sig { params(key: Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+    sig { params(key: Interface::Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
     def self.pbkw(key:, password:, options: {})
       Operations::PBKW.pbkw(key, password, options)
     end

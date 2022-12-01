@@ -33,12 +33,7 @@ module Paseto
           'k4.secret-pw.'
         end
 
-        sig do
-          override.params(
-            key: Key,
-            options: T::Hash[Symbol, Integer]
-          ).returns(String)
-        end
+        sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
         def wrap(key, options)
           options => {memlimit:, opslimit:}
 
@@ -57,7 +52,7 @@ module Paseto
           [header, Util.encode64("#{message}#{t}")].join
         end
 
-        sig { override.params(header: String, data: String).returns(Key) }
+        sig { override.params(header: String, data: String).returns(Interface::Key) }
         def unwrap(header, data)
           h = pbkw_header(header)
 
@@ -79,11 +74,11 @@ module Paseto
 
         private
 
-        sig { params(lookup: T.any(Key, String)).returns(String) }
+        sig { params(lookup: T.any(Interface::Key, String)).returns(String) }
         def pbkw_header(lookup)
           case lookup
-          when Interface::Symmetric, 'k4.local-pw' then local_header
-          when Interface::Asymmetric, 'k4.secret-pw' then secret_header
+          when SymmetricKey, 'k4.local-pw' then local_header
+          when AsymmetricKey, 'k4.secret-pw' then secret_header
           else
             # :nocov:
             raise ArgumentError, 'not a valid type of key'

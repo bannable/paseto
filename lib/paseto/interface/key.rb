@@ -1,13 +1,17 @@
-# typed: strict
+# encoding: binary
+# typed: true
 # frozen_string_literal: true
 
 module Paseto
   module Interface
-    module Coder
+    class Key
       extend T::Sig
       extend T::Helpers
 
-      interface!
+      DOMAIN_SEPARATOR_AUTH = "\x81"
+      DOMAIN_SEPARATOR_ENCRYPT = "\x80"
+
+      abstract!
 
       sig do
         abstract.params(
@@ -39,6 +43,41 @@ module Paseto
 
       sig { abstract.returns(String) }
       def purpose; end
+
+      sig { abstract.returns(String) }
+      def to_bytes; end
+
+      sig { abstract.returns(String) }
+      def to_paserk; end
+
+      sig { abstract.returns(Version) }
+      def protocol; end
+
+      sig(:final) { returns(String) }
+      def version
+        protocol.version
+      end
+
+      sig(:final) { returns(String) }
+      def paserk_version
+        protocol.paserk_version
+      end
+
+      sig(:final) { returns(String) }
+      def header
+        "#{version}.#{purpose}"
+      end
+
+      sig(:final) { returns(String) }
+      def pae_header
+        "#{header}."
+      end
+
+      sig(:final) { params(other: T.untyped).returns(T::Boolean) }
+      def ==(other)
+        self.class == other.class &&
+          to_bytes == other.to_bytes
+      end
     end
   end
 end
