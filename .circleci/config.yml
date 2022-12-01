@@ -6,15 +6,6 @@ shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
-all_builds_matrix: &all_builds_matrix
-  parameters:
-    version:
-      - "3.0"
-      - "3.1"
-    appraisal:
-      - standalone
-      - rbnacl
-
 executors:
   ruby:
     parameters:
@@ -84,12 +75,9 @@ jobs:
   install-dependencies:
     description: "Install gems with bundler and appraisal"
     parameters:
-      appraisal:
-          type: string
-          default: standalone
       version:
-          type: string
-          default: "3.1"
+        type: string
+        default: "3.1"
     executor:
       name: ruby
       version: << parameters.version >>
@@ -98,11 +86,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
             - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - install-bundler:
-          appraisal: << parameters.appraisal >>
+          appraisal: rbnacl
       - run:
           name: "Bundle/Appraisal Install"
           command : |
@@ -114,13 +102,13 @@ jobs:
             bundle install
             bundle exec appraisal install
       - save_cache:
-          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
           paths:
             - ./vendor/bundle
       - persist_to_workspace:
           root: vendor
           paths:
-            - bundle
+            - bundle/
   specs:
     parameters:
       version:
@@ -252,10 +240,13 @@ workflows:
       - codeclimate-setup
       - install-dependencies:
           matrix:
-            <<: *all_builds_matrix
+            parameters:
+              version:
+                - "3.0"
+                - "3.1"
       - typecheck:
           requires:
-            - install-dependencies-standalone-3.1
+            - install-dependencies-3.1
       - specs:
           matrix:
             parameters:
@@ -267,10 +258,10 @@ workflows:
                 - rbnacl
           requires:
             - codeclimate-setup
-            - install-dependencies-<< matrix.appraisal >>-<< matrix.version >>
+            - install-dependencies-<< matrix.version >>
       - rubocop:
           requires:
-            - install-dependencies-standalone-3.1
+            - install-dependencies-3.1
       - codeclimate-upload:
           requires:
             - specs
