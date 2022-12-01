@@ -32,6 +32,8 @@ GEM
     netrc (0.11.0)
     openssl (3.0.1)
     parallel (1.22.1)
+    parallel_tests (4.0.0)
+      parallel
     parlour (8.0.0)
       commander (~> 4.5)
       parser
@@ -136,6 +138,7 @@ DEPENDENCIES
   appraisal
   bundler (~> 2)
   debug (>= 1.0)
+  parallel_tests
   parlour
   paseto!
   rake
