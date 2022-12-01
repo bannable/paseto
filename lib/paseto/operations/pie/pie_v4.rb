@@ -23,7 +23,7 @@ module Paseto
           'k4.secret-wrap.pie.'
         end
 
-        sig { params(wrapping_key: T.all(Key, Interface::Symmetric)).void }
+        sig { params(wrapping_key: SymmetricKey).void }
         def initialize(wrapping_key)
           @wrapping_key = wrapping_key
         end

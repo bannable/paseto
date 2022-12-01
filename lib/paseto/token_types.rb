@@ -12,7 +12,7 @@ module Paseto
       V4Public = new('v4.public')
     end
 
-    sig { returns(T.nilable(T.class_of(Key))) }
+    sig { returns(T.nilable(T.class_of(Interface::Key))) }
     def key_klass
       case self
       in V3Local then V3::Local

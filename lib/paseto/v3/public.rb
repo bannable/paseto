@@ -5,11 +5,9 @@
 module Paseto
   module V3
     # PASETOv3 `public` token interface providing asymmetric signature signing and verification of tokens.
-    class Public < Key
+    class Public < AsymmetricKey
       extend T::Sig
       extend T::Helpers
-
-      include Interface::Asymmetric
 
       final!
 
@@ -48,11 +46,9 @@ module Paseto
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
       sig(:final) { override.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
       def sign(message:, footer: '', implicit_assertion: '')
-        raise ArgumentError, 'no private key available' unless @key.private?
+        raise ArgumentError, 'no private key available' unless private?
 
-        pk = @key.public_key.to_octet_string(:compressed)
-
-        m2 = Util.pre_auth_encode(pk, pae_header, message, footer, implicit_assertion)
+        m2 = Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
 
         data = OpenSSL::Digest.digest('SHA384', m2)
         sig_asn = @key.sign_raw(nil, data)
@@ -73,12 +69,10 @@ module Paseto
         m = token.payload.dup.to_s
         raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN
 
-        pk = @key.public_key.to_octet_string(:compressed)
-
         sig = T.must(m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
         s = ASN1::ECDSASignature.from_rs(sig, SIGNATURE_PART_LEN).to_der
 
-        m2 = Util.pre_auth_encode(pk, pae_header, m, token.footer, implicit_assertion)
+        m2 = Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
 
         data = OpenSSL::Digest.digest('SHA384', m2)
         raise InvalidSignature unless @key.verify_raw(nil, s, data)
@@ -97,16 +91,26 @@ module Paseto
 
       sig(:final) { override.returns(String) }
       def private_to_pem
-        raise ArgumentError, 'no private key available' unless @key.private?
+        raise ArgumentError, 'no private key available' unless private?
 
         @key.to_pem
       end
 
       sig(:final) { override.returns(String) }
       def to_bytes
-        raise ArgumentError, 'no private key available' unless @key.private?
+        raise ArgumentError, 'no private key available' unless private?
 
         @key.private_key.to_s(2).rjust(48, "\x00")
+      end
+
+      sig(:final) { override.returns(T::Boolean) }
+      def private?
+        @key.private?
+      end
+
+      sig(:final) { override.returns(String) }
+      def public_bytes
+        @key.public_key.to_octet_string(:compressed)
       end
 
       private
@@ -139,7 +143,7 @@ module Paseto
           return false
         end
 
-        return true unless @key.private? && Util.openssl?(3)
+        return true unless private? && Util.openssl?(3)
 
         priv_key = @key.private_key
 

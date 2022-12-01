@@ -33,7 +33,7 @@ module Paseto
           'k3.secret-pw.'
         end
 
-        sig { override.params(key: Key, options: T::Hash[Symbol, Integer]).returns(String) }
+        sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
         def wrap(key, options)
           raise LucidityError unless key.protocol == protocol
 
@@ -53,7 +53,7 @@ module Paseto
           [h, Util.encode64("#{message}#{t}")].join
         end
 
-        sig { override.params(header: String, data: String).returns(Key) }
+        sig { override.params(header: String, data: String).returns(Interface::Key) }
         def unwrap(header, data)
           h = pbkw_header(header)
           decode(data) => {salt:, iterations:, nonce:, edk:, authentication_tag:}
@@ -72,12 +72,12 @@ module Paseto
 
         private
 
-        sig { params(lookup: T.any(Key, String)).returns(String) }
+        sig { params(lookup: T.any(Interface::Key, String)).returns(String) }
         def pbkw_header(lookup)
           case lookup
-          when Interface::Symmetric, 'k3.local-pw' then local_header
-          when Interface::Asymmetric, 'k3.secret-pw' then secret_header
-          when Key
+          when SymmetricKey, 'k3.local-pw' then local_header
+          when AsymmetricKey, 'k3.secret-pw' then secret_header
+          when Interface::Key
             raise LucidityError, "wrong protocol version for key version #{lookup.version}"
           when String
             raise LucidityError, "wrong protocol version for header: '#{lookup}'"

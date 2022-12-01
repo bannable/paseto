@@ -9,7 +9,7 @@ module Paseto
 
       include Interface::Wrapper
 
-      sig { params(wrapping_key: T.all(Key, Interface::Symmetric)).void }
+      sig { params(wrapping_key: SymmetricKey).void }
       def initialize(wrapping_key)
         case wrapping_key.protocol
         in Protocol::Version3
@@ -23,7 +23,7 @@ module Paseto
         @coder = T.let(coder.new(wrapping_key), Interface::PIE)
       end
 
-      sig { override.params(key: Key, nonce: T.nilable(String)).returns(String) }
+      sig { override.params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }
       def encode(key, nonce: nil)
         raise LucidityError unless key.version == @wrapping_key.version
 
@@ -38,7 +38,7 @@ module Paseto
         [header, Util.encode64("#{t}#{nonce}#{c}")].join
       end
 
-      sig { override.params(paserk: [String, String, String, String]).returns(Key) }
+      sig { override.params(paserk: [String, String, String, String]).returns(Interface::Key) }
       def decode(paserk)
         paserk => [version, type, protocol, data]
         raise UnknownProtocol, 'payload does not use PIE' unless protocol == 'pie'
@@ -63,11 +63,11 @@ module Paseto
 
       private
 
-      sig { params(key: Key).returns(String) }
+      sig { params(key: Interface::Key).returns(String) }
       def pie_header(key)
         case key
-        when Interface::Symmetric then @coder.local_header
-        when Interface::Asymmetric then @coder.secret_header
+        when SymmetricKey then @coder.local_header
+        when AsymmetricKey then @coder.secret_header
         else
           # :nocov:
           raise ArgumentError, 'not a valid type of key'

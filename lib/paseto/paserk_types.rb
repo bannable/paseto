@@ -16,7 +16,7 @@ module Paseto
       K4SecretPBKW = new('k4.secret-pw')
     end
 
-    sig { params(input: String).returns(Key) }
+    sig { params(input: String).returns(Interface::Key) }
     def generate(input)
       case self
       in K3LocalWrap | K3LocalPBKW if input.bytesize == 32
