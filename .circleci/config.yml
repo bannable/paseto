@@ -7,19 +7,26 @@ shared_env: &shared_env
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
 executors:
-  ruby:
+  ruby-other:
     parameters:
       version:
         type: string
         default: "3.1"
-      size:
-        type: string
-        default: medium
     docker:
       - image: cimg/ruby:<< parameters.version >>
     environment:
       <<: *shared_env
-    resource_class: medium
+    resource_class: medium+
+  ruby-specs:
+    parameters:
+      version:
+        type: string
+        default: "3.1"
+    docker:
+      - image: cimg/ruby:<< parameters.version >>
+    environment:
+      <<: *shared_env
+    resource_class: large
 
 commands:
   load-dependencies:
@@ -79,9 +86,8 @@ jobs:
         type: string
         default: "3.1"
     executor:
-      name: ruby
+      name: ruby-other
       version: << parameters.version >>
-      size: small
     steps:
       - checkout
       - restore_cache:
@@ -118,7 +124,7 @@ jobs:
         type: string
         default: standalone
     executor:
-      name: ruby
+      name: ruby-specs
       version: << parameters.version >>
     parallelism: 4
     steps:
@@ -145,7 +151,6 @@ jobs:
 
             IFS="$o_ifs"
 
-            ./tmp/cc-test-reporter before-build
             set -x
             bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
@@ -158,9 +163,7 @@ jobs:
             - codeclimate.*.json
 
   codeclimate-setup:
-    executor:
-      name: ruby
-      size: small
+    executor: ruby-other
     steps:
       - run:
           name: Download latest cc-test-reporter signature
@@ -188,6 +191,7 @@ jobs:
 
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
             chmod +x ./tmp/cc-test-reporter
+            ./tmp/cc-test-reporter before-build
       - save_cache:
           key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
           paths:
@@ -198,9 +202,7 @@ jobs:
             - cc-test-reporter
 
   codeclimate-upload:
-    executor:
-      name: ruby
-      size: small
+    executor: ruby-other
     steps:
       - attach_workspace:
           at: tmp
@@ -215,7 +217,7 @@ jobs:
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
-    executor: ruby
+    executor: ruby-other
     steps:
       - checkout
       - load-dependencies
@@ -225,7 +227,7 @@ jobs:
             bundle exec rubocop --parallel
 
   typecheck:
-    executor: ruby
+    executor: ruby-other
     steps:
       - checkout
       - load-dependencies
