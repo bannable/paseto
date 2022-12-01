@@ -6,27 +6,54 @@ shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
 
-all_jobs_matrix: &all_jobs_matrix
+executors:
+  ruby-other:
     parameters:
-      version: ["3.0", "3.1"]
-      appraisal: [standalone, rbnacl]
+      version:
+        type: string
+        default: "3.1"
+    docker:
+      - image: cimg/ruby:<< parameters.version >>
+    environment:
+      <<: *shared_env
+    resource_class: medium+
+  ruby-specs:
+    parameters:
+      version:
+        type: string
+        default: "3.1"
+    docker:
+      - image: cimg/ruby:<< parameters.version >>
+    environment:
+      <<: *shared_env
+    resource_class: large
 
 commands:
-  install-dependencies:
-    description: "Install gems with bundler and appraisal"
+  load-dependencies:
+    description: "Load gems into workspace and configure bundler"
     parameters:
       appraisal:
-          type: string
-          default: standalone
-      version:
-          type: string
-          default: "3.1"
+        type: string
+        default: standalone
     steps:
-      - restore_cache:
-          keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}
+      - install-bundler:
+          appraisal: << parameters.appraisal >>
+      - attach_workspace:
+          at: vendor
+      - run:
+          name: "Configure Bundler"
+          command : |
+            #!/usr/bin/env bash
+
+            bundle config set deployment 'true'
+            bundle config set path "./vendor/bundle"
+
+  install-bundler:
+    description: "Install the appropriate bundler version for an appraisal lockfile"
+    parameters:
+      appraisal:
+        type: string
+    steps:
       - run:
           name: "Install bundler"
           command : |
@@ -50,6 +77,26 @@ commands:
             fi
           environment:
             PARAM_APPRAISAL: << parameters.appraisal >>
+
+jobs:
+  install-dependencies:
+    description: "Install gems with bundler and appraisal"
+    parameters:
+      version:
+        type: string
+        default: "3.1"
+    executor:
+      name: ruby-other
+      version: << parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}
+      - install-bundler:
+          appraisal: rbnacl
       - run:
           name: "Bundle/Appraisal Install"
           command : |
@@ -60,14 +107,14 @@ commands:
 
             bundle install
             bundle exec appraisal install
-          environment:
-            PARAM_APPRAISAL: << parameters.appraisal >>
       - save_cache:
-          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile" }}-{{ checksum "gemfiles/<< parameters.appraisal >>.gemfile.lock" }}
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
           paths:
             - ./vendor/bundle
-
-jobs:
+      - persist_to_workspace:
+          root: vendor
+          paths:
+            - bundle/
   specs:
     parameters:
       version:
@@ -76,23 +123,20 @@ jobs:
       appraisal:
         type: string
         default: standalone
-    docker:
-      - image: cimg/ruby:<< parameters.version >>
-    environment:
-      <<: *shared_env
+    executor:
+      name: ruby-specs
+      version: << parameters.version >>
     parallelism: 4
     steps:
       - checkout
       - attach_workspace:
           at: tmp
-      - install-dependencies:
+      - load-dependencies:
           appraisal: << parameters.appraisal >>
-          version: << parameters.version >>
       - run:
           name: Run specs
           command: |
             #!/usr/bin/env bash
-
 
             if ! mkdir -p "/tmp/test-results/"; then
               printf '%s\n' "Failed to create output directory: /tmp/test-results/rspec"
@@ -107,8 +151,6 @@ jobs:
 
             IFS="$o_ifs"
 
-
-            ./tmp/cc-test-reporter before-build
             set -x
             bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
@@ -121,25 +163,46 @@ jobs:
             - codeclimate.*.json
 
   codeclimate-setup:
-    docker:
-      - image: cimg/ruby:3.1
+    executor: ruby-other
     steps:
       - run:
-          name: Download Code Climate test-reporter
+          name: Download latest cc-test-reporter signature
           command: |
-            mkdir -p tmp
+            #!/usr/bin/env bash
+
+            if ! mkdir -p tmp; then
+              printf '%s\n' "Failed to create tmp directory!"
+              exit 1
+            fi
+
+            SUM=$(curl -s -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64.sha256)
+            echo $SUM | sed 's:test-reporter-latest-linux-amd64:./tmp/cc-test-reporter:' > ./tmp/cc-test-reporter.sha256
+      - restore_cache:
+          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+      - run:
+          name: Maybe Download cc-test-reporter
+          command: |
+            #!/usr/bin/env bash
+
+            if sha256sum -c ./tmp/cc-test-reporter.sha256; then
+              echo "cc-test-reporter has had no updates since last run"
+              exit 0
+            fi
+
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
             chmod +x ./tmp/cc-test-reporter
+            ./tmp/cc-test-reporter before-build
+      - save_cache:
+          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+          paths:
+            - ./tmp/cc-test-reporter
       - persist_to_workspace:
           root: tmp
           paths:
             - cc-test-reporter
 
   codeclimate-upload:
-    docker:
-      - image: cimg/ruby:3.1
-    environment:
-      <<: *shared_env
+    executor: ruby-other
     steps:
       - attach_workspace:
           at: tmp
@@ -154,22 +217,20 @@ jobs:
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
-    docker:
-      - image: cimg/ruby:3.1
+    executor: ruby-other
     steps:
       - checkout
-      - install-dependencies
+      - load-dependencies
       - run:
           name: "Rubocop"
           command: |
             bundle exec rubocop --parallel
 
   typecheck:
-    docker:
-      - image: cimg/ruby:3.1
+    executor: ruby-other
     steps:
       - checkout
-      - install-dependencies
+      - load-dependencies
       - run:
           name: "Sorbet Typecheck"
           command: |
@@ -179,13 +240,30 @@ workflows:
   build:
     jobs:
       - codeclimate-setup
-      - typecheck
+      - install-dependencies:
+          matrix:
+            parameters:
+              version:
+                - "3.0"
+                - "3.1"
+      - typecheck:
+          requires:
+            - install-dependencies-3.1
       - specs:
           matrix:
-            <<: *all_jobs_matrix
+            parameters:
+              version:
+                - "3.0"
+                - "3.1"
+              appraisal:
+                - standalone
+                - rbnacl
           requires:
             - codeclimate-setup
-      - rubocop
+            - install-dependencies-<< matrix.version >>
+      - rubocop:
+          requires:
+            - install-dependencies-3.1
       - codeclimate-upload:
           requires:
             - specs
