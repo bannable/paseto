@@ -81,4 +81,10 @@ RSpec.describe Paseto::V3::Local do
   describe '#header' do
     it { expect(key.header).to eq('v3.local') }
   end
+
+  describe '#to_paserk' do
+    it 'encodes to the expected k3.local' do
+      expect(key.to_paserk).to eq('k3.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+    end
+  end
 end

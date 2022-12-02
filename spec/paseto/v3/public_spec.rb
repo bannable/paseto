@@ -216,4 +216,36 @@ RSpec.describe Paseto::V3::Public do
       end
     end
   end
+
+  describe '#to_paserk' do
+    context 'with a secret key' do
+      let(:key_pem) do
+        <<~P384
+          -----BEGIN EC PRIVATE KEY-----
+          MD4CAQEEMHBxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeY
+          mZqbnJ2en6AHBgUrgQQAIg==
+          -----END EC PRIVATE KEY-----
+        P384
+      end
+
+      it 'encodes to the expected k3.secret' do
+        expect(key.to_paserk).to eq('k3.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo-QkZKTlJWWl5iZmpucnZ6f')
+      end
+    end
+
+    context 'with a public key' do
+      let(:key_pem) do
+        <<~P384
+          -----BEGIN PUBLIC KEY-----
+          MEYwEAYHKoZIzj0CAQYFK4EEACIDMgACcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaH
+          iImKi4yNjo+QkZKTlJWWl5iZmpucnZ6f
+          -----END PUBLIC KEY-----
+        P384
+      end
+
+      it 'encodes to the expected k3.public' do
+        expect(key.to_paserk).to eq('k3.public.AnBxcnN0dXZ3eHl6e3x9fn-AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2enw')
+      end
+    end
+  end
 end

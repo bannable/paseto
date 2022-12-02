@@ -193,4 +193,24 @@ RSpec.describe 'Paseto::V4::Public' do
       end
     end
   end
+
+  describe '#to_paserk' do
+    let(:key_bytes) { Paseto::Util.decode_hex('707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f') }
+
+    context 'with a secret key' do
+      let(:key) { described_class.new(RbNaCl::SigningKey.new(key_bytes)) }
+
+      it 'encodes to the expected k3.secret' do
+        expect(key.to_paserk).to eq('k4.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8c5WpIyC_5kWKhS8VEYSZ05dYfuTF-ZdQFV4D9vLTcNQ')
+      end
+    end
+
+    context 'with a public key' do
+      let(:key) { described_class.new(RbNaCl::VerifyKey.new(key_bytes)) }
+
+      it 'encodes to the expected k3.public' do
+        expect(key.to_paserk).to eq('k4.public.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+      end
+    end
+  end
 end
