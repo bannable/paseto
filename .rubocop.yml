@@ -42,6 +42,9 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 
+Metrics/ClassLength: # Rubocop counts sigs as lines
+  Max: 115
+
 Metrics/ParameterLists:
   Exclude:
     - 'spec/generate_vectors.rb'
