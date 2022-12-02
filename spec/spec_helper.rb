@@ -8,7 +8,7 @@ SimpleCov.start do
   if ENV['CI']
     require 'simplecov_json_formatter'
     formatter SimpleCov::Formatter::JSONFormatter
-  else
+  elsif ENV['APPRAISAL_INITIALIZED']
     formatter SimpleCov::Formatter::SimpleFormatter
     gemfile = ENV.fetch('BUNDLE_GEMFILE', nil)
     coverage_dir "coverage/results/#{File.basename(gemfile, '.gemfile')}" if gemfile
