@@ -62,15 +62,21 @@ RSpec.describe 'Paseto::V4::Public' do
   end
 
   describe '.from_keypair' do
-    let(:keypair) { Paseto::Util.decode_hex('5f445f215af4331f567339bc83308b16694f6b8e70e1d0e24ce192e91e028310bd3c6270088ea35eafdd38edfb7bfd107107df533b82903b39576ccb6c8c48e0') }
-    let(:key) { described_class.from_keypair(keypair) }
+    let(:keypair) do
+      '5f445f215af4331f567339bc83308b16694f6b8e70e1d0e24ce192e91e02831' \
+        '0bd3c6270088ea35eafdd38edfb7bfd107107df533b82903b39576ccb6c8c48e0'
+    end
+    let(:key) { described_class.from_keypair(Paseto::Util.decode_hex(keypair)) }
 
     it 'succeeds' do
       expect(key).to be_a described_class
     end
 
     context 'with an invalid keypair' do
-      let(:keypair) { Paseto::Util.decode_hex('5f445f215af4331f567339bc83308b16694f6b8e70e1d0e24ce192e91e0283100000000000000000000000000000000000000000000000000000000000000000') }
+      let(:keypair) do
+        '5f445f215af4331f567339bc83308b16694f6b8e70e1d0e24ce192e91e02831' \
+          '00000000000000000000000000000000000000000000000000000000000000000'
+      end
 
       it 'raises InvalidKeyPair' do
         expect { key }.to raise_error(Paseto::InvalidKeyPair, 'public key does not match private')
