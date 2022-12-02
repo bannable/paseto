@@ -56,7 +56,6 @@ module Paseto
     def unwrap(paserk)
       Paserk.from_paserk(
         paserk: paserk,
-        # wrapping_key: T.cast(self, T.all(Paseto::Key, Interface::Symmetric))
         wrapping_key: self
       )
     end
@@ -65,10 +64,14 @@ module Paseto
     def wrap(key, nonce: nil)
       Paserk.wrap(
         key: key,
-        # wrapping_key: T.cast(self, T.all(Paseto::Key, Interface::Symmetric)),
         wrapping_key: self,
         nonce: nonce
       )
+    end
+
+    sig(:final) { override.returns(String) }
+    def to_paserk
+      "#{paserk_version}.#{purpose}.#{Util.encode64(to_bytes)}"
     end
 
     sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }

@@ -29,6 +29,18 @@ module Paseto
     end
 
     sig { params(bytes: String).returns(String) }
+    def self.p384_public_bytes_to_oak_der(bytes)
+      SubjectPublicKeyInfo.new(
+        algorithm_identifier: AlgorithmIdentifier.new(
+          algorithm: NamedCurve.new(curve_name: 'secp384r1')
+        ),
+        public_key: PublicKey.new(
+          public_key: bytes
+        )
+      ).to_der
+    end
+
+    sig { params(bytes: String).returns(String) }
     def self.ed25519_rs_to_oak_der(bytes)
       OneAsymmetricKey.new(
         version: OpenSSL::BN.new(0),
