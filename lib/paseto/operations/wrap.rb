@@ -10,7 +10,7 @@ module Paseto
       DOMAIN_SEPARATOR_AUTH = "\x81"
       DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
-      sig { params( wrapping_key: SymmetricKey, paserk: [String, String, String, String]).returns(Interface::Key) }
+      sig { params(wrapping_key: SymmetricKey, paserk: [String, String, String, String]).returns(Interface::Key) }
       def self.unwrap(wrapping_key, paserk)
         case paserk
         in [_, _, _, data] if data.empty?
