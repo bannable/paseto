@@ -27,8 +27,7 @@ module Paseto
       in K4LocalWrap | K4LocalPBKW if Paseto.rbnacl? && input.bytesize == 32
         V4::Local.new(ikm: input)
       in K4SecretWrap | K4SecretPBKW if Paseto.rbnacl? && input.bytesize == 64
-        # TODO: Accept the public portion of this input and verify the relationship to the scalar.
-        V4::Public.new(RbNaCl::SigningKey.new(input[0, 32]))
+        V4::Public.from_keypair(input)
       else
         raise InvalidKeyPair
       end

@@ -23,6 +23,11 @@ module Paseto
         new(RbNaCl::SigningKey.generate)
       end
 
+      sig(:final) { params(keypair: String).returns(T.attached_class) }
+      def self.from_keypair(keypair)
+        new(Sodium::SafeEd25519Loader.from_keypair(keypair))
+      end
+
       sig(:final) { override.returns(Protocol::Version4) }
       def protocol
         Protocol::Version4.new
