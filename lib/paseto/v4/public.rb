@@ -81,9 +81,9 @@ module Paseto
       def public_to_pem
         case @key
         when RbNaCl::SigningKey
-          ed25519_pubkey_nacl_to_pem(@key.verify_key)
+          ASN1.ed25519_pubkey_nacl_to_pem(@key.verify_key.to_bytes)
         when RbNaCl::VerifyKey
-          ed25519_pubkey_nacl_to_pem(@key)
+          ASN1.ed25519_pubkey_nacl_to_pem(@key.to_bytes)
         end
       end
 
@@ -91,16 +91,7 @@ module Paseto
       def private_to_pem
         raise ArgumentError, 'no private key available' unless @key.is_a? RbNaCl::SigningKey
 
-        # RbNaCl::SigningKey.keypair_bytes returns the 32-byte private scalar and group element
-        # as (s || g), so we repack that into an ASN1 structure and then Base64 the resulting DER
-        # to get a PEM.
-        der = ASN1.ed25519_rs_to_oak_der(@key.keypair_bytes)
-
-        <<~PEM
-          -----BEGIN PRIVATE KEY-----
-          #{Base64.strict_encode64(der)}
-          -----END PRIVATE KEY-----
-        PEM
+        ASN1.ed25519_rs_to_oak_pem(@key.keypair_bytes)
       end
 
       sig(:final) { override.returns(String) }
@@ -127,19 +118,6 @@ module Paseto
 
       private
 
-      sig(:final) { params(verify_key: RbNaCl::VerifyKey).returns(String) }
-      def ed25519_pubkey_nacl_to_pem(verify_key)
-        der = OpenSSL::ASN1::Sequence.new([
-                                            OpenSSL::ASN1::Sequence.new([OpenSSL::ASN1::ObjectId.new('ED25519')]),
-                                            OpenSSL::ASN1::BitString.new(verify_key.to_bytes)
-                                          ]).to_der
-        <<~PEM
-          -----BEGIN PUBLIC KEY-----
-          #{Base64.strict_encode64(der)}
-          -----END PUBLIC KEY-----
-        PEM
-      end
-
       # Convert a PEM- or DER- encoded ED25519 key into either a `RbNaCl::VerifyKey`` or `RbNaCl::SigningKey`
       sig(:final) { params(pem_or_der: String).returns(T.any(RbNaCl::VerifyKey, RbNaCl::SigningKey)) }
       def ed25519_pkey_ossl_to_nacl(pem_or_der)
@@ -161,7 +139,7 @@ module Paseto
       def ossl_ed25519_private_key?(key)
         raise LucidityError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
 
-        return false if !Util.openssl?(3, 0, 8) && Util.openssl?(3) && key.to_text.start_with?('ED25519 Public-Key')
+        return false if Util.openssl?(3) && key.to_text.start_with?('ED25519 Public-Key')
         return false if Util.openssl?(1, 1, 1) && key.to_text == "<INVALID PRIVATE KEY>\n"
 
         true

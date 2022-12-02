@@ -40,6 +40,9 @@ module Paseto
       ).to_der
     end
 
+    # RbNaCl::SigningKey.keypair_bytes returns the 32-byte private scalar and group element
+    # as (s || g), so we repack that into an ASN1 structure and then Base64 the resulting DER
+    # to get a PEM.
     sig { params(bytes: String).returns(String) }
     def self.ed25519_rs_to_oak_der(bytes)
       OneAsymmetricKey.new(
@@ -53,6 +56,46 @@ module Paseto
           )
         )
       ).to_der
+    end
+
+    sig { params(bytes: String).returns(String) }
+    def self.ed25519_rs_to_oak_pem(bytes)
+      der_to_private_pem(ed25519_rs_to_oak_der(bytes))
+    end
+
+    sig { params(verify_key: String).returns(String) }
+    def self.ed25519_pubkey_nacl_to_der(verify_key)
+      OpenSSL::ASN1::Sequence.new(
+        [
+          OpenSSL::ASN1::Sequence.new(
+            [OpenSSL::ASN1::ObjectId.new('ED25519')]
+          ),
+          OpenSSL::ASN1::BitString.new(verify_key)
+        ]
+      ).to_der
+    end
+
+    sig { params(verify_key: String).returns(String) }
+    def self.ed25519_pubkey_nacl_to_pem(verify_key)
+      der_to_public_pem(ed25519_pubkey_nacl_to_der(verify_key))
+    end
+
+    sig { params(der: String).returns(String) }
+    def self.der_to_public_pem(der)
+      <<~PEM
+        -----BEGIN PUBLIC KEY-----
+        #{Base64.strict_encode64(der)}
+        -----END PUBLIC KEY-----
+      PEM
+    end
+
+    sig { params(der: String).returns(String) }
+    def self.der_to_private_pem(der)
+      <<~PEM
+        -----BEGIN PRIVATE KEY-----
+        #{Base64.strict_encode64(der)}
+        -----END PRIVATE KEY-----
+      PEM
     end
   end
 end
