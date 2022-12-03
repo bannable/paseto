@@ -1,6 +1,4 @@
-  it '<%= name %>' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if <%= options['opslimit'].to_i > 2 %> && ENV['CI'] && !ENV['SLOW_CI']
+  it '<%= name %>', :sodium, :slow do
     <%- if unwrapped -%>
     unwrapped = '<%= unwrapped %>'
     <%- end -%>

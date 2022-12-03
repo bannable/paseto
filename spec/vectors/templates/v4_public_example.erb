@@ -1,5 +1,4 @@
-  it '<%= name %>' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
+  it '<%= name %>', :sodium do
     pub = Paseto::V4::Public.new(<%= public_key_pem %>)
     priv = Paseto::V4::Public.new(<%= secret_key_pem %>)
     tok = %[<%= token %>]
