@@ -5,13 +5,13 @@
 module Paseto
   module Operations
     class ID
-      class IDv3
+      module IDv3
         extend T::Sig
 
-        include Interface::ID
+        extend Interface::ID
 
         sig { override.params(type: String, paserk: String).returns(String) }
-        def encode(type, paserk)
+        def self.encode(type, paserk)
           header = "k3.#{type}."
           d = T.must(OpenSSL::Digest.digest('SHA384', "#{header}#{paserk}")[0, 33])
           "#{header}#{Util.encode64(d)}"

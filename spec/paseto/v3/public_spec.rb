@@ -235,7 +235,7 @@ RSpec.describe Paseto::V3::Public do
 
     context 'with a secret key and requesting a public paserk' do
       it 'encodes to the expected k3.public' do
-        expect(key.to_paserk(pub: true)).to eq('k3.public.AxqZCCGSmyX74eY91flGwJXKrQTl-5ATZYuDbsha8revply0Jy7BIKjXN1maDP1EJw')
+        expect(key.to_public_paserk).to eq('k3.public.AxqZCCGSmyX74eY91flGwJXKrQTl-5ATZYuDbsha8revply0Jy7BIKjXN1maDP1EJw')
       end
     end
 
