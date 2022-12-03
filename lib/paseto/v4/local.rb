@@ -28,6 +28,8 @@ module Paseto
       # `ikm` must be a 32-byte string
       sig(:final) { params(ikm: String).void }
       def initialize(ikm:)
+        raise ArgumentError, 'ikm must be 32 bytes' unless ikm.bytesize == 32
+
         @key = ikm
       end
 

@@ -1,0 +1,11 @@
+  it '<%= name %>' do
+    <%- if expect_fail -%>
+    # It is not possible to construct the necessary SymmetricKey
+    <%- else -%>
+    ikm = Paseto::Util.decode_hex('<%= key %>')
+    paserk = %[<%= paserk %>]
+
+    key = Paseto::V3::Local.new(ikm: ikm)
+    expect(key.id).to eq(paserk)
+    <%- end -%>
+  end

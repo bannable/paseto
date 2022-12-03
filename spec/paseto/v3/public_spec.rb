@@ -254,4 +254,64 @@ RSpec.describe Paseto::V3::Public do
       end
     end
   end
+
+  describe '#id' do
+    context 'with a public key' do
+      let(:key_bytes) { '02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' }
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k3.pid' do
+        expect(key.id).to eq('k3.pid.mL4lGxNG7cz128frmpn83_76V9C7LmV2sHAMtJ8vIdwG')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) { '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001' }
+      let(:key) { described_class.from_scalar_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k3.sid' do
+        expect(key.id).to eq('k3.sid.DjlX1m4BBFtsnbwzw1zv_x0yRcrZpsvdr_gIxh_hg_Rv')
+      end
+    end
+  end
+
+  describe '#pid' do
+    context 'with a public key' do
+      let(:key_bytes) { '02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' }
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k3.pid' do
+        expect(key.pid).to eq('k3.pid.mL4lGxNG7cz128frmpn83_76V9C7LmV2sHAMtJ8vIdwG')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) { '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001' }
+      let(:key) { described_class.from_scalar_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k3.pid' do
+        expect(key.pid).to eq('k3.pid.6mfu-tuOAlvgfyirHYmFVDwVwkSxUB9vWJc2_cG_oCGG')
+      end
+    end
+  end
+
+  describe '#sid' do
+    context 'with a public key' do
+      let(:key_bytes) { '02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000' }
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'raises an ArgumentError' do
+        expect { key.sid }.to raise_error(ArgumentError, 'no private key available')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) { '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001' }
+      let(:key) { described_class.from_scalar_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k3.sid' do
+        expect(key.sid).to eq('k3.sid.DjlX1m4BBFtsnbwzw1zv_x0yRcrZpsvdr_gIxh_hg_Rv')
+      end
+    end
+  end
 end

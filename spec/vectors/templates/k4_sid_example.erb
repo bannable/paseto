@@ -1,0 +1,11 @@
+it '<%= name %>', :sodium do
+  <%- if expect_fail -%>
+  # Direct calls against Operations are not supported and the Key API prevents lucidity issues
+  <%- else -%>
+  ikm = Paseto::Util.decode_hex('<%= key %>')
+  paserk = %[<%= paserk %>]
+
+  key = Paseto::V4::Public.from_keypair(ikm)
+  expect(key.id).to eq(paserk)
+  <%- end -%>
+end

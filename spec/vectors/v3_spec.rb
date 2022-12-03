@@ -9,14 +9,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -32,14 +25,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -55,14 +41,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -78,14 +57,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -101,14 +73,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo"}]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -124,14 +89,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo"}]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -147,14 +105,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo"}]
     ia = %[{"test-vector":"3-E-7"}]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -170,14 +121,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo"}]
     ia = %[{"test-vector":"3-E-8"}]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -193,14 +137,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[arbitrary-string-that-isn't-json]
     ia = %[{"test-vector":"3-E-9"}]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect(local.encrypt(message: payload, footer: footer, implicit_assertion: ia, n: nonce).to_s).to eq(tok)
@@ -307,14 +244,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN"}]
     ia = %[{"test-vector":"3-F-2"}]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect do
@@ -329,7 +259,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     expect(message).to be_nil
   end
 
-  it '3-F-3' do
+  it '3-F-3', :sodium do
     nonce = Paseto::Util.decode_hex('26f7553354482a1d91d4784627854b8da6b8042a7966523c2b404e8dbbe7f7f2')
     key = Paseto::Util.decode_hex('707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f')
     tok = %[v4.local.1JgN1UG8TFAYS49qsx8rxlwh-9E4ONUm3slJXYi5EibmzxpF0Q-du6gakjuyKCBX8TvnSLOKqCPu8Yh3WSa5yJWigPy33z9XZTJF2HQ9wlLDPtVn_Mu1pPxkTU50ZaBKblJBufRA.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24]
@@ -337,14 +267,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[arbitrary-string-that-isn't-json]
     ia = %[{"test-vector":"3-F-3"}]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect do
@@ -367,14 +290,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect do
@@ -397,14 +313,7 @@ RSpec.describe "PASETO v3 Test Vectors" do
     footer = %[{"kid":"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo"}]
     ia = %[]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     expect do

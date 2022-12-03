@@ -219,7 +219,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
     context 'with a secret key' do
       let(:key) { described_class.new(RbNaCl::SigningKey.new(key_bytes)) }
 
-      it 'encodes to the expected k3.secret' do
+      it 'encodes to the expected k4.secret' do
         expect(key.to_paserk).to eq('k4.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8c5WpIyC_5kWKhS8VEYSZ05dYfuTF-ZdQFV4D9vLTcNQ')
       end
     end
@@ -235,8 +235,80 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
     context 'with a public key' do
       let(:key) { described_class.new(RbNaCl::VerifyKey.new(key_bytes)) }
 
-      it 'encodes to the expected k3.public' do
+      it 'encodes to the expected k4.public' do
         expect(key.to_paserk).to eq('k4.public.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+      end
+    end
+  end
+
+  describe '#id' do
+    let(:key_bytes) { '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' }
+
+    context 'with a public key' do
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k4.pid' do
+        expect(key.id).to eq('k4.pid.9ShR3xc8-qVJ_di0tc9nx0IDIqbatdeM2mqLFBJsKRHs')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) do
+        '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' \
+          '1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
+      end
+      let(:key) { described_class.from_keypair(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k4.sid' do
+        expect(key.id).to eq('k4.sid.gHYyx8y5YzqKEZeYoMDqUOKejdSnY_AWhYZiSCMjR1V5')
+      end
+    end
+  end
+
+  describe '#pid' do
+    let(:key_bytes) { '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' }
+
+    context 'with a public key' do
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k4.pid' do
+        expect(key.pid).to eq('k4.pid.9ShR3xc8-qVJ_di0tc9nx0IDIqbatdeM2mqLFBJsKRHs')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) do
+        '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' \
+          '1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
+      end
+      let(:key) { described_class.from_keypair(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k4.pid' do
+        expect(key.pid).to eq('k4.pid.mCv5F34c3ALB7hzKEOQUsEBpj3CTArhbJzGyeeCCKWn1')
+      end
+    end
+  end
+
+  describe '#sid' do
+    let(:key_bytes) { '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' }
+
+    context 'with a public key' do
+      let(:key) { described_class.from_public_bytes(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'raises an ArgumentError' do
+        expect { key.sid }.to raise_error(ArgumentError, 'no private key available')
+      end
+    end
+
+    context 'with a secret key' do
+      let(:key_bytes) do
+        '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f' \
+          '1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
+      end
+      let(:key) { described_class.from_keypair(Paseto::Util.decode_hex(key_bytes)) }
+
+      it 'encodes to the expected k4.sid' do
+        expect(key.sid).to eq('k4.sid.gHYyx8y5YzqKEZeYoMDqUOKejdSnY_AWhYZiSCMjR1V5')
       end
     end
   end

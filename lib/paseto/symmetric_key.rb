@@ -74,6 +74,11 @@ module Paseto
       "#{paserk_version}.#{purpose}.#{Util.encode64(to_bytes)}"
     end
 
+    sig(:final) { returns(String) }
+    def id
+      Operations::ID.lid(self)
+    end
+
     sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
     def encrypt(message:, footer: '', implicit_assertion: '', n: nil); end # rubocop:disable Naming/MethodParameterName
 

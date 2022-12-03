@@ -32,7 +32,8 @@ loader.inflector.inflect(
   'ecdsa_full_r' => 'ECDSAFullR',
   'pie' => 'PIE',
   'pbkw' => 'PBKW',
-  'pbkd' => 'PBKD'
+  'pbkd' => 'PBKD',
+  'id' => 'ID'
 )
 loader.setup
 
