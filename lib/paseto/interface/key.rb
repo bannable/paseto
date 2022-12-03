@@ -32,14 +32,18 @@ module Paseto
       end
       def decode(payload:, implicit_assertion: '', **options); end
 
-      sig do
-        abstract.params(
+      sig(:final) do
+        params(
           payload: String,
           implicit_assertion: String,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(T::Hash[String, T.untyped])
       end
-      def decode!(payload:, implicit_assertion: '', **options); end
+      def decode!(payload:, implicit_assertion: '', **options)
+        result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
+
+        Verify.verify_claims(result, options)
+      end
 
       sig { abstract.returns(String) }
       def purpose; end

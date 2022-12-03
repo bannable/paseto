@@ -34,19 +34,6 @@ module Paseto
       MultiJson.load(decrypt(token: token, implicit_assertion: implicit_assertion), **options)
     end
 
-    sig(:final) do
-      override.params(
-        payload: String,
-        implicit_assertion: String,
-        options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-      ).returns(T::Hash[String, T.untyped])
-    end
-    def decode!(payload:, implicit_assertion: '', **options)
-      result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
-
-      Verify.verify_claims(result, options)
-    end
-
     sig(:final) { override.returns(String) }
     def purpose
       'local'
