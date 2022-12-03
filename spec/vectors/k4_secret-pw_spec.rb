@@ -2,7 +2,6 @@
 
 RSpec.describe "PASERK k4.secret-pw Test Vectors" do
   it 'k4.secret-pw-1' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
     unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c65'
@@ -23,8 +22,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     end
   end
 
-  it 'k4.secret-pw-2' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.secret-pw-2', :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
     unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c65'
@@ -45,8 +43,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     end
   end
 
-  it 'k4.secret-pw-3' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.secret-pw-3', :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
     unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = 'correct horse battery staple'
@@ -67,8 +64,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     end
   end
 
-  it 'k4.secret-pw-fail-1' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.secret-pw-fail-1', :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
     unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c66'
@@ -91,8 +87,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     end
   end
 
-  it 'k4.secret-pw-fail-2' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.secret-pw-fail-2', :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f1ce56a48c82ff99162a14bc544612674e5d61fb9317e65d4055780fdbcb4dc35'
     unwrapped_raw = Paseto::Util.decode_hex(unwrapped)
     password = '636f727265637420686f727365206261747465727920737461706c65'
@@ -115,8 +110,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     end
   end
 
-  it 'k4.secret-pw-fail-3' do
-    # skip('slow tests run only on command in CI') if ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.secret-pw-fail-3', :slow do
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k3.secret-pw.LajP_XFziwwUW8t0xppL3ecIgaOzfSEx-5-UQG36jJ8AACcQUeD46ydUwIkMOqkXWFvacyf_eaH1BTMlJsdCy6ZhemmaFMZTclOD9LrOwCVnmhlCDQEePilxQEfvPsRM5cL_yxx1bWL0wjS4GAQABQiCvGyQTi_LGlbMnYuiZfxWgpqNJpAI6jx71m6s3f6wZIg68Q'

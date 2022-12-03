@@ -20,11 +20,7 @@ TEST_VECTORS = [
 ]
 # rubocop:enable Layout/LineLength, Style/WordArray, Style/MutableConstant
 
-RSpec.describe 'Paseto::Sodium::Stream::XChaCha20Xor' do
-  before do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-  end
-
+RSpec.describe 'Paseto::Sodium::Stream::XChaCha20Xor', :sodium do
   let(:described_class) { Paseto::Sodium::Stream::XChaCha20Xor }
 
   let(:key) { Paseto::Util.decode_hex(TEST_VECTORS[0][0]) }

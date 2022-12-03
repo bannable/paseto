@@ -129,20 +129,18 @@ RSpec.describe Paseto::Token do
       it { is_expected.to eq Paseto::V3::Public }
     end
 
-    context 'with a v4.local token' do
+    context 'with a v4.local token', :sodium do
       let(:message) { 'v4.local.YXNkZkFTREY' }
 
       it 'is expected to eq Paseto::V4::Local' do
-        skip('requires RbNaCl') unless Paseto.rbnacl?
         expect(token).to eq Paseto::V4::Local
       end
     end
 
-    context 'with a v4.public token' do
+    context 'with a v4.public token', :sodium do
       let(:message) { 'v4.public.YXNkZkFTREY' }
 
       it 'is expected to eq Paseto::V4::Public' do
-        skip('requires RbNaCl') unless Paseto.rbnacl?
         expect(token).to eq Paseto::V4::Public
       end
     end

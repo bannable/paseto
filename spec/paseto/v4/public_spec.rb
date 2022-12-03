@@ -3,11 +3,7 @@
 
 require 'shared_examples_for_coders'
 
-RSpec.describe 'Paseto::V4::Public' do
-  before do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-  end
-
+RSpec.describe 'Paseto::V4::Public', :sodium do
   let(:described_class) { Paseto::V4::Public }
 
   let(:priv_pem) do

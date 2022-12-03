@@ -1,5 +1,4 @@
-  it '<%= name %>' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
+  it '<%= name %>', :sodium do
     <%- if unwrapped -%>
     unwrapped = Paseto::Util.decode_hex('<%= unwrapped %>')
     <%- end -%>

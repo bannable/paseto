@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "PASERK k4.local-pw Test Vectors" do
-  it 'k4.local-pw-1' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if false && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-1', :sodium, :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>67108864, :opslimit=>2}
@@ -17,9 +15,7 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     expect(unpacked).to eq(key)
   end
 
-  it 'k4.local-pw-2' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-2', :sodium, :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
@@ -33,9 +29,7 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     expect(unpacked).to eq(key)
   end
 
-  it 'k4.local-pw-3' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-3', :sodium, :slow do
     unwrapped = '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
     password = 'correct horse battery staple'
     options = {:memlimit=>268435456, :opslimit=>3}
@@ -49,9 +43,7 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     expect(unpacked).to eq(key)
   end
 
-  it 'k4.local-pw-fail-1' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-fail-1', :sodium, :slow do
     password = '636f727265637420686f727365206261747465727920737461706c66'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.local-pw.cyacmXuslYEP8Xyheh9i-AAAAAAQAAAAAAAAAwAAAAEJh5jS-CAQP9grqo6xhuNMwmjcs6yTAvBjOW2HwZyBrBd0NNs6btknqo-6e-tyXJebU5S5918-es1Y9jhF1dOjMW0gDrsWkPoWT3Vy_poNxjIQHxHOHXaa'
@@ -66,9 +58,7 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     end.to raise_error(Paseto::LucidityError)
   end
 
-  it 'k4.local-pw-fail-2' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if true && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-fail-2', :sodium, :slow do
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.local-pw.cyacmXuslYEP8Xyheh9i-AAAAAAQAAAAAAAAAwAAAAEJh5jS-CAQP9grqo6xhuNMwmjcs6yTAvBjOW2HwZyBrBd0NNs6btknqo-6e-tyXJebU5S5918-es1Y9jhF1dOjMW0gDrsWkPoWT3Vy_poNxjIQHyHOHXbb'
@@ -83,9 +73,7 @@ RSpec.describe "PASERK k4.local-pw Test Vectors" do
     end.to raise_error(Paseto::LucidityError)
   end
 
-  it 'k4.local-pw-fail-3' do
-    skip('requires RbNaCl') unless Paseto.rbnacl?
-    # skip('slow tests run only on command in CI') if false && ENV['CI'] && !ENV['SLOW_CI']
+  it 'k4.local-pw-fail-3', :sodium, :slow do
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:iterations=>10000}
     paserk = 'k3.local-pw.BZtl8KfhFR8CCZp6hB0V2yMWttTMpK_U8HiKxnuvMI0AACcQIm4KcJGvG1kfptqCbQxzQUOp72AzgtmhCLVP1mn3orDRJIpoDzRj82dc1cMnANbUsEdcYVG8xzSuCt99zfCjQnQ2rIKbKRM66gafzcSWmD9iMoY3W6KUaN56t0P-ODV2'
