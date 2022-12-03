@@ -29,7 +29,7 @@ module Paseto
     end
 
     sig { params(bytes: String).returns(String) }
-    def self.p384_public_bytes_to_oak_der(bytes)
+    def self.p384_public_bytes_to_spki_der(bytes)
       SubjectPublicKeyInfo.new(
         algorithm_identifier: AlgorithmIdentifier.new(
           algorithm: NamedCurve.new(curve_name: 'secp384r1')

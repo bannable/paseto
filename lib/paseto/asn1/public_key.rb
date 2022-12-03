@@ -12,11 +12,6 @@ module Paseto
       def build
         OpenSSL::ASN1::BitString.new(public_key)
       end
-
-      sig { returns(String) }
-      def to_der
-        build.to_der
-      end
     end
   end
 end

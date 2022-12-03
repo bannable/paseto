@@ -3,9 +3,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Paseto::Paserk do
-  describe '.from_paserk' do
-    subject(:key) { described_class.from_paserk(paserk: paserk, wrapping_key: wrapping_key) }
+  subject(:key) do
+    described_class.from_paserk(paserk: paserk, wrapping_key: wrapping_key, password: password, unsealing_key: unsealing_key)
+  end
 
+  let(:wrapping_key) { nil }
+  let(:password) { nil }
+  let(:unsealing_key) { nil }
+
+  describe 'key wrapping' do
     let(:wrapping_key) do
       Paseto::V3::Local.new(ikm: Paseto::Util.decode_hex('707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'))
     end
@@ -69,6 +75,54 @@ RSpec.describe Paseto::Paserk do
       it 'raises an error' do
         expect { key }.to raise_error(Paseto::UnknownOperation)
       end
+    end
+  end
+
+  describe 'v3.local' do
+    let(:paserk) { 'k3.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
+    end
+  end
+
+  describe 'v3.public' do
+    let(:paserk) { 'k3.public.AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
+    end
+  end
+
+  describe 'v3.secret' do
+    let(:paserk) { 'k3.secret.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
+    end
+  end
+
+  describe 'v4.local', :sodium do
+    let(:paserk) { 'k4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
+    end
+  end
+
+  describe 'v4.public', :sodium do
+    let(:paserk) { 'k4.public.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
+    end
+  end
+
+  describe 'v4.secret', :sodium do
+    let(:paserk) { 'k4.secret.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7aie8zrakLWKjqNAqbw1zZTIVdx3iQ6Y6wEihi1naKQ' }
+
+    it 'deserializes correctly' do
+      expect(key.to_paserk).to eq(paserk)
     end
   end
 end

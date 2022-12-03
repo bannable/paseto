@@ -29,7 +29,9 @@ module Paseto
         version = Versions.deserialize(version).instance
         Operations::PBKW.new(version, T.must(password)).decode(paserk)
       in [String => version, String => type, String => data] if unsealing_key
-        # seal
+      # seal
+      in [String => version, String => type, String => data] if %w[local secret public].include?(type)
+        PaserkTypes.deserialize(paserk.rpartition('.').first).generate(Util.decode64(data))
       else
         raise UnknownOperation
       end

@@ -70,9 +70,10 @@ module Paseto
       'public'
     end
 
-    sig(:final) { override.returns(String) }
-    def to_paserk
-      if private?
+
+    sig(:final) { override.params(pub_key: T::Boolean).returns(String) }
+    def to_paserk(pub_key = false)
+      if private? && !pub_key
         "#{paserk_version}.secret.#{Util.encode64(to_bytes)}"
       else
         "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
