@@ -353,20 +353,24 @@ The tests are written with rspec. [Appraisal](https://github.com/thoughtbot/appr
 
 ```
 bundle install
-bundle exec appraisal rake spec
+appraisal install
+# in parallel
+appraisal rake
+# or not
+appraisal rake specs
 ```
 
 ### Updating RBI Files
 
-To check that RBI files for gems are up-to-date with your Gemfile.lock:
+To check that RBI files for gems are up-to-date:
 ```
-bin/tapioca gems --verify
+appraisal rbnacl bin/tapioca gems --verify
 ```
 
 To update RBI files for gems:
 ```
-bin/tapioca gems
-bin/tapioca annotations
+appraisal rbnacl bin/tapioca gems
+appraisal rbnacl bin/tapioca annotations
 ```
 
 ## Contributing
