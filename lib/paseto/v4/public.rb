@@ -28,6 +28,11 @@ module Paseto
         new(Sodium::SafeEd25519Loader.from_keypair(keypair))
       end
 
+      sig(:final) { params(bytes: String).returns(T.attached_class) }
+      def self.from_public_bytes(bytes)
+        new(RbNaCl::VerifyKey.new(bytes))
+      end
+
       sig(:final) { override.returns(Protocol::Version4) }
       def protocol
         Protocol::Version4.new

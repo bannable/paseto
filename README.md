@@ -56,9 +56,9 @@ And run `bundle install`
 | `lid`         |  ❌  |  ❌  |
 | `sid`         |  ❌  |  ❌  |
 | `pid`         |  ❌  |  ❌  |
-| `local`       |  ❌  |  ❌  |
-| `secret`      |  ❌  |  ❌  |
-| `public`      |  ❌  |  ❌  |
+| `local`       |  ✅  |  ✅  |
+| `secret`      |  ✅  |  ✅  |
+| `public`      |  ✅  |  ✅  |
 | `seal`        |  ❌  |  ❌  |
 | `local-wrap`  |  ✅  |  ✅  |
 | `secret-wrap` |  ✅  |  ✅  |

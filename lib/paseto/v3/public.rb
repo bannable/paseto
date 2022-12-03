@@ -18,9 +18,19 @@ module Paseto
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
       # Create a new Public instance with a brand new EC key.
-      sig(:final) { returns(Public) }
+      sig(:final) { returns(T.attached_class) }
       def self.generate
         new(key: OpenSSL::PKey::EC.generate('secp384r1').to_der)
+      end
+
+      sig(:final) { params(bytes: String).returns(T.attached_class) }
+      def self.from_public_bytes(bytes)
+        new(key: ASN1.p384_public_bytes_to_spki_der(bytes))
+      end
+
+      sig(:final) { params(bytes: String).returns(T.attached_class) }
+      def self.from_scalar_bytes(bytes)
+        new(key: ASN1.p384_scalar_bytes_to_oak_der(bytes))
       end
 
       sig(:final) { override.returns(Protocol::Version3) }

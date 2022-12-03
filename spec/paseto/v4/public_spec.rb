@@ -224,6 +224,14 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
       end
     end
 
+    context 'with a secret key and requesting a public paserk' do
+      let(:key) { described_class.new(RbNaCl::SigningKey.new(key_bytes)) }
+
+      it 'encodes to the expected k4.public' do
+        expect(key.to_paserk(true)).to eq('k4.public.HOVqSMgv-ZFioUvFRGEmdOXWH7kxfmXUBVeA_by03DU')
+      end
+    end
+
     context 'with a public key' do
       let(:key) { described_class.new(RbNaCl::VerifyKey.new(key_bytes)) }
 
