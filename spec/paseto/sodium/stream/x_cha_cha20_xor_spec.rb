@@ -38,6 +38,10 @@ RSpec.describe 'Paseto::Sodium::Stream::XChaCha20Xor', :sodium do
     it 'raises on a nil key' do
       expect { described_class.new(nil) }.to raise_error(TypeError)
     end
+
+    it 'raises when the key is the wrong length' do
+      expect { described_class.new('foo') }.to raise_error(RbNaCl::LengthError, 'Key was 3 bytes (Expected 32)')
+    end
   end
 
   describe '#encrypt' do
