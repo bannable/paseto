@@ -57,13 +57,16 @@ module Paseto
       'public'
     end
 
-    sig(:final) { override.params(pub: T::Boolean).returns(String) }
-    def to_paserk(pub: false)
-      if private? && !pub
-        "#{paserk_version}.secret.#{Util.encode64(to_bytes)}"
-      else
-        "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
-      end
+    sig(:final) { override.returns(String) }
+    def to_paserk
+      return to_public_paserk unless private?
+
+      "#{paserk_version}.secret.#{Util.encode64(to_bytes)}"
+    end
+
+    sig(:final) { returns(String) }
+    def to_public_paserk
+      "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
     end
 
     sig(:final) { returns(String) }

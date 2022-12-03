@@ -26,9 +26,9 @@ module Paseto
       def initialize(protocol)
         case protocol
         in Protocol::Version3
-          coder = ID::IDv3.new
+          coder = ID::IDv3
         in Protocol::Version4 if Paseto.rbnacl?
-          coder = ID::IDv4.new
+          coder = ID::IDv4
         else
           raise UnknownProtocol
         end
@@ -49,7 +49,7 @@ module Paseto
 
       sig(:final) { params(key: AsymmetricKey).returns(String) }
       def pid(key)
-        @coder.encode('pid', key.to_paserk(pub: true))
+        @coder.encode('pid', key.to_public_paserk)
       end
     end
   end
