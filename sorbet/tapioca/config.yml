@@ -13,6 +13,7 @@ gem:
   - paseto
   - rbi
   - reek
+  - rspec_junit_formatter
   - rubocop
   - rubocop-ast
   - rubocop-performance
