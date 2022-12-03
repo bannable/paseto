@@ -21,6 +21,16 @@ RSpec.describe Paseto::V3::Local do
     end
   end
 
+  describe '.new' do
+    context 'when the ikm is the wrong length' do
+      let(:key_material) { "\x00" * 31 }
+
+      it 'raises an ArgumentError' do
+        expect { key }.to raise_error(ArgumentError, 'ikm must be 32 bytes')
+      end
+    end
+  end
+
   describe '#encrypt' do
     subject(:token) { key.encrypt(message: message, n: nonce, implicit_assertion: 'test') }
 
@@ -85,6 +95,14 @@ RSpec.describe Paseto::V3::Local do
   describe '#to_paserk' do
     it 'encodes to the expected k3.local' do
       expect(key.to_paserk).to eq('k3.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+    end
+  end
+
+  describe '#id' do
+    let(:key_material) { Paseto::Util.decode_hex('0000000000000000000000000000000000000000000000000000000000000000') }
+
+    it 'encodes to the expected k3.lid' do
+      expect(key.id).to eq('k3.lid.c2Wpke9KunV6-Tow8dV1wsvVFRkjcTYt_7ZzOtIDRFpM')
     end
   end
 end

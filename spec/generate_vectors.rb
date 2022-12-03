@@ -116,8 +116,23 @@ class SecretPWSpec
   end
 end
 
+class IDSpec
+  include Spec
+
+  attr_reader :name, :expect_fail, :key, :paserk, :seed
+
+  def initialize(template_name, name:, expect_fail:, key:, paserk:, seed: nil, **_unused)
+    @name = name
+    @expect_fail = expect_fail
+    @paserk = paserk
+    @key = key
+    @seed = seed
+    @template = erb_for(template_name)
+  end
+end
+
 module SpecFactory
-  def self.build(name, **test)
+  def self.build(name, **test) # rubocop:disable Metrics/CyclomaticComplexity
     klass = case name
             when 'v3', 'v4'
               test.include?(:key) ? LocalSpec : PublicSpec
@@ -125,6 +140,7 @@ module SpecFactory
             when 'k3_secret-wrap_pie', 'k4_secret-wrap_pie' then SecretWrapPieSpec
             when 'k3_local-pw', 'k4_local-pw' then LocalPWSpec
             when 'k3_secret-pw', 'k4_secret-pw' then SecretPWSpec
+            when 'k3_lid', 'k3_pid', 'k3_sid', 'k4_lid', 'k4_pid', 'k4_sid' then IDSpec
             else
               raise ArgumentError, "unrecognized vector: #{name}"
             end
@@ -164,7 +180,13 @@ if __FILE__ == $PROGRAM_NAME
     { json_filename: 'k3.local-pw.json', name: 'k3_local-pw' },
     { json_filename: 'k3.secret-pw.json', name: 'k3_secret-pw' },
     { json_filename: 'k4.local-pw.json', name: 'k4_local-pw' },
-    { json_filename: 'k4.secret-pw.json', name: 'k4_secret-pw' }
+    { json_filename: 'k4.secret-pw.json', name: 'k4_secret-pw' },
+    { json_filename: 'k3.lid.json', name: 'k3_lid' },
+    { json_filename: 'k4.lid.json', name: 'k4_lid' },
+    { json_filename: 'k3.sid.json', name: 'k3_sid' },
+    { json_filename: 'k4.sid.json', name: 'k4_sid' },
+    { json_filename: 'k3.pid.json', name: 'k3_pid' },
+    { json_filename: 'k4.pid.json', name: 'k4_pid' }
   ]
 
   TEST_VECTORS.each { |tv| generate(**tv) }

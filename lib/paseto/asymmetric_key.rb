@@ -78,5 +78,22 @@ module Paseto
         "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
       end
     end
+
+    sig(:final) { returns(String) }
+    def id
+      return sid if private?
+
+      pid
+    end
+
+    sig(:final) { returns(String) }
+    def pid
+      Operations::ID.pid(self)
+    end
+
+    sig(:final) { returns(String) }
+    def sid
+      Operations::ID.sid(self)
+    end
   end
 end

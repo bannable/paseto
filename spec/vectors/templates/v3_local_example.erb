@@ -1,4 +1,4 @@
-  it '<%= name %>' do
+  it '<%= name %>'<%= name == '3-F-3' ? ', :sodium' : '' %> do
     nonce = Paseto::Util.decode_hex('<%= nonce %>')
     key = Paseto::Util.decode_hex('<%= key %>')
     tok = %[<%= token %>]
@@ -10,14 +10,7 @@
     footer = %[<%= footer %>]
     ia = %[<%= implicit_assertion %>]
 
-    begin
-      token = Paseto::Token.parse(tok)
-    rescue Paseto::UnsupportedToken # for 3-F-3 without RbNaCl
-      # :nocov:
-      skip('requires RbNaCl') unless Paseto.rbnacl?
-      raise
-      # :nocov:
-    end
+    token = Paseto::Token.parse(tok)
     local = Paseto::V3::Local.new(ikm: key)
 
     <%- if expect_fail -%>

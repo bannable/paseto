@@ -53,9 +53,9 @@ And run `bundle install`
 
 |               |  v4  |  v3  |
 | ------------- | ---- | ---- |
-| `lid`         |  ❌  |  ❌  |
-| `sid`         |  ❌  |  ❌  |
-| `pid`         |  ❌  |  ❌  |
+| `lid`         |  ✅  |  ✅  |
+| `sid`         |  ✅  |  ✅  |
+| `pid`         |  ✅  |  ✅  |
 | `local`       |  ✅  |  ✅  |
 | `secret`      |  ✅  |  ✅  |
 | `public`      |  ✅  |  ✅  |
