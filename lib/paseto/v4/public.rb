@@ -121,6 +121,16 @@ module Paseto
         end
       end
 
+      sig(:final) { returns(String) }
+      def x25519_private_key
+        Sodium::Curve25519.new(self).to_x25519_private_key
+      end
+
+      sig(:final) { returns(String) }
+      def x25519_public_key
+        Sodium::Curve25519.new(self).to_x25519_public_key
+      end
+
       private
 
       # Convert a PEM- or DER- encoded ED25519 key into either a `RbNaCl::VerifyKey`` or `RbNaCl::SigningKey`

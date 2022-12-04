@@ -20,18 +20,18 @@ module Paseto
       parts = paserk.split('.')
       case parts
       in [String => version, String => type, String => protocol, String => data] if wrapping_key
-        # Symmetric Key Wrapping, local/secret-wrap
-        # https://github.com/paseto-standard/paserk/blob/master/operations/Wrap.md
         Operations::Wrap.unwrap(T.must(wrapping_key), [version, type, protocol, data])
+
       in [String => version, String => type, String => data] if password
-        # Password-Based Key Wrapping, local/secret-pw
-        # https://github.com/paseto-standard/paserk/blob/master/operations/PBKW.md
         version = Versions.deserialize(version).instance
         Operations::PBKW.new(version, T.must(password)).decode(paserk)
+
       in [String => version, String => type, String => data] if unsealing_key
       # seal
+
       in [String => version, String => type, String => data] if %w[local secret public].include?(type)
         PaserkTypes.deserialize(paserk.rpartition('.').first).generate(Util.decode64(data))
+
       else
         raise UnknownOperation
       end
