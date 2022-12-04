@@ -26,6 +26,9 @@ module Paseto
     sig { abstract.returns(String) }
     def public_bytes; end
 
+    sig { abstract.params(other: T.untyped).returns(String) }
+    def ecdh(other); end
+
     sig(:final) do
       override.params(
         payload: T::Hash[String, T.untyped],
@@ -84,6 +87,16 @@ module Paseto
     sig(:final) { returns(String) }
     def sid
       Operations::ID.sid(self)
+    end
+
+    sig(:final) { params(other: SymmetricKey).returns(String) }
+    def seal(other)
+      Paserk.seal(sealing_key: self, key: other)
+    end
+
+    sig(:final) { params(paserk: String).returns(SymmetricKey) }
+    def unseal(paserk)
+      Paserk.from_paserk(paserk: paserk, unsealing_key: self)
     end
   end
 end

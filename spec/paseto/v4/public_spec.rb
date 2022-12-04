@@ -317,7 +317,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
     let(:x25519_sk) { Paseto::Util.decode_hex('f824dc38b52b23ef0e27ddf4ddad7c0b144aefb46bc3ec57f053f9575224835d') }
 
     it 'converts the key to x25519 sk form' do
-      expect(key.x25519_private_key).to eq(x25519_sk)
+      expect(key.x25519_private_key.to_bytes).to eq(x25519_sk)
     end
   end
 
@@ -325,7 +325,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
     let(:x25519_pk) { Paseto::Util.decode_hex('012789e6eeea79a9edbefc1e4b71d3348aa94e1529cc1027fa7fb83b7ca2cf33') }
 
     it 'converts the key to x25519 pk form' do
-      expect(key.x25519_public_key).to eq(x25519_pk)
+      expect(key.x25519_public_key.to_bytes).to eq(x25519_pk)
     end
   end
 end

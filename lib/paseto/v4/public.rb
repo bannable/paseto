@@ -121,12 +121,22 @@ module Paseto
         end
       end
 
-      sig(:final) { returns(String) }
+      sig(:final) { override.params(other: T.any(RbNaCl::PrivateKey, RbNaCl::PublicKey)).returns(String) }
+      def ecdh(other)
+        case other
+        when RbNaCl::PrivateKey
+          RbNaCl::GroupElement.new(x25519_public_key).mult(other).to_bytes
+        when RbNaCl::PublicKey
+          RbNaCl::GroupElement.new(other).mult(x25519_private_key).to_bytes
+        end
+      end
+
+      sig(:final) { returns(RbNaCl::PrivateKey) }
       def x25519_private_key
         Sodium::Curve25519.new(self).to_x25519_private_key
       end
 
-      sig(:final) { returns(String) }
+      sig(:final) { returns(RbNaCl::PublicKey) }
       def x25519_public_key
         Sodium::Curve25519.new(self).to_x25519_public_key
       end

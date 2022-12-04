@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 require:
   - rubocop-performance
   - rubocop-rspec
@@ -52,6 +54,8 @@ Metrics/ParameterLists:
 Naming/MethodParameterName:
   Exclude:
     - 'lib/paseto/asn1'
+    - 'lib/paseto/operations/pke/*'
+    - 'lib/paseto/interface/pke.rb'
 
 Naming/VariableNumber:
   CheckSymbols: false

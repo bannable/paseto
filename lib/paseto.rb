@@ -33,7 +33,8 @@ loader.inflector.inflect(
   'pie' => 'PIE',
   'pbkw' => 'PBKW',
   'pbkd' => 'PBKD',
-  'id' => 'ID'
+  'id' => 'ID',
+  'pke' => 'PKE'
 )
 loader.setup
 

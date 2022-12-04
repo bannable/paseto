@@ -123,6 +123,16 @@ module Paseto
         @key.public_key.to_octet_string(:compressed)
       end
 
+      sig(:final) { override.params(other: T.any(OpenSSL::PKey::EC, OpenSSL::PKey::EC::Point)).returns(String) }
+      def ecdh(other)
+        case other
+        when OpenSSL::PKey::EC::Point
+          @key.dh_compute_key(other)
+        when OpenSSL::PKey::EC
+          other.dh_compute_key(@key.public_key)
+        end
+      end
+
       private
 
       # TODO: Figure out how to get SimpleCov to cover this consistently. With OSSL1.1.1, most of

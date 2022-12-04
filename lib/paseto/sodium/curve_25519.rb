@@ -4,6 +4,8 @@
 module Paseto
   module Sodium
     class Curve25519
+      extend T::Sig
+
       extend RbNaCl::Sodium
 
       sodium_type :sign
@@ -17,24 +19,27 @@ module Paseto
                       :crypto_sign_ed25519_pk_to_curve25519,
                       %i[pointer pointer]
 
+      sig { params(key: V4::Public).void }
       def initialize(key)
         @key = key
       end
 
+      sig { returns(RbNaCl::PrivateKey) }
       def to_x25519_private_key
-        buffer = RbNaCl::Util.zeros(RbNaCl::Boxes::Curve25519XSalsa20Poly1305::PRIVATEKEYBYTES)
+        buffer = RbNaCl::Util.zeros(RbNaCl::PrivateKey::BYTES)
         success = self.class.to_x25519_private_key(buffer, @key.to_bytes)
         raise CryptoError, 'Ed25519->X25519 sk failure' unless success
 
-        buffer
+        RbNaCl::PrivateKey.new(buffer)
       end
 
+      sig { returns(RbNaCl::PublicKey) }
       def to_x25519_public_key
-        buffer = RbNaCl::Util.zeros(RbNaCl::Boxes::Curve25519XSalsa20Poly1305::PUBLICKEYBYTES)
+        buffer = RbNaCl::Util.zeros(RbNaCl::PublicKey::BYTES)
         success = self.class.to_x25519_public_key(buffer, @key.public_bytes)
         raise CryptoError, 'Ed25519->X25519 pk failure' unless success
 
-        buffer
+        RbNaCl::PublicKey.new(buffer)
       end
     end
   end
