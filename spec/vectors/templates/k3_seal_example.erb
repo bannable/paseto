@@ -1,0 +1,33 @@
+<%- if paserk.start_with?('k4') -%>
+  # The situation described by this vector is nonsense in this library.
+  #   Given an ED25519 Key, perform a K3 Unseal Operation against a k4.seal PASERK.
+  #
+  # Because my implementation separates the PKE algorithm implementation from the
+  #   cryptographic primitive implementations, and selects the primtiives based on
+  #   the asymmetric key protocol, it is impossible to perform a PKE operation against
+  #   a Type of another version with the provided inputs.
+  #
+  # For this vector to be useful, it would need to provide either of these inputs instead:
+  #   - the PASERK is a k3.seal
+  #   - v3.public key inputs
+  #
+  # it '<%= name %>'
+<%- else -%>
+  it '<%= name %>' do
+    paserk = %[<%= paserk %>]
+    secret_key = <%= sealing_secret_key.inspect %>
+    public_key = <%= sealing_public_key.inspect %>
+    sk = Paseto::V3::Public.new(key: secret_key)
+    pk = Paseto::V3::Public.new(key: public_key)
+    <%- if expect_fail -%>
+    expect { sk.unseal(paserk) }.to raise_error(Paseto::InvalidAuthenticator)
+    <%- else -%>
+    unsealed = Paseto::Util.decode_hex('<%= unsealed %>')
+
+    revealed = sk.unseal(paserk)
+    expect(revealed.to_bytes).to eq(unsealed)
+    encoded = pk.seal(revealed)
+    expect(sk.unseal(encoded)).to eq(revealed)
+    <%- end -%>
+  end
+<%- end -%>

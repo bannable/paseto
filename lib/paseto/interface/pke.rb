@@ -36,12 +36,6 @@ module Paseto
       sig { abstract.params(encoded_data: String).returns([String, T.untyped, String]) }
       def split(encoded_data); end
 
-      sig { abstract.params(key: T.untyped).returns(String) }
-      def encode(key); end
-
-      sig { abstract.params(encoded_data: String).returns(Key) }
-      def decode(encoded_data); end
-
       sig { abstract.params(xk: String, epk: T.untyped).returns(String) }
       def derive_ak(xk:, epk:); end
 
@@ -50,6 +44,9 @@ module Paseto
 
       sig { abstract.params(message: String, ek: String, n: String).returns(String) }
       def crypt(message:, ek:, n:); end
+
+      sig { abstract.params(message: String, ek: String, n: String).returns(SymmetricKey) }
+      def decrypt(message:, ek:, n:); end
 
       sig { abstract.params(ak: String, epk: T.untyped, edk: String).returns(String) }
       def tag(ak:, epk:, edk:); end

@@ -131,6 +131,22 @@ class IDSpec
   end
 end
 
+class SealSpec
+  include Spec
+
+  attr_reader :name, :expect_fail, :sealing_secret_key, :sealing_public_key, :unsealed, :paserk
+
+  def initialize(template_name, name:, expect_fail:, sealing_secret_key:, sealing_public_key:, unsealed:, paserk:, **_unused)
+    @name = name
+    @expect_fail = expect_fail
+    @paserk = paserk
+    @sealing_secret_key = sealing_secret_key
+    @sealing_public_key = sealing_public_key
+    @unsealed = unsealed
+    @template = erb_for(template_name)
+  end
+end
+
 module SpecFactory
   def self.build(name, **test) # rubocop:disable Metrics/CyclomaticComplexity
     klass = case name
@@ -141,6 +157,7 @@ module SpecFactory
             when 'k3_local-pw', 'k4_local-pw' then LocalPWSpec
             when 'k3_secret-pw', 'k4_secret-pw' then SecretPWSpec
             when 'k3_lid', 'k3_pid', 'k3_sid', 'k4_lid', 'k4_pid', 'k4_sid' then IDSpec
+            when 'k3_seal', 'k4_seal' then SealSpec
             else
               raise ArgumentError, "unrecognized vector: #{name}"
             end
@@ -186,7 +203,9 @@ if __FILE__ == $PROGRAM_NAME
     { json_filename: 'k3.sid.json', name: 'k3_sid' },
     { json_filename: 'k4.sid.json', name: 'k4_sid' },
     { json_filename: 'k3.pid.json', name: 'k3_pid' },
-    { json_filename: 'k4.pid.json', name: 'k4_pid' }
+    { json_filename: 'k4.pid.json', name: 'k4_pid' },
+    { json_filename: 'k3.seal.json', name: 'k3_seal' },
+    { json_filename: 'k4.seal.json', name: 'k4_seal' }
   ]
 
   TEST_VECTORS.each { |tv| generate(**tv) }

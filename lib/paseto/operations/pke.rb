@@ -48,7 +48,17 @@ module Paseto
         raise LucidityError unless version == @sealing_key.paserk_version
         raise LucidityError unless type == 'seal'
 
-        @coder.decode(encoded_data)
+        t, epk, edk = @coder.split(encoded_data)
+
+        xk = @sealing_key.ecdh(epk)
+
+        ak = @coder.derive_ak(xk: xk, epk: epk)
+        t2 = @coder.tag(ak: ak, epk: epk, edk: edk)
+        raise InvalidAuthenticator unless Util.constant_compare(t, t2)
+
+        @coder.derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
+
+        @coder.decrypt(message: edk, ek: ek, n: n)
       end
     end
   end

@@ -1,0 +1,21 @@
+  it '<%= name %>', :sodium do
+    paserk = %[<%= paserk %>]
+    secret_key = Paseto::Util.decode_hex(<%= sealing_secret_key.inspect %>)
+    public_key = Paseto::Util.decode_hex(<%= sealing_public_key.inspect %>)
+    sk = Paseto::V4::Public.from_keypair(secret_key)
+    pk = Paseto::V4::Public.from_public_bytes(public_key)
+    <%- if expect_fail -%>
+      <%- if paserk.start_with?('k3') -%>
+    expect { sk.unseal(paserk) }.to raise_error(Paseto::LucidityError)
+      <%- else -%>
+    expect { sk.unseal(paserk) }.to raise_error(Paseto::InvalidAuthenticator)
+      <%- end -%>
+    <%- else -%>
+    unsealed = Paseto::Util.decode_hex('<%= unsealed %>')
+
+    revealed = sk.unseal(paserk)
+    expect(revealed.to_bytes).to eq(unsealed)
+    encoded = pk.seal(revealed)
+    expect(sk.unseal(encoded)).to eq(revealed)
+    <%- end -%>
+  end

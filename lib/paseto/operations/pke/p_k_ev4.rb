@@ -82,36 +82,10 @@ module Paseto
           esk.public_key.to_bytes
         end
 
-        sig { override.params(key: V4::Local).returns(String) }
-        def encode(key)
-          esk = generate_ephemeral_key
-          epk = esk.public_key.to_bytes
-          xk = @sealing_key.ecdh(esk)
-
-          derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
-
-          edk = crypt(message: key.to_bytes, ek: ek, n: n)
-
-          ak = derive_ak(xk: xk, epk: epk)
-          t = tag(ak: ak, epk: epk, edk: edk)
-
-          "#{header}#{Util.encode64([t, epk, edk].join)}"
-        end
-
-        sig { override.params(encoded_data: String).returns(V4::Local) }
-        def decode(encoded_data)
-          t, epk, edk = split(encoded_data)
-
-          xk = @sealing_key.ecdh(epk)
-
-          ak = derive_ak(xk: xk, epk: epk)
-          t2 = tag(ak: ak, epk: epk, edk: edk)
-          raise InvalidAuthenticator unless Util.constant_compare(t, t2)
-
-          derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
-
-          pdk = crypt(message: edk, ek: ek, n: n)
-          Paseto::V4::Local.new(ikm: pdk)
+        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
+        def decrypt(message:, ek:, n:)
+          pdk = crypt(message: message, ek: ek, n: n)
+          V4::Local.new(ikm: pdk)
         end
 
         private

@@ -84,12 +84,7 @@ module Paseto
 
       sig(:final) { override.returns(String) }
       def public_to_pem
-        case @key
-        when RbNaCl::SigningKey
-          ASN1.ed25519_pubkey_nacl_to_pem(@key.verify_key.to_bytes)
-        when RbNaCl::VerifyKey
-          ASN1.ed25519_pubkey_nacl_to_pem(@key.to_bytes)
-        end
+        ASN1.ed25519_pubkey_nacl_to_pem(public_bytes)
       end
 
       sig(:final) { override.returns(String) }
@@ -114,10 +109,8 @@ module Paseto
       sig(:final) { override.returns(String) }
       def public_bytes
         case @key
-        when RbNaCl::SigningKey
-          @key.verify_key.to_bytes
-        when RbNaCl::VerifyKey
-          @key.to_bytes
+        when RbNaCl::SigningKey then @key.verify_key.to_bytes
+        when RbNaCl::VerifyKey then @key.to_bytes
         end
       end
 

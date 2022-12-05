@@ -1,5 +1,5 @@
 # encoding: binary
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 module Paseto
@@ -93,36 +93,10 @@ module Paseto
           esk.public_key.to_octet_string(:compressed)
         end
 
-        sig { override.params(key: V3::Local).returns(String) }
-        def encode(key)
-          esk = generate_ephemeral_key
-          epk = esk.public_key.to_octet_string(:compressed)
-          xk = @sealing_key.ecdh(esk)
-
-          derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
-
-          edk = crypt(message: key.to_bytes, ek: ek, n: n)
-
-          ak = derive_ak(xk: xk, epk: epk)
-          t = tag(ak: ak, epk: epk, edk: edk)
-
-          "#{header}#{Util.encode64([t, epk, edk].join)}"
-        end
-
-        sig { override.params(encoded_data: String).returns(V3::Local) }
-        def decode(encoded_data)
-          t, epk, edk = split(encoded_data)
-
-          xk = @sealing_key.ecdh(epk)
-
-          ak = derive_ak(xk: xk, epk: epk)
-          t2 = tag(ak: ak, epk: epk, edk: edk)
-          raise InvalidAuthenticator unless Util.constant_compare(t, t2)
-
-          derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
-
-          ptk = crypt(message: edk, ek: ek, n: n)
-          V3::Local.new(ikm: ptk)
+        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
+        def decrypt(message:, ek:, n:)
+          pdk = crypt(message: message, ek: ek, n: n)
+          V3::Local.new(ikm: pdk)
         end
 
         private
