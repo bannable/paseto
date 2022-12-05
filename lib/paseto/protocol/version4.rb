@@ -29,6 +29,24 @@ module Paseto
         RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
       end
 
+      sig(:final) do
+        override.params(
+          password: String,
+          salt: String,
+          length: Integer,
+          parameters: T.nilable(Integer)
+        ).returns(String)
+      end
+      def self.kdf(password, salt:, length:, **parameters)
+        RbNaCl::PasswordHash.argon2id(
+          password,
+          salt,
+          T.must(parameters[:opslimit]),
+          T.must(parameters[:memlimit]),
+          length
+        )
+      end
+
       sig(:final) { override.returns(String) }
       def self.paserk_version
         'k4'

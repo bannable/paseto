@@ -25,15 +25,13 @@ module Paseto
 
         sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
         def wrap(key, options)
-          raise LucidityError unless key.protocol == protocol
-
           options => {iterations:}
 
           h = key.pbkw_header
           salt = SecureRandom.random_bytes(32)
           nonce = SecureRandom.random_bytes(16)
 
-          pre_key = OpenSSL::KDF.pbkdf2_hmac(@password, salt: salt, iterations: iterations, length: 32, hash: 'SHA384')
+          pre_key = protocol.kdf(@password, salt: salt, length: 32, iterations: iterations)
 
           edk = crypt(payload: key.to_bytes, nonce: nonce, pre_key: pre_key)
 

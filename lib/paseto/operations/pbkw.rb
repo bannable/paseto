@@ -27,7 +27,7 @@ module Paseto
 
       sig { params(key: Interface::Key, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
       def encode(key, options)
-        raise LucidityError unless key.version == @coder.version
+        raise LucidityError unless key.protocol == @coder.protocol
 
         opts = default_options.merge(options)
         @coder.wrap(key, **opts)

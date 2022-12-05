@@ -27,10 +27,11 @@ module Paseto
         def wrap(key, options)
           options => {memlimit:, opslimit:}
 
-          header = key.pbkw_header
-          nonce = RbNaCl::Random.random_bytes(24)
+          h = key.pbkw_header
           salt = RbNaCl::Random.random_bytes(16)
-          pre_key = RbNaCl::PasswordHash.argon2id(@password, salt, opslimit, memlimit, 32)
+          nonce = RbNaCl::Random.random_bytes(24)
+
+          pre_key = protocol.kdf(@password, salt: salt, length: 32, opslimit: opslimit, memlimit: memlimit)
           ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
 
           edk = protocol.crypt(key: ek, nonce: nonce, payload: key.to_bytes)
@@ -38,9 +39,9 @@ module Paseto
           message = [salt, Util.int_to_be64(memlimit), Util.int_to_be32(opslimit), Util.int_to_be32(1), nonce, edk].join
 
           ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
-          t = protocol.hmac("#{header}#{message}", key: ak, digest_size: 32)
+          t = protocol.hmac("#{h}#{message}", key: ak, digest_size: 32)
 
-          [header, Util.encode64("#{message}#{t}")].join
+          [h, Util.encode64("#{message}#{t}")].join
         end
 
         sig { override.params(header: String, data: String).returns(Interface::Key) }

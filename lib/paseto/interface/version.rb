@@ -30,6 +30,16 @@ module Paseto
         sig { abstract.params(data: String, key: String, digest_size: Integer).returns(String) }
         def hmac(data, key:, digest_size:); end
 
+        sig do
+          abstract.params(
+            password: String,
+            salt: String,
+            length: Integer,
+            parameters: T.nilable(Integer)
+          ).returns(String)
+        end
+        def kdf(password, salt:, length:, **parameters); end
+
         sig { abstract.returns(String) }
         def paserk_version; end
 
@@ -63,6 +73,18 @@ module Paseto
       sig(:final) { params(data: String, key: String, digest_size: T.nilable(Integer)).returns(String) }
       def hmac(data, key:, digest_size: nil)
         self.class.hmac(data, key: key, digest_size: digest_size || digest_bytes)
+      end
+
+      sig do
+        params(
+          password: String,
+          salt: String,
+          length: Integer,
+          parameters: T.nilable(Integer)
+        ).returns(String)
+      end
+      def kdf(password, salt:, length:, **parameters)
+        self.class.kdf(password, salt: salt, length: length, **parameters)
       end
 
       sig(:final) { returns(String) }

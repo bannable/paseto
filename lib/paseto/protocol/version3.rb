@@ -33,6 +33,24 @@ module Paseto
         T.must(OpenSSL::HMAC.digest('SHA384', key, data).byteslice(0, digest_size))
       end
 
+      sig(:final) do
+        override.params(
+          password: String,
+          salt: String,
+          length: Integer,
+          parameters: T.nilable(Integer)
+        ).returns(String)
+      end
+      def self.kdf(password, salt:, length:, **parameters)
+        OpenSSL::KDF.pbkdf2_hmac(
+          password,
+          salt: salt,
+          length: length,
+          iterations: T.must(parameters[:iterations]),
+          hash: 'SHA384'
+        )
+      end
+
       sig(:final) { override.returns(String) }
       def self.paserk_version
         'k3'

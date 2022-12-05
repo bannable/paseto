@@ -40,8 +40,6 @@ module Paseto
         @key = ikm
       end
 
-      # rubocop:disable Metrics/AbcSize
-
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
@@ -81,7 +79,6 @@ module Paseto
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
       end
-      # rubocop:enable Metrics/AbcSize
 
       sig(:final) { override.returns(String) }
       def to_bytes
