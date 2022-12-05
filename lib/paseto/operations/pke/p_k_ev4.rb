@@ -10,14 +10,38 @@ module Paseto
 
         include Interface::PKE
 
-        sig(:final) { returns(RbNaCl::PrivateKey) }
+        sig { override.params(message: String, ek: String, n: String).returns(String) }
+        def self.crypt(message:, ek:, n:)
+          Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n, message)
+        end
+
+        sig(:final) { override.returns(RbNaCl::PrivateKey) }
         def self.generate_ephemeral_key
           RbNaCl::PrivateKey.generate
+        end
+
+        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
+        def self.epk_bytes_from_esk(esk)
+          esk.public_key.to_bytes
         end
 
         sig(:final) { override.returns(String) }
         def self.header
           'k4.seal.'
+        end
+
+        sig { override.params(encoded_data: String).returns([String, RbNaCl::PublicKey, String]) }
+        def self.split(encoded_data)
+          data = Util.decode64(encoded_data)
+
+          t = T.must(data.slice(0, 32))
+
+          epk_bytes = T.must(data.slice(32, 32))
+          epk = RbNaCl::PublicKey.new(epk_bytes)
+
+          edk = T.must(data.slice(64, 32))
+
+          [t, epk, edk]
         end
 
         sig { params(sealing_key: AsymmetricKey).void }
@@ -30,11 +54,6 @@ module Paseto
           @sealing_key = T.let(sealing_key, V4::Public)
           @pk = T.let(@sealing_key.x25519_public_key, RbNaCl::PublicKey)
           @pk_bytes = T.let(@pk.to_bytes, String)
-        end
-
-        sig { override.returns(RbNaCl::PrivateKey) }
-        def generate_ephemeral_key
-          self.class.generate_ephemeral_key
         end
 
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns({ ek: String, n: String }) }
@@ -53,33 +72,9 @@ module Paseto
           RbNaCl::Hash.blake2b([DOMAIN_SEPARATOR_AUTH, header, xk, epk.to_bytes, @pk_bytes].join, digest_size: 32)
         end
 
-        sig { override.params(message: String, ek: String, n: String).returns(String) }
-        def crypt(message:, ek:, n:)
-          Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n, message)
-        end
-
         sig { override.params(ak: String, epk: RbNaCl::PublicKey, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
           RbNaCl::Hash.blake2b("#{header}#{epk.to_bytes}#{edk}", key: ak, digest_size: 32)
-        end
-
-        sig { override.params(encoded_data: String).returns([String, RbNaCl::PublicKey, String]) }
-        def split(encoded_data)
-          data = Util.decode64(encoded_data)
-
-          t = T.must(data.slice(0, 32))
-
-          epk_bytes = T.must(data.slice(32, 32))
-          epk = RbNaCl::PublicKey.new(epk_bytes)
-
-          edk = T.must(data.slice(64, 32))
-
-          [t, epk, edk]
-        end
-
-        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
-        def epk_bytes_from_esk(esk)
-          esk.public_key.to_bytes
         end
 
         sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }

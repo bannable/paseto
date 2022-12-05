@@ -10,7 +10,15 @@ module Paseto
 
         include Interface::PKE
 
-        sig(:final) { returns(OpenSSL::PKey::EC) }
+        sig { override.params(message: String, ek: String, n: String).returns(String) }
+        def self.crypt(message:, ek:, n:)
+          cipher = OpenSSL::Cipher.new('aes-256-ctr')
+          cipher.key = ek
+          cipher.iv = n
+          cipher.update(message) + cipher.final
+        end
+
+        sig(:final) { override.returns(OpenSSL::PKey::EC) }
         def self.generate_ephemeral_key
           OpenSSL::PKey::EC.generate('secp384r1')
         end
@@ -18,6 +26,25 @@ module Paseto
         sig(:final) { override.returns(String) }
         def self.header
           'k3.seal.'
+        end
+
+        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
+        def self.epk_bytes_from_esk(esk)
+          esk.public_key.to_octet_string(:compressed)
+        end
+
+        sig { override.params(encoded_data: String).returns([String, OpenSSL::PKey::EC::Point, String]) }
+        def self.split(encoded_data)
+          data = Util.decode64(encoded_data)
+
+          t = T.must(data.slice(0, 48))
+
+          epk_bytes = T.must(data.slice(48, 49))
+          epk = OpenSSL::PKey::EC::Point.new(OpenSSL::PKey::EC::Group.new('secp384r1'), epk_bytes)
+
+          edk = T.must(data.slice(97, 32))
+
+          [t, epk, edk]
         end
 
         sig { params(sealing_key: AsymmetricKey).void }
@@ -29,11 +56,6 @@ module Paseto
 
           @sealing_key = T.let(sealing_key, V3::Public)
           @pk = T.let(@sealing_key.public_bytes, String)
-        end
-
-        sig { override.returns(OpenSSL::PKey::EC) }
-        def generate_ephemeral_key
-          self.class.generate_ephemeral_key
         end
 
         sig { override.params(xk: String, epk: OpenSSL::PKey::EC::Point).returns({ ek: String, n: String }) }
@@ -60,37 +82,10 @@ module Paseto
           )
         end
 
-        sig { override.params(message: String, ek: String, n: String).returns(String) }
-        def crypt(message:, ek:, n:)
-          cipher = OpenSSL::Cipher.new('aes-256-ctr')
-          cipher.key = ek
-          cipher.iv = n
-          cipher.update(message) + cipher.final
-        end
-
         sig { override.params(ak: String, epk: OpenSSL::PKey::EC::Point, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
           epk_bytes = epk.to_octet_string(:compressed)
           OpenSSL::HMAC.digest('SHA384', ak, "#{header}#{epk_bytes}#{edk}")
-        end
-
-        sig { override.params(encoded_data: String).returns([String, OpenSSL::PKey::EC::Point, String]) }
-        def split(encoded_data)
-          data = Util.decode64(encoded_data)
-
-          t = T.must(data.slice(0, 48))
-
-          epk_bytes = T.must(data.slice(48, 49))
-          epk = OpenSSL::PKey::EC::Point.new(OpenSSL::PKey::EC::Group.new('secp384r1'), epk_bytes)
-
-          edk = T.must(data.slice(97, 32))
-
-          [t, epk, edk]
-        end
-
-        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
-        def epk_bytes_from_esk(esk)
-          esk.public_key.to_octet_string(:compressed)
         end
 
         sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
