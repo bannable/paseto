@@ -9,6 +9,11 @@ module Paseto
 
       include Interface::Version
 
+      sig(:final) { override.params(key: String, nonce: String, payload: String).returns(String) }
+      def self.crypt(key:, nonce:, payload:)
+        Paseto::Sodium::Stream::XChaCha20Xor.new(key).encrypt(nonce, payload)
+      end
+
       sig(:final) { override.returns(String) }
       def self.paserk_version
         'k4'

@@ -9,6 +9,14 @@ module Paseto
 
       include Interface::Version
 
+      sig(:final) { override.params(key: String, nonce: String, payload: String).returns(String) }
+      def self.crypt(key:, nonce:, payload:)
+        cipher = OpenSSL::Cipher.new('aes-256-ctr')
+        cipher.key = key
+        cipher.iv = nonce
+        cipher.update(payload) + cipher.final
+      end
+
       sig(:final) { override.returns(String) }
       def self.paserk_version
         'k3'

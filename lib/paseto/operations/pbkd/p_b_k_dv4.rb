@@ -34,7 +34,7 @@ module Paseto
           ek = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
           ak = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
 
-          edk = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(nonce, key.to_bytes)
+          edk = protocol.crypt(key: ek, nonce: nonce, payload: key.to_bytes)
 
           message = [salt, Util.int_to_be64(memlimit), Util.int_to_be32(opslimit), Util.int_to_be32(1), nonce, edk].join
           t = RbNaCl::Hash.blake2b("#{header}#{message}", key: ak, digest_size: 32)
@@ -57,7 +57,7 @@ module Paseto
           raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
 
           ek = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{k}", digest_size: 32)
-          ptk = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(nonce, edk)
+          ptk = protocol.crypt(key: ek, nonce: nonce, payload: edk)
 
           PaserkTypes.deserialize(header).generate(ptk)
         end

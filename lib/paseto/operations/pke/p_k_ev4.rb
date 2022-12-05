@@ -10,9 +10,9 @@ module Paseto
 
         include Interface::PKE
 
-        sig { override.params(message: String, ek: String, n: String).returns(String) }
-        def self.crypt(message:, ek:, n:)
-          Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n, message)
+        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
+        def self.epk_bytes_from_esk(esk)
+          esk.public_key.to_bytes
         end
 
         sig(:final) { override.returns(RbNaCl::PrivateKey) }
@@ -20,14 +20,14 @@ module Paseto
           RbNaCl::PrivateKey.generate
         end
 
-        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
-        def self.epk_bytes_from_esk(esk)
-          esk.public_key.to_bytes
-        end
-
         sig(:final) { override.returns(String) }
         def self.header
           'k4.seal.'
+        end
+
+        sig { override.returns(Protocol::Version4) }
+        def self.protocol
+          Protocol::Version4.new
         end
 
         sig { override.params(encoded_data: String).returns([String, RbNaCl::PublicKey, String]) }
@@ -56,6 +56,12 @@ module Paseto
           @pk_bytes = T.let(@pk.to_bytes, String)
         end
 
+        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
+        def decrypt(message:, ek:, n:)
+          pdk = protocol.crypt(payload: message, key: ek, nonce: n)
+          V4::Local.new(ikm: pdk)
+        end
+
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns({ ek: String, n: String }) }
         def derive_ek_n(xk:, epk:)
           ek = RbNaCl::Hash.blake2b(
@@ -72,15 +78,14 @@ module Paseto
           RbNaCl::Hash.blake2b([DOMAIN_SEPARATOR_AUTH, header, xk, epk.to_bytes, @pk_bytes].join, digest_size: 32)
         end
 
+        sig { override.params(message: String, ek: String, n: String).returns(String) }
+        def encrypt(message:, ek:, n:)
+          protocol.crypt(payload: message, key: ek, nonce: n)
+        end
+
         sig { override.params(ak: String, epk: RbNaCl::PublicKey, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
           RbNaCl::Hash.blake2b("#{header}#{epk.to_bytes}#{edk}", key: ak, digest_size: 32)
-        end
-
-        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
-        def decrypt(message:, ek:, n:)
-          pdk = crypt(message: message, ek: ek, n: n)
-          V4::Local.new(ikm: pdk)
         end
 
         private

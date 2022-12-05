@@ -71,10 +71,8 @@ module Paseto
         sig { params(payload: String, pre_key: String, nonce: String).returns(String) }
         def crypt(payload:, pre_key:, nonce:)
           ek = T.must(OpenSSL::Digest.digest('SHA384', "#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}").byteslice(0, 32))
-          cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
-          cipher.key = ek
-          cipher.iv = nonce
-          cipher.update(payload) + cipher.final
+
+          protocol.crypt(key: ek, nonce: nonce, payload: payload)
         end
 
         sig do

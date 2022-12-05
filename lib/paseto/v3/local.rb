@@ -51,10 +51,7 @@ module Paseto
 
         ek, n2, ak = calc_keys(n)
 
-        cipher = OpenSSL::Cipher.new('aes-256-ctr').encrypt
-        cipher.key = ek
-        cipher.iv = n2
-        c = cipher.update(message) + cipher.final
+        c = protocol.crypt(payload: message, key: ek, nonce: n2)
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
@@ -80,11 +77,7 @@ module Paseto
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
-        cipher.key = ek
-        cipher.iv = n2
-        plaintext = cipher.update(c) + cipher.final
-        plaintext.encode(Encoding::UTF_8)
+        protocol.crypt(payload: c, key: ek, nonce: n2).encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
       end

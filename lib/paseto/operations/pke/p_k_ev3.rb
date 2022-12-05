@@ -10,12 +10,9 @@ module Paseto
 
         include Interface::PKE
 
-        sig { override.params(message: String, ek: String, n: String).returns(String) }
-        def self.crypt(message:, ek:, n:)
-          cipher = OpenSSL::Cipher.new('aes-256-ctr')
-          cipher.key = ek
-          cipher.iv = n
-          cipher.update(message) + cipher.final
+        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
+        def self.epk_bytes_from_esk(esk)
+          esk.public_key.to_octet_string(:compressed)
         end
 
         sig(:final) { override.returns(OpenSSL::PKey::EC) }
@@ -28,9 +25,9 @@ module Paseto
           'k3.seal.'
         end
 
-        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
-        def self.epk_bytes_from_esk(esk)
-          esk.public_key.to_octet_string(:compressed)
+        sig { override.returns(Protocol::Version3) }
+        def self.protocol
+          Protocol::Version3.new
         end
 
         sig { override.params(encoded_data: String).returns([String, OpenSSL::PKey::EC::Point, String]) }
@@ -58,6 +55,12 @@ module Paseto
           @pk = T.let(@sealing_key.public_bytes, String)
         end
 
+        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
+        def decrypt(message:, ek:, n:)
+          pdk = protocol.crypt(key: ek, nonce: n, payload: message)
+          V3::Local.new(ikm: pdk)
+        end
+
         sig { override.params(xk: String, epk: OpenSSL::PKey::EC::Point).returns({ ek: String, n: String }) }
         def derive_ek_n(xk:, epk:)
           epk_bytes = epk.to_octet_string(:compressed)
@@ -82,16 +85,15 @@ module Paseto
           )
         end
 
+        sig { override.params(message: String, ek: String, n: String).returns(String) }
+        def encrypt(message:, ek:, n:)
+          protocol.crypt(payload: message, key: ek, nonce: n)
+        end
+
         sig { override.params(ak: String, epk: OpenSSL::PKey::EC::Point, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
           epk_bytes = epk.to_octet_string(:compressed)
           OpenSSL::HMAC.digest('SHA384', ak, "#{header}#{epk_bytes}#{edk}")
-        end
-
-        sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
-        def decrypt(message:, ek:, n:)
-          pdk = crypt(message: message, ek: ek, n: n)
-          V3::Local.new(ikm: pdk)
         end
 
         private

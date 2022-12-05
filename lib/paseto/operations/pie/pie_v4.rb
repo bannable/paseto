@@ -13,6 +13,11 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
+        sig { override.returns(Protocol::Version4) }
+        def self.protocol
+          Protocol::Version4.new
+        end
+
         sig { override.returns(String) }
         def local_header
           'k4.local-wrap.pie.'
@@ -59,7 +64,7 @@ module Paseto
           ek = T.must(x[0, 32])
           n2 = T.must(x[32..])
 
-          Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, payload)
+          protocol.crypt(key: ek, nonce: n2, payload: payload)
         end
       end
     end

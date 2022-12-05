@@ -13,6 +13,11 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
+        sig { override.returns(Protocol::Version3) }
+        def self.protocol
+          Protocol::Version3.new
+        end
+
         sig { override.returns(String) }
         def local_header
           'k3.local-wrap.pie.'
@@ -59,10 +64,7 @@ module Paseto
           ek = x[0, 32]
           n2 = x[32..]
 
-          cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
-          cipher.key = ek
-          cipher.iv = n2
-          cipher.update(payload) + cipher.final
+          protocol.crypt(key: ek, nonce: n2, payload: payload)
         end
       end
     end

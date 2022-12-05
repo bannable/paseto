@@ -18,6 +18,9 @@ module Paseto
 
         interface!
 
+        sig { abstract.params(key: String, nonce: String, payload: String).returns(String) }
+        def crypt(key:, nonce:, payload:); end
+
         sig { abstract.returns(String) }
         def paserk_version; end
 
@@ -32,6 +35,11 @@ module Paseto
       end
 
       mixes_in_class_methods(ClassMethods)
+
+      sig { params(key: String, nonce: String, payload: String).returns(String) }
+      def crypt(key:, nonce:, payload:)
+        self.class.crypt(key: key, nonce: nonce, payload: payload)
+      end
 
       sig(:final) { returns(String) }
       def paserk_version

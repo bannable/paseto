@@ -42,7 +42,7 @@ module Paseto
 
         ek, n2, ak = calc_keys(n)
 
-        c = Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, message.encode(Encoding::UTF_8)).b
+        c = protocol.crypt(payload: message.encode(Encoding::UTF_8), key: ek, nonce: n2).b
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
@@ -68,7 +68,7 @@ module Paseto
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        Paseto::Sodium::Stream::XChaCha20Xor.new(ek).encrypt(n2, c).encode(Encoding::UTF_8)
+        protocol.crypt(payload: c, key: ek, nonce: n2).encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
       end

@@ -32,7 +32,7 @@ module Paseto
 
         @coder.derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
 
-        edk = @coder.crypt(message: key.to_bytes, ek: ek, n: n)
+        edk = @coder.encrypt(message: key.to_bytes, ek: ek, n: n)
 
         ak = @coder.derive_ak(xk: xk, epk: epk)
         t = @coder.tag(ak: ak, epk: epk, edk: edk)
