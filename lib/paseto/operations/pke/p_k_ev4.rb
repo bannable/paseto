@@ -46,10 +46,7 @@ module Paseto
 
         sig { params(sealing_key: AsymmetricKey).void }
         def initialize(sealing_key)
-          case sealing_key
-          when V4::Public then nil
-          else raise LucidityError
-          end
+          raise LucidityError unless sealing_key.is_a? V4::Public
 
           @sealing_key = T.let(sealing_key, V4::Public)
           @pk = T.let(@sealing_key.x25519_public_key, RbNaCl::PublicKey)
