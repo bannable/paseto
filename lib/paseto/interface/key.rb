@@ -32,6 +32,21 @@ module Paseto
       end
       def decode(payload:, implicit_assertion: '', **options); end
 
+      sig { abstract.returns(String) }
+      def pbkw_header; end
+
+      sig { abstract.returns(Version) }
+      def protocol; end
+
+      sig { abstract.returns(String) }
+      def purpose; end
+
+      sig { abstract.returns(String) }
+      def to_bytes; end
+
+      sig { abstract.returns(String) }
+      def to_paserk; end
+
       sig(:final) do
         params(
           payload: String,
@@ -45,26 +60,10 @@ module Paseto
         Verify.verify_claims(result, options)
       end
 
-      sig { abstract.returns(String) }
-      def purpose; end
-
-      sig { abstract.returns(String) }
-      def to_bytes; end
-
-      sig { abstract.returns(String) }
-      def to_paserk; end
-
-      sig { abstract.returns(Version) }
-      def protocol; end
-
-      sig(:final) { returns(String) }
-      def version
-        protocol.version
-      end
-
-      sig(:final) { returns(String) }
-      def paserk_version
-        protocol.paserk_version
+      sig(:final) { params(other: T.untyped).returns(T::Boolean) }
+      def ==(other)
+        self.class == other.class &&
+          to_bytes == other.to_bytes
       end
 
       sig(:final) { returns(String) }
@@ -73,14 +72,18 @@ module Paseto
       end
 
       sig(:final) { returns(String) }
+      def paserk_version
+        protocol.paserk_version
+      end
+
+      sig(:final) { returns(String) }
       def pae_header
         "#{header}."
       end
 
-      sig(:final) { params(other: T.untyped).returns(T::Boolean) }
-      def ==(other)
-        self.class == other.class &&
-          to_bytes == other.to_bytes
+      sig(:final) { returns(String) }
+      def version
+        protocol.version
       end
     end
   end

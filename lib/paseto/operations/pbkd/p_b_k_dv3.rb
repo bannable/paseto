@@ -14,7 +14,7 @@ module Paseto
         include Interface::PBKD
 
         sig { override.returns(Protocol::Version3) }
-        def protocol
+        def self.protocol
           Protocol::Version3.new
         end
 
@@ -23,23 +23,13 @@ module Paseto
           @password = password
         end
 
-        sig { override.returns(String) }
-        def local_header
-          'k3.local-pw.'
-        end
-
-        sig { override.returns(String) }
-        def secret_header
-          'k3.secret-pw.'
-        end
-
         sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
         def wrap(key, options)
           raise LucidityError unless key.protocol == protocol
 
           options => {iterations:}
 
-          h = pbkw_header(key)
+          h = key.pbkw_header
           salt = SecureRandom.random_bytes(32)
           nonce = SecureRandom.random_bytes(16)
 
@@ -55,7 +45,7 @@ module Paseto
 
         sig { override.params(header: String, data: String).returns(Interface::Key) }
         def unwrap(header, data)
-          h = pbkw_header(header)
+          h = "#{header}."
           decode(data) => {salt:, iterations:, nonce:, edk:, authentication_tag:}
 
           pre_key = OpenSSL::KDF.pbkdf2_hmac(@password, salt: salt, iterations: Util.be32_to_int(iterations), length: 32, hash: 'SHA384')
@@ -71,18 +61,6 @@ module Paseto
         end
 
         private
-
-        sig { params(lookup: T.any(Interface::Key, String)).returns(String) }
-        def pbkw_header(lookup)
-          case lookup
-          when SymmetricKey, 'k3.local-pw' then local_header
-          when AsymmetricKey, 'k3.secret-pw' then secret_header
-          when Interface::Key
-            raise LucidityError, "wrong protocol version for key version #{lookup.version}"
-          when String
-            raise LucidityError, "wrong protocol version for header: '#{lookup}'"
-          end
-        end
 
         sig { params(pre_key: String, message: String).returns(String) }
         def authenticate(pre_key:, message:)

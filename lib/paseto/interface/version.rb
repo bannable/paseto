@@ -8,14 +8,50 @@ module Paseto
       extend T::Helpers
 
       include Comparable
+      include Kernel
 
       abstract!
 
-      sig { abstract.returns(String) }
-      def version; end
+      module ClassMethods
+        extend T::Sig
+        extend T::Helpers
 
-      sig { abstract.returns(String) }
-      def paserk_version; end
+        interface!
+
+        sig { abstract.returns(String) }
+        def paserk_version; end
+
+        sig { abstract.returns(String) }
+        def pbkd_local_header; end
+
+        sig { abstract.returns(String) }
+        def pbkd_secret_header; end
+
+        sig { abstract.returns(String) }
+        def version; end
+      end
+
+      mixes_in_class_methods(ClassMethods)
+
+      sig(:final) { returns(String) }
+      def paserk_version
+        self.class.paserk_version
+      end
+
+      sig(:final) { returns(String) }
+      def pbkd_local_header
+        self.class.pbkd_local_header
+      end
+
+      sig(:final) { returns(String) }
+      def pbkd_secret_header
+        self.class.pbkd_secret_header
+      end
+
+      sig(:final) { returns(String) }
+      def version
+        self.class.version
+      end
 
       sig(:final) { params(other: T.untyped).returns(T.nilable(Integer)) }
       def <=>(other)

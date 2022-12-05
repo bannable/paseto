@@ -14,7 +14,7 @@ module Paseto
         include Interface::PBKD
 
         sig { override.returns(Protocol::Version4) }
-        def protocol
+        def self.protocol
           Protocol::Version4.new
         end
 
@@ -23,21 +23,11 @@ module Paseto
           @password = password
         end
 
-        sig { override.returns(String) }
-        def local_header
-          'k4.local-pw.'
-        end
-
-        sig { override.returns(String) }
-        def secret_header
-          'k4.secret-pw.'
-        end
-
         sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
         def wrap(key, options)
           options => {memlimit:, opslimit:}
 
-          header = pbkw_header(key)
+          header = key.pbkw_header
           nonce = RbNaCl::Random.random_bytes(24)
           salt = RbNaCl::Random.random_bytes(16)
           pre_key = RbNaCl::PasswordHash.argon2id(@password, salt, opslimit, memlimit, 32)
@@ -54,7 +44,7 @@ module Paseto
 
         sig { override.params(header: String, data: String).returns(Interface::Key) }
         def unwrap(header, data)
-          h = pbkw_header(header)
+          h = "#{header}."
 
           decode(data) => {salt:, memlimit:, opslimit:, nonce:, para:, edk:, tag:}
 
@@ -73,18 +63,6 @@ module Paseto
         end
 
         private
-
-        sig { params(lookup: T.any(Interface::Key, String)).returns(String) }
-        def pbkw_header(lookup)
-          case lookup
-          when SymmetricKey, 'k4.local-pw' then local_header
-          when AsymmetricKey, 'k4.secret-pw' then secret_header
-          else
-            # :nocov:
-            raise ArgumentError, 'not a valid type of key'
-            # :nocov:
-          end
-        end
 
         sig do
           params(payload: String)

@@ -10,13 +10,23 @@ module Paseto
       include Interface::Version
 
       sig(:final) { override.returns(String) }
-      def version
-        'v3'
+      def self.paserk_version
+        'k3'
       end
 
       sig(:final) { override.returns(String) }
-      def paserk_version
-        'k3'
+      def self.pbkd_local_header
+        'k3.local-pw'
+      end
+
+      sig(:final) { override.returns(String) }
+      def self.pbkd_secret_header
+        'k3.secret-pw'
+      end
+
+      sig(:final) { override.returns(String) }
+      def self.version
+        'v3'
       end
     end
   end

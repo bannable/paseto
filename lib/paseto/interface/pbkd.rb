@@ -7,16 +7,21 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
+      include Kernel
+
       abstract!
 
-      sig { abstract.returns(Interface::Version) }
-      def protocol; end
+      module ClassMethods
+        extend T::Sig
+        extend T::Helpers
 
-      sig { abstract.returns(String) }
-      def local_header; end
+        interface!
 
-      sig { abstract.returns(String) }
-      def secret_header; end
+        sig { abstract.returns(Interface::Version) }
+        def protocol; end
+      end
+
+      mixes_in_class_methods(ClassMethods)
 
       sig { abstract.params(key: Key, options: T::Hash[T.untyped, T.untyped]).returns(String) }
       def wrap(key, options); end
@@ -25,13 +30,18 @@ module Paseto
       def unwrap(header, data); end
 
       sig(:final) { returns(String) }
-      def version
-        protocol.version
+      def paserk_version
+        protocol.paserk_version
+      end
+
+      sig(:final) { returns(Interface::Version) }
+      def protocol
+        self.class.protocol
       end
 
       sig(:final) { returns(String) }
-      def paserk_version
-        protocol.paserk_version
+      def version
+        protocol.version
       end
     end
   end
