@@ -49,8 +49,6 @@ And run `bundle install`
 
 ## Support for PASERK types
 
-[PASERK (Platform-Agnostic Serialized Keys)](https://github.com/paseto-standard/paserk), support is a Work In Progress.
-
 |               |  v4  |  v3  |
 | ------------- | ---- | ---- |
 | `lid`         |  ✅  |  ✅  |
@@ -59,7 +57,7 @@ And run `bundle install`
 | `local`       |  ✅  |  ✅  |
 | `secret`      |  ✅  |  ✅  |
 | `public`      |  ✅  |  ✅  |
-| `seal`        |  ❌  |  ❌  |
+| `seal`        |  ✅  |  ✅  |
 | `local-wrap`  |  ✅  |  ✅  |
 | `secret-wrap` |  ✅  |  ✅  |
 | `local-pw`    |  ✅  |  ✅  |
