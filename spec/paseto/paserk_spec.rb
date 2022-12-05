@@ -125,4 +125,43 @@ RSpec.describe Paseto::Paserk do
       expect(key.to_paserk).to eq(paserk)
     end
   end
+
+  describe 'v4.seal', :sodium do
+    let(:paserk) do
+      'k4.seal.OPFn-AEUsKUWtAUZrutVvd9YaZ4CmV4_lk6ii8N72l5gTnl8RlL_zRFq' \
+        'WTZZV9gSnPzARQ_QklrZ2Qs6cJGKOENNOnsDXL5haXcr-QbTXgoLVBvT4ruJ8MdjWXGRTVc9'
+    end
+    let(:keypair) do
+      '407796f4bc4b8184e9fe0c54b336822d34823092ad873d87ba14c3efb9db8c1d' \
+        'b7715bd661458d928654d3e832f53ff5c9480542e0e3d4c9b032c768c7ce6023'
+    end
+    let(:unsealing_key) { Paseto::V4::Public.from_keypair([keypair].pack('H*')) }
+
+    it 'deserializes correctly' do
+      expect(key.to_bytes).to eq("\x00" * 32)
+    end
+  end
+
+  describe 'v3.seal' do
+    let(:paserk) do
+      'k3.seal.NsI9NFzAouTSs7V5mejAeyBLYcoeNlbb9eY8C2KnkPTsARsPLen9KfMF' \
+        'fgqeI50FAnuRCdcb4HmXPaY3i-ZdBXwfdqSiB_65lmIHosVOJ7chmqqscnBkA7vc' \
+        '3mEAXxM05hSytjBYFxwlUnfFE3Sq3YHUZrOELF7PM87K6FFOMqc6'
+    end
+    let(:pem) do
+      <<~P384
+        -----BEGIN EC PRIVATE KEY-----
+        MIGkAgEBBDAhUb6WGhABE1MTj0x7E/5acgyap23kh7hUAVoAavKyfhYcmI3n1Q7L
+        JpHxNb792H6gBwYFK4EEACKhZANiAAT5H7mTSOyjfILDtSuavZfalI3doM8pRUlb
+        TzNyYLqM9iVmajpc0JRXvKuBtGtYi7Yft+eqFr6BuzGrdb4Z1vkvRcI504m0qKiE
+        zjhi6u4sNgzW23rrVkRYkb2oE3SJPko=
+        -----END EC PRIVATE KEY-----
+      P384
+    end
+    let(:unsealing_key) { Paseto::V3::Public.new(key: pem) }
+
+    it 'deserializes correctly' do
+      expect(key.to_bytes).to eq("\x00" * 32)
+    end
+  end
 end

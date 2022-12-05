@@ -13,8 +13,6 @@ module Paseto
       sig { params(wrapping_key: SymmetricKey, paserk: [String, String, String, String]).returns(Interface::Key) }
       def self.unwrap(wrapping_key, paserk)
         case paserk
-        in [_, _, _, data] if data.empty?
-          raise ParseError, 'empty paserk payload'
         in [_, _, String => protocol, _] if protocol == 'pie'
           PIE.new(wrapping_key).decode(paserk)
         else

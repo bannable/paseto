@@ -22,8 +22,6 @@ module Paseto
         case other
         in Interface::Version
           version <=> other.version
-        in String
-          version <=> other
         else
           nil
         end

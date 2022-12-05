@@ -84,12 +84,7 @@ module Paseto
 
       sig(:final) { override.returns(String) }
       def public_to_pem
-        case @key
-        when RbNaCl::SigningKey
-          ASN1.ed25519_pubkey_nacl_to_pem(@key.verify_key.to_bytes)
-        when RbNaCl::VerifyKey
-          ASN1.ed25519_pubkey_nacl_to_pem(@key.to_bytes)
-        end
+        ASN1.ed25519_pubkey_nacl_to_pem(public_bytes)
       end
 
       sig(:final) { override.returns(String) }
@@ -114,11 +109,29 @@ module Paseto
       sig(:final) { override.returns(String) }
       def public_bytes
         case @key
-        when RbNaCl::SigningKey
-          @key.verify_key.to_bytes
-        when RbNaCl::VerifyKey
-          @key.to_bytes
+        when RbNaCl::SigningKey then @key.verify_key.to_bytes
+        when RbNaCl::VerifyKey then @key.to_bytes
         end
+      end
+
+      sig(:final) { override.params(other: T.any(RbNaCl::PrivateKey, RbNaCl::PublicKey)).returns(String) }
+      def ecdh(other)
+        case other
+        when RbNaCl::PrivateKey
+          RbNaCl::GroupElement.new(x25519_public_key).mult(other).to_bytes
+        when RbNaCl::PublicKey
+          RbNaCl::GroupElement.new(other).mult(x25519_private_key).to_bytes
+        end
+      end
+
+      sig(:final) { returns(RbNaCl::PrivateKey) }
+      def x25519_private_key
+        Sodium::Curve25519.new(self).to_x25519_private_key
+      end
+
+      sig(:final) { returns(RbNaCl::PublicKey) }
+      def x25519_public_key
+        Sodium::Curve25519.new(self).to_x25519_public_key
       end
 
       private

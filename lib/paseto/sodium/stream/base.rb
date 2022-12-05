@@ -35,6 +35,7 @@ module Paseto
         # Sets up Stream with a secret key for encrypting and decrypting messages.
         sig { params(key: String).void }
         def initialize(key)
+          RbNaCl::Util.check_length(key, key_bytes, 'Key')
           @key = key
         end
 
