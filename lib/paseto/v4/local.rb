@@ -46,7 +46,7 @@ module Paseto
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
-        t = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
+        t = protocol.hmac(pre_auth, key: ak, digest_size: 32)
 
         Token.new(payload: "#{n}#{c}#{t}", version: version, purpose: purpose, footer: footer)
       end
@@ -64,7 +64,7 @@ module Paseto
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
 
-        t2 = RbNaCl::Hash.blake2b(pre_auth, key: ak, digest_size: 32)
+        t2 = protocol.hmac(pre_auth, key: ak, digest_size: 32)
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
@@ -97,10 +97,10 @@ module Paseto
       # Derive an encryption key, nonce, and authentication key from an input nonce.
       sig(:final) { params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
-        tmp = RbNaCl::Hash.blake2b("paseto-encryption-key#{nonce}", key: key, digest_size: 56)
+        tmp = protocol.hmac("paseto-encryption-key#{nonce}", key: key, digest_size: 56)
         ek = T.must(tmp[0, 32])
         n2 = T.must(tmp[-24, 24])
-        ak = RbNaCl::Hash.blake2b("paseto-auth-key-for-aead#{nonce}", key: key, digest_size: 32)
+        ak = protocol.hmac("paseto-auth-key-for-aead#{nonce}", key: key, digest_size: 32)
         [ek, n2, ak]
       end
     end

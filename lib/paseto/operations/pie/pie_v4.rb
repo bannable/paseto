@@ -35,12 +35,12 @@ module Paseto
 
         sig { override.params(nonce: String).returns(String) }
         def authentication_key(nonce:)
-          RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_AUTH}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 32)
+          protocol.hmac("#{DOMAIN_SEPARATOR_AUTH}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 32)
         end
 
         sig { override.params(payload: String, auth_key: String).returns(String) }
         def authentication_tag(payload:, auth_key:)
-          RbNaCl::Hash.blake2b(payload, key: auth_key, digest_size: 32)
+          protocol.hmac(payload, key: auth_key, digest_size: 32)
         end
 
         sig { override.returns(String) }
@@ -60,7 +60,7 @@ module Paseto
 
         sig { override.params(nonce: String, payload: String).returns(String) }
         def crypt(nonce:, payload:)
-          x = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 56)
+          x = protocol.hmac("#{DOMAIN_SEPARATOR_ENCRYPT}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 56)
           ek = T.must(x[0, 32])
           n2 = T.must(x[32..])
 

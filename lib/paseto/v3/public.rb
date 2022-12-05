@@ -60,7 +60,7 @@ module Paseto
 
         m2 = Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest('SHA384', m2)
+        data = protocol.digest(m2)
         sig_asn = @key.sign_raw(nil, data)
         sig = ASN1::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
 
@@ -84,7 +84,7 @@ module Paseto
 
         m2 = Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest('SHA384', m2)
+        data = protocol.digest(m2)
         raise InvalidSignature unless @key.verify_raw(nil, s, data)
 
         m.encode(Encoding::UTF_8)

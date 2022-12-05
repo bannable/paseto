@@ -31,13 +31,14 @@ module Paseto
           nonce = RbNaCl::Random.random_bytes(24)
           salt = RbNaCl::Random.random_bytes(16)
           pre_key = RbNaCl::PasswordHash.argon2id(@password, salt, opslimit, memlimit, 32)
-          ek = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
-          ak = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
+          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
 
           edk = protocol.crypt(key: ek, nonce: nonce, payload: key.to_bytes)
 
           message = [salt, Util.int_to_be64(memlimit), Util.int_to_be32(opslimit), Util.int_to_be32(1), nonce, edk].join
-          t = RbNaCl::Hash.blake2b("#{header}#{message}", key: ak, digest_size: 32)
+
+          ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
+          t = protocol.hmac("#{header}#{message}", key: ak, digest_size: 32)
 
           [header, Util.encode64("#{message}#{t}")].join
         end
@@ -50,13 +51,13 @@ module Paseto
 
           k = RbNaCl::PasswordHash.argon2id(@password, salt, Util.be32_to_int(opslimit), Util.be64_to_int(memlimit), 32)
 
-          ak = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_AUTH}#{k}", digest_size: 32)
+          ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{k}", digest_size: 32)
 
           message = "#{h}#{salt}#{memlimit}#{opslimit}#{para}#{nonce}#{edk}"
-          t2 = RbNaCl::Hash.blake2b(message, key: ak, digest_size: 32)
+          t2 = protocol.hmac(message, key: ak, digest_size: 32)
           raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
 
-          ek = RbNaCl::Hash.blake2b("#{DOMAIN_SEPARATOR_ENCRYPT}#{k}", digest_size: 32)
+          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{k}", digest_size: 32)
           ptk = protocol.crypt(key: ek, nonce: nonce, payload: edk)
 
           PaserkTypes.deserialize(header).generate(ptk)

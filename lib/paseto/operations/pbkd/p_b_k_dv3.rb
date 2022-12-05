@@ -64,13 +64,13 @@ module Paseto
 
         sig { params(pre_key: String, message: String).returns(String) }
         def authenticate(pre_key:, message:)
-          ak = OpenSSL::Digest.digest('SHA384', "#{DOMAIN_SEPARATOR_AUTH}#{pre_key}")
-          OpenSSL::HMAC.digest('SHA384', ak, message)
+          ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}")
+          protocol.hmac(message, key: ak)
         end
 
         sig { params(payload: String, pre_key: String, nonce: String).returns(String) }
         def crypt(payload:, pre_key:, nonce:)
-          ek = T.must(OpenSSL::Digest.digest('SHA384', "#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}").byteslice(0, 32))
+          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
 
           protocol.crypt(key: ek, nonce: nonce, payload: payload)
         end

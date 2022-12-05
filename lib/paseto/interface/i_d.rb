@@ -11,6 +11,9 @@ module Paseto
 
       sig { abstract.params(type: String, paserk: String).returns(String) }
       def encode(type, paserk); end
+
+      sig { abstract.returns(Interface::Version) }
+      def protocol; end
     end
   end
 end

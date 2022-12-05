@@ -101,6 +101,11 @@ module OpenSSL
 end
 
 class OpenSSL::Digest
-  sig { params(hash: String, data: String).returns(String) }
-  def self.digest(hash, data); end
+  sig { params(name: String, data: String).returns(String) }
+  def self.digest(name, data); end
+end
+
+class OpenSSL::HMAC
+  sig { params(digest: String, key: String, data: String).returns(String) }
+  def self.digest(digest, key, data); end
 end

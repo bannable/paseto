@@ -13,8 +13,13 @@ module Paseto
         sig { override.params(type: String, paserk: String).returns(String) }
         def self.encode(type, paserk)
           header = "k3.#{type}."
-          d = T.must(OpenSSL::Digest.digest('SHA384', "#{header}#{paserk}")[0, 33])
+          d = protocol.digest("#{header}#{paserk}", digest_size: 33)
           "#{header}#{Util.encode64(d)}"
+        end
+
+        sig { override.returns(Protocol::Version3) }
+        def self.protocol
+          Protocol::Version3.new
         end
       end
     end

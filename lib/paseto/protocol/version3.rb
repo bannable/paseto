@@ -1,3 +1,4 @@
+# encoding: binary
 # typed: strict
 # frozen_string_literal: true
 
@@ -15,6 +16,21 @@ module Paseto
         cipher.key = key
         cipher.iv = nonce
         cipher.update(payload) + cipher.final
+      end
+
+      sig(:final) { override.params(data: String, digest_size: Integer).returns(String) }
+      def self.digest(data, digest_size:)
+        T.must(OpenSSL::Digest.digest('SHA384', data).byteslice(0, digest_size))
+      end
+
+      sig(:final) { override.returns(Integer) }
+      def self.digest_bytes
+        48
+      end
+
+      sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
+      def self.hmac(data, key:, digest_size:)
+        T.must(OpenSSL::HMAC.digest('SHA384', key, data).byteslice(0, digest_size))
       end
 
       sig(:final) { override.returns(String) }

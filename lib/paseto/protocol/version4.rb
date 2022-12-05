@@ -14,6 +14,21 @@ module Paseto
         Paseto::Sodium::Stream::XChaCha20Xor.new(key).encrypt(nonce, payload)
       end
 
+      sig(:final) { override.params(data: String, digest_size: Integer).returns(String) }
+      def self.digest(data, digest_size:)
+        RbNaCl::Hash.blake2b(data, digest_size: digest_size)
+      end
+
+      sig(:final) { override.returns(Integer) }
+      def self.digest_bytes
+        32
+      end
+
+      sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
+      def self.hmac(data, key:, digest_size:)
+        RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
+      end
+
       sig(:final) { override.returns(String) }
       def self.paserk_version
         'k4'

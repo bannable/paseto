@@ -64,18 +64,18 @@ module Paseto
 
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns({ ek: String, n: String }) }
         def derive_ek_n(xk:, epk:)
-          ek = RbNaCl::Hash.blake2b(
+          ek = protocol.digest(
             "#{DOMAIN_SEPARATOR_ENCRYPT}#{header}#{xk}#{epk.to_bytes}#{@pk_bytes}",
             digest_size: 32
           )
-          n = RbNaCl::Hash.blake2b("#{epk.to_bytes}#{@pk_bytes}", digest_size: 24)
+          n = protocol.digest("#{epk.to_bytes}#{@pk_bytes}", digest_size: 24)
 
           { ek: ek, n: n }
         end
 
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns(String) }
         def derive_ak(xk:, epk:)
-          RbNaCl::Hash.blake2b([DOMAIN_SEPARATOR_AUTH, header, xk, epk.to_bytes, @pk_bytes].join, digest_size: 32)
+          protocol.digest([DOMAIN_SEPARATOR_AUTH, header, xk, epk.to_bytes, @pk_bytes].join, digest_size: 32)
         end
 
         sig { override.params(message: String, ek: String, n: String).returns(String) }
@@ -85,7 +85,7 @@ module Paseto
 
         sig { override.params(ak: String, epk: RbNaCl::PublicKey, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
-          RbNaCl::Hash.blake2b("#{header}#{epk.to_bytes}#{edk}", key: ak, digest_size: 32)
+          protocol.hmac("#{header}#{epk.to_bytes}#{edk}", key: ak, digest_size: 32)
         end
 
         private

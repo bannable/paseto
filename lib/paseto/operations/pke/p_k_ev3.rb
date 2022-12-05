@@ -65,10 +65,7 @@ module Paseto
         def derive_ek_n(xk:, epk:)
           epk_bytes = epk.to_octet_string(:compressed)
 
-          x = OpenSSL::Digest.digest(
-            'SHA384',
-            "#{DOMAIN_SEPARATOR_ENCRYPT}#{header}#{xk}#{epk_bytes}#{@pk}"
-          )
+          x = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{header}#{xk}#{epk_bytes}#{@pk}")
 
           ek = T.must(x[0, 32])
           n = T.must(x[32, 16])
@@ -79,10 +76,7 @@ module Paseto
         sig { override.params(xk: String, epk: OpenSSL::PKey::EC::Point).returns(String) }
         def derive_ak(xk:, epk:)
           epk_bytes = epk.to_octet_string(:compressed)
-          OpenSSL::Digest.digest(
-            'SHA384',
-            "#{DOMAIN_SEPARATOR_AUTH}#{header}#{xk}#{epk_bytes}#{@pk}"
-          )
+          protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{header}#{xk}#{epk_bytes}#{@pk}")
         end
 
         sig { override.params(message: String, ek: String, n: String).returns(String) }
@@ -93,7 +87,7 @@ module Paseto
         sig { override.params(ak: String, epk: OpenSSL::PKey::EC::Point, edk: String).returns(String) }
         def tag(ak:, epk:, edk:)
           epk_bytes = epk.to_octet_string(:compressed)
-          OpenSSL::HMAC.digest('SHA384', ak, "#{header}#{epk_bytes}#{edk}")
+          protocol.hmac("#{header}#{epk_bytes}#{edk}", key: ak)
         end
 
         private
