@@ -39,6 +39,11 @@ module Paseto
       protocol.pbkd_local_header
     end
 
+    sig(:final) { returns(Interface::PIE) }
+    def pie
+      protocol.pie(self)
+    end
+
     sig(:final) { override.returns(String) }
     def purpose
       'local'

@@ -12,7 +12,7 @@ module Paseto
       sig { params(wrapping_key: SymmetricKey).void }
       def initialize(wrapping_key)
         @wrapping_key = wrapping_key
-        @coder = T.let(wrapping_key.protocol.pie(@wrapping_key), Interface::PIE)
+        @coder = T.let(wrapping_key.pie, Interface::PIE)
       end
 
       sig { override.params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }

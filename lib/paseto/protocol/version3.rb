@@ -71,6 +71,11 @@ module Paseto
         Wrappers::PIE::PieV3.new(key)
       end
 
+      sig(:final) { override.params(key: AsymmetricKey).returns(Operations::PKE::PKEv3) }
+      def self.pke(key)
+        Operations::PKE::PKEv3.new(key)
+      end
+
       sig(:final) { override.params(size: Integer).returns(String) }
       def self.random(size)
         SecureRandom.random_bytes(size)

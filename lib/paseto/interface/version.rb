@@ -52,6 +52,9 @@ module Paseto
         sig { abstract.params(key: SymmetricKey).returns(Interface::PIE) }
         def pie(key); end
 
+        sig { abstract.params(key: AsymmetricKey).returns(Interface::PKE) }
+        def pke(key); end
+
         sig { abstract.params(size: Integer).returns(String) }
         def random(size); end
 
@@ -111,6 +114,11 @@ module Paseto
       sig(:final) { params(key: SymmetricKey).returns(Interface::PIE) }
       def pie(key)
         self.class.pie(key)
+      end
+
+      sig(:final) { params(key: AsymmetricKey).returns(Interface::PKE) }
+      def pke(key)
+        self.class.pke(key)
       end
 
       sig(:final) { params(size: Integer).returns(String) }

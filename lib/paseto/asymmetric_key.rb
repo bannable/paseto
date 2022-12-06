@@ -60,6 +60,11 @@ module Paseto
       protocol.pbkd_secret_header
     end
 
+    sig(:final) { returns(Interface::PKE) }
+    def pke
+      protocol.pke(self)
+    end
+
     sig(:final) { override.returns(String) }
     def purpose
       'public'

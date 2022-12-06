@@ -9,16 +9,8 @@ module Paseto
 
       sig { params(sealing_key: AsymmetricKey).void }
       def initialize(sealing_key)
-        case sealing_key
-        in V3::Public
-          coder = PKE::PKEv3
-        in V4::Public if Paseto.rbnacl?
-          coder = PKE::PKEv4
-        else
-          raise UnknownProtocol, 'not a valid version'
-        end
         @sealing_key = sealing_key
-        @coder = T.let(coder.new(@sealing_key), Interface::PKE)
+        @coder = T.let(@sealing_key.pke, Paseto::Interface::PKE)
       end
 
       sig { params(key: SymmetricKey).returns(String) }
