@@ -5,6 +5,9 @@
 module Paseto
   module Operations
     class PBKW
+      DOMAIN_SEPARATOR_ENCRYPT = T.let("\xFF", String)
+      DOMAIN_SEPARATOR_AUTH = T.let("\xFE", String)
+
       extend T::Sig
 
       sig { params(key: Interface::Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }

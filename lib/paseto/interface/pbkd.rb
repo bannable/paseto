@@ -35,8 +35,12 @@ module Paseto
       end
       def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:); end  # rubocop:disable Metrics/ParameterLists
 
-      sig { abstract.params(payload: String, key: String, nonce: String).returns(String) }
-      def crypt(payload:, key:, nonce:); end
+      sig(:final) { params(payload: String, key: String, nonce: String).returns(String) }
+      def crypt(payload:, key:, nonce:)
+        ek = protocol.digest("#{Operations::PBKW::DOMAIN_SEPARATOR_ENCRYPT}#{key}", digest_size: 32)
+
+        protocol.crypt(key: ek, nonce: nonce, payload: payload)
+      end
 
       sig do
         abstract.params(payload: String).returns(
