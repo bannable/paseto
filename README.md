@@ -262,7 +262,7 @@ hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, iss: 'example.com'
 payload = crypt.encode(payload: hash)
 
 options = { verify_issuer: 'not.example.com' }
-crypt.decode!(payload:, options:) # => Pseto::InvalidIssuer
+crypt.decode!(payload:, options:) # => Paseto::InvalidIssuer
 ```
 
 You may also pass a Regexp or Proc with arity 1, and verification will succeed if the regexp matches or the proc returns truthy.

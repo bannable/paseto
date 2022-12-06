@@ -24,15 +24,7 @@ module Paseto
 
       sig { params(protocol: Interface::Version).void }
       def initialize(protocol)
-        case protocol
-        in Protocol::Version3
-          coder = ID::IDv3
-        in Protocol::Version4 if Paseto.rbnacl?
-          coder = ID::IDv4
-        else
-          raise UnknownProtocol
-        end
-        @coder = T.let(coder, Interface::ID)
+        @coder = T.let(protocol.id, Interface::ID)
       end
 
       sig(:final) { params(key: SymmetricKey).returns(String) }

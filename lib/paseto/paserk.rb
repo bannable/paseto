@@ -27,7 +27,7 @@ module Paseto
         Operations::PBKW.new(version, T.must(password)).decode(paserk)
 
       in [String => version, String => type, String => data] if unsealing_key
-        Operations::PKE.new(T.must(unsealing_key)).decode(paserk)
+        Operations::PKE.new(T.must(unsealing_key)).unseal(paserk)
 
       in [String => version, String => type, String => data] if %w[local secret public].include?(type)
         PaserkTypes.deserialize(paserk.rpartition('.').first).generate(Util.decode64(data))
@@ -49,7 +49,7 @@ module Paseto
 
     sig { params(key: SymmetricKey, sealing_key: AsymmetricKey).returns(String) }
     def self.seal(key:, sealing_key:)
-      Operations::PKE.new(sealing_key).encode(key)
+      Operations::PKE.new(sealing_key).seal(key)
     end
   end
 end

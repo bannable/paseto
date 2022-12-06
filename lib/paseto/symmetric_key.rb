@@ -8,6 +8,12 @@ module Paseto
 
     abstract!
 
+    sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
+    def encrypt(message:, footer: '', implicit_assertion: '', n: nil); end # rubocop:disable Naming/MethodParameterName
+
+    sig { abstract.params(token: Token, implicit_assertion: String).returns(String) }
+    def decrypt(token:, implicit_assertion: ''); end
+
     sig(:final) do
       override.params(
         payload: T::Hash[String, T.untyped],
@@ -37,6 +43,11 @@ module Paseto
     sig(:final) { override.returns(String) }
     def pbkw_header
       protocol.pbkd_local_header
+    end
+
+    sig(:final) { returns(Interface::PIE) }
+    def pie
+      protocol.pie(self)
     end
 
     sig(:final) { override.returns(String) }
@@ -70,11 +81,5 @@ module Paseto
     def id
       Operations::ID.lid(self)
     end
-
-    sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
-    def encrypt(message:, footer: '', implicit_assertion: '', n: nil); end # rubocop:disable Naming/MethodParameterName
-
-    sig { abstract.params(token: Token, implicit_assertion: String).returns(String) }
-    def decrypt(token:, implicit_assertion: ''); end
   end
 end

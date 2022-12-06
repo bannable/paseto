@@ -30,6 +30,9 @@ module Paseto
         sig { abstract.params(data: String, key: String, digest_size: Integer).returns(String) }
         def hmac(data, key:, digest_size:); end
 
+        sig { abstract.returns(Interface::ID) }
+        def id; end
+
         sig do
           abstract.params(
             password: String,
@@ -48,6 +51,15 @@ module Paseto
 
         sig { abstract.returns(String) }
         def pbkd_secret_header; end
+
+        sig { abstract.params(password: String).returns(Interface::PBKD) }
+        def pbkw(password); end
+
+        sig { abstract.params(key: SymmetricKey).returns(Interface::PIE) }
+        def pie(key); end
+
+        sig { abstract.params(key: AsymmetricKey).returns(Interface::PKE) }
+        def pke(key); end
 
         sig { abstract.params(size: Integer).returns(String) }
         def random(size); end
@@ -78,7 +90,12 @@ module Paseto
         self.class.hmac(data, key: key, digest_size: digest_size || digest_bytes)
       end
 
-      sig do
+      sig(:final) { returns(Interface::ID) }
+      def id
+        self.class.id
+      end
+
+      sig(:final) do
         params(
           password: String,
           salt: String,
@@ -103,6 +120,21 @@ module Paseto
       sig(:final) { returns(String) }
       def pbkd_secret_header
         self.class.pbkd_secret_header
+      end
+
+      sig(:final) { params(password: String).returns(Interface::PBKD) }
+      def pbkw(password)
+        self.class.pbkw(password)
+      end
+
+      sig(:final) { params(key: SymmetricKey).returns(Interface::PIE) }
+      def pie(key)
+        self.class.pie(key)
+      end
+
+      sig(:final) { params(key: AsymmetricKey).returns(Interface::PKE) }
+      def pke(key)
+        self.class.pke(key)
       end
 
       sig(:final) { params(size: Integer).returns(String) }

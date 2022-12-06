@@ -14,7 +14,7 @@ module Paseto
       def self.unwrap(wrapping_key, paserk)
         case paserk
         in [_, _, String => protocol, _] if protocol == 'pie'
-          PIE.new(wrapping_key).decode(paserk)
+          Wrappers::PIE.new(wrapping_key).decode(paserk)
         else
           raise UnknownProtocol, protocol
         end
@@ -22,7 +22,7 @@ module Paseto
 
       sig { params(key: Interface::Key, wrapping_key: SymmetricKey, nonce: T.nilable(String)).returns(String) }
       def self.wrap(key, wrapping_key:, nonce: nil)
-        PIE.new(wrapping_key).encode(key, nonce: nonce)
+        Wrappers::PIE.new(wrapping_key).encode(key, nonce: nonce)
       end
     end
   end
