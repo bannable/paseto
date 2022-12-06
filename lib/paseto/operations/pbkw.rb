@@ -17,15 +17,7 @@ module Paseto
 
       sig { params(version: Interface::Version, password: String).void }
       def initialize(version, password)
-        case version
-        in Protocol::Version3
-          coder = PBKD::PBKDv3
-        in Protocol::Version4 if Paseto.rbnacl?
-          coder = PBKD::PBKDv4
-        else
-          raise UnknownProtocol
-        end
-        @coder = T.let(coder.new(password), Interface::PBKD)
+        @coder = T.let(version.pbkw(password), Interface::PBKD)
       end
 
       sig { params(key: Interface::Key, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }

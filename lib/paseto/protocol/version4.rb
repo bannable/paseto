@@ -62,6 +62,11 @@ module Paseto
         'k4.secret-pw'
       end
 
+      sig(:final) { override.params(password: String).returns(Operations::PBKD::PBKDv4) }
+      def self.pbkw(password)
+        Operations::PBKD::PBKDv4.new(password)
+      end
+
       sig(:final) { override.params(key: SymmetricKey).returns(Wrappers::PIE::PieV4) }
       def self.pie(key)
         Wrappers::PIE::PieV4.new(key)

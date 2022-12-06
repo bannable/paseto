@@ -49,6 +49,9 @@ module Paseto
         sig { abstract.returns(String) }
         def pbkd_secret_header; end
 
+        sig { abstract.params(password: String).returns(Interface::PBKD) }
+        def pbkw(password); end
+
         sig { abstract.params(key: SymmetricKey).returns(Interface::PIE) }
         def pie(key); end
 
@@ -109,6 +112,11 @@ module Paseto
       sig(:final) { returns(String) }
       def pbkd_secret_header
         self.class.pbkd_secret_header
+      end
+
+      sig(:final) { params(password: String).returns(Interface::PBKD) }
+      def pbkw(password)
+        self.class.pbkw(password)
       end
 
       sig(:final) { params(key: SymmetricKey).returns(Interface::PIE) }
