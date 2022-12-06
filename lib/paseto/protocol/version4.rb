@@ -34,7 +34,7 @@ module Paseto
           password: String,
           salt: String,
           length: Integer,
-          parameters: T.nilable(Integer)
+          parameters: Integer
         ).returns(String)
       end
       def self.kdf(password, salt:, length:, **parameters)
@@ -60,6 +60,11 @@ module Paseto
       sig(:final) { override.returns(String) }
       def self.pbkd_secret_header
         'k4.secret-pw'
+      end
+
+      sig(:final) { override.params(size: Integer).returns(String) }
+      def self.random(size)
+        RbNaCl::Random.random_bytes(size)
       end
 
       sig(:final) { override.returns(String) }

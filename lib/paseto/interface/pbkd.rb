@@ -23,11 +23,36 @@ module Paseto
 
       mixes_in_class_methods(ClassMethods)
 
-      sig { abstract.params(key: Key, options: T::Hash[T.untyped, T.untyped]).returns(String) }
-      def wrap(key, options); end
+      sig do
+        abstract.params(
+          header: String,
+          pre_key: String,
+          salt: String,
+          nonce: String,
+          edk: String,
+          params: T::Hash[Symbol, Integer]
+        ).returns([String, String])
+      end
+      def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:); end
 
-      sig { abstract.params(header: String, data: String).returns(Key) }
-      def unwrap(header, data); end
+      sig { abstract.params(payload: String, key: String, nonce: String).returns(String) }
+      def crypt(payload:, key:, nonce:); end
+
+      sig do
+        abstract.params(payload: String).returns(
+          {
+            salt: String,
+            nonce: String,
+            edk: String,
+            tag: String,
+            params: T::Hash[Symbol, Integer]
+          }
+        )
+      end
+      def decode(payload); end
+
+      sig { abstract.params(salt: String, params: T::Hash[Symbol, Integer]).returns(String) }
+      def pre_key(salt:, params:); end
 
       sig(:final) { returns(String) }
       def paserk_version
@@ -38,6 +63,12 @@ module Paseto
       def protocol
         self.class.protocol
       end
+
+      sig { abstract.returns(String) }
+      def random_nonce; end
+
+      sig { abstract.returns(String) }
+      def random_salt; end
 
       sig(:final) { returns(String) }
       def version

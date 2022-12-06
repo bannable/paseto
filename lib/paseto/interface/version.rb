@@ -35,7 +35,7 @@ module Paseto
             password: String,
             salt: String,
             length: Integer,
-            parameters: T.nilable(Integer)
+            parameters: Integer
           ).returns(String)
         end
         def kdf(password, salt:, length:, **parameters); end
@@ -48,6 +48,9 @@ module Paseto
 
         sig { abstract.returns(String) }
         def pbkd_secret_header; end
+
+        sig { abstract.params(size: Integer).returns(String) }
+        def random(size); end
 
         sig { abstract.returns(String) }
         def version; end
@@ -80,7 +83,7 @@ module Paseto
           password: String,
           salt: String,
           length: Integer,
-          parameters: T.nilable(Integer)
+          parameters: Integer
         ).returns(String)
       end
       def kdf(password, salt:, length:, **parameters)
@@ -100,6 +103,11 @@ module Paseto
       sig(:final) { returns(String) }
       def pbkd_secret_header
         self.class.pbkd_secret_header
+      end
+
+      sig(:final) { params(size: Integer).returns(String) }
+      def random(size)
+        self.class.random(size)
       end
 
       sig(:final) { returns(String) }

@@ -23,74 +23,77 @@ module Paseto
           @password = password
         end
 
-        sig { override.params(key: Interface::Key, options: T::Hash[Symbol, Integer]).returns(String) }
-        def wrap(key, options)
-          options => {memlimit:, opslimit:}
+        sig do
+          override.params(
+            header: String,
+            pre_key: String,
+            salt: String,
+            nonce: String,
+            edk: String,
+            params: T::Hash[Symbol, Integer]
+          ).returns([String, String])
+        end
+        def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:)
+          memlimit = Util.int_to_be64(T.must(params[:memlimit]))
+          opslimit = Util.int_to_be32(T.must(params[:opslimit]))
+          para = Util.int_to_be32(1)
 
-          h = key.pbkw_header
-          salt = RbNaCl::Random.random_bytes(16)
-          nonce = RbNaCl::Random.random_bytes(24)
-
-          pre_key = protocol.kdf(@password, salt: salt, length: 32, opslimit: opslimit, memlimit: memlimit)
-          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{pre_key}", digest_size: 32)
-
-          edk = protocol.crypt(key: ek, nonce: nonce, payload: key.to_bytes)
-
-          message = [salt, Util.int_to_be64(memlimit), Util.int_to_be32(opslimit), Util.int_to_be32(1), nonce, edk].join
+          message = "#{salt}#{memlimit}#{opslimit}#{para}#{nonce}#{edk}"
 
           ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
-          t = protocol.hmac("#{h}#{message}", key: ak, digest_size: 32)
+          tag = protocol.hmac("#{header}.#{message}", key: ak, digest_size: 32)
 
-          [h, Util.encode64("#{message}#{t}")].join
+          [message, tag]
         end
 
-        sig { override.params(header: String, data: String).returns(Interface::Key) }
-        def unwrap(header, data)
-          h = "#{header}."
+        sig { override.params(payload: String, key: String, nonce: String).returns(String) }
+        def crypt(payload:, key:, nonce:)
+          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{key}", digest_size: 32)
 
-          decode(data) => {salt:, memlimit:, opslimit:, nonce:, para:, edk:, tag:}
-
-          k = RbNaCl::PasswordHash.argon2id(@password, salt, Util.be32_to_int(opslimit), Util.be64_to_int(memlimit), 32)
-
-          ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{k}", digest_size: 32)
-
-          message = "#{h}#{salt}#{memlimit}#{opslimit}#{para}#{nonce}#{edk}"
-          t2 = protocol.hmac(message, key: ak, digest_size: 32)
-          raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
-
-          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{k}", digest_size: 32)
-          ptk = protocol.crypt(key: ek, nonce: nonce, payload: edk)
-
-          PaserkTypes.deserialize(header).generate(ptk)
+          protocol.crypt(key: ek, nonce: nonce, payload: payload)
         end
 
-        private
+        sig { override.params(salt: String, params: T::Hash[Symbol, Integer]).returns(String) }
+        def pre_key(salt:, params:)
+          opslimit = T.must(params[:opslimit])
+          memlimit = T.must(params[:memlimit])
+          protocol.kdf(@password, salt: salt, length: 32, opslimit: opslimit, memlimit: memlimit)
+        end
+
+        sig { override.returns(String) }
+        def random_nonce
+          protocol.random(24)
+        end
+
+        sig { override.returns(String) }
+        def random_salt
+          protocol.random(16)
+        end
 
         sig do
-          params(payload: String)
-            .returns(
-              {
-                salt: String,
-                memlimit: String,
-                opslimit: String,
-                para: String,
-                nonce: String,
-                edk: String,
-                tag: String
-              }
-            )
+          override.params(payload: String).returns(
+            {
+              salt: String,
+              nonce: String,
+              edk: String,
+              tag: String,
+              params: T::Hash[Symbol, Integer]
+            }
+          )
         end
         def decode(payload)
           data = Util.decode64(payload)
           edk_len = data.bytesize - 88
           {
             salt: T.must(data.byteslice(0, 16)),
-            memlimit: T.must(data.byteslice(16, 8)),
-            opslimit: T.must(data.byteslice(24, 4)),
-            para: T.must(data.byteslice(28, 4)),
             nonce: T.must(data.byteslice(32, 24)),
             edk: T.must(data.byteslice(56, edk_len)),
-            tag: T.must(data.byteslice(-32, 32))
+            tag: T.must(data.byteslice(-32, 32)),
+            params: {
+              memlimit: Util.be64_to_int(T.must(data.byteslice(16, 8))),
+              opslimit: Util.be32_to_int(T.must(data.byteslice(24, 4))),
+              para: Util.be32_to_int(T.must(data.byteslice(28, 4)))
+            }
           }
         end
       end
