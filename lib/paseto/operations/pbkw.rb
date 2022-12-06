@@ -56,7 +56,7 @@ module Paseto
 
         pre_key = @coder.pre_key(salt: salt, params: params)
 
-        message, t2 = @coder.authenticate(header: header, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: params)
+        _, t2 = @coder.authenticate(header: header, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: params)
         raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
 
         ptk = @coder.crypt(payload: edk, key: pre_key, nonce: nonce)

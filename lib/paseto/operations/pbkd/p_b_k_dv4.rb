@@ -33,7 +33,7 @@ module Paseto
             params: T::Hash[Symbol, Integer]
           ).returns([String, String])
         end
-        def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:)
+        def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:) # rubocop:disable Metrics/ParameterLists
           memlimit = Util.int_to_be64(T.must(params[:memlimit]))
           opslimit = Util.int_to_be32(T.must(params[:opslimit]))
           para = Util.int_to_be32(1)
@@ -81,7 +81,7 @@ module Paseto
             }
           )
         end
-        def decode(payload)
+        def decode(payload) # rubocop:disable Metrics/AbcSize
           data = Util.decode64(payload)
           edk_len = data.bytesize - 88
           {

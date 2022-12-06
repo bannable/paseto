@@ -56,7 +56,7 @@ module Paseto
       # `token` must be a `v4.local` type Token.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: '')
-        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
+        raise LucidityError unless header == token.header
 
         n, c, t = split_payload(token.payload)
 

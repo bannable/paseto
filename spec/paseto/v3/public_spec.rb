@@ -212,7 +212,7 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'raises an error' do
-        expect { verify }.to raise_error(Paseto::ParseError, 'incorrect header for key type v3.public')
+        expect { verify }.to raise_error(Paseto::LucidityError)
       end
     end
   end

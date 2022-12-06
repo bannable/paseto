@@ -33,7 +33,7 @@ module Paseto
             params: T::Hash[Symbol, Integer]
           ).returns([String, String])
         end
-        def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:)
+        def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:) # rubocop:disable Metrics/ParameterLists
           iterations = Util.int_to_be32(T.must(params[:iterations]))
 
           message = "#{salt}#{iterations}#{nonce}#{edk}"

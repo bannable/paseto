@@ -67,7 +67,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
       let(:token) { Paseto::Token.parse(token_str.sub('v4', 'v3')) }
 
       it 'raises an error' do
-        expect { plaintext }.to raise_error(Paseto::ParseError, 'incorrect header for key type v4.local')
+        expect { plaintext }.to raise_error(Paseto::LucidityError)
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
       let(:token) { Paseto::Token.parse(token_str.sub('local', 'public')) }
 
       it 'raises an error' do
-        expect { plaintext }.to raise_error(Paseto::ParseError, 'incorrect header for key type v4.local')
+        expect { plaintext }.to raise_error(Paseto::LucidityError)
       end
     end
 

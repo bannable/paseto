@@ -74,7 +74,7 @@ module Paseto
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: '')
-        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
+        raise LucidityError unless header == token.header
 
         m = token.payload.dup.to_s
         raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN

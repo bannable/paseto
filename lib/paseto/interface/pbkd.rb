@@ -33,7 +33,7 @@ module Paseto
           params: T::Hash[Symbol, Integer]
         ).returns([String, String])
       end
-      def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:); end
+      def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:); end  # rubocop:disable Metrics/ParameterLists
 
       sig { abstract.params(payload: String, key: String, nonce: String).returns(String) }
       def crypt(payload:, key:, nonce:); end

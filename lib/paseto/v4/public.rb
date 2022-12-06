@@ -61,8 +61,8 @@ module Paseto
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
-        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
+      def verify(token:, implicit_assertion: '')
+        raise LucidityError unless header == token.header
 
         m = token.payload
         raise ParseError, 'message too short' if m.size < SIGNATURE_BYTES
