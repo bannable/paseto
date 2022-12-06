@@ -64,7 +64,7 @@ RSpec.describe Paseto::V3::Local do
       let(:token) { Paseto::Token.parse(token_str.sub('local', 'public')) }
 
       it 'raises an error' do
-        expect { plaintext }.to raise_error(Paseto::ParseError, 'incorrect header for key type v3.local')
+        expect { plaintext }.to raise_error(Paseto::LucidityError)
       end
     end
 

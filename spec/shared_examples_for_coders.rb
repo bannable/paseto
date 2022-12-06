@@ -32,7 +32,7 @@ RSpec.shared_examples 'a token coder' do
       payload = key.purpose == 'local' ? 'v3.public.payload.footer' : 'v3.local.payload.footer'
       expect do
         key.decode(payload: payload, implicit_assertion: 'test')
-      end.to raise_error(Paseto::ParseError, "incorrect header for key type #{key.header}")
+      end.to raise_error(Paseto::LucidityError)
     end
 
     context 'with some entirely unknown payload type' do

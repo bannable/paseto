@@ -21,9 +21,6 @@ module Paseto
 
         interface!
 
-        sig { abstract.params(message: String, ek: String, n: String).returns(String) }
-        def crypt(message:, ek:, n:); end
-
         sig { abstract.params(esk: T.untyped).returns(String) }
         def epk_bytes_from_esk(esk); end
 
@@ -32,6 +29,9 @@ module Paseto
 
         sig { abstract.returns(String) }
         def header; end
+
+        sig { abstract.returns(Interface::Version) }
+        def protocol; end
 
         sig { abstract.params(encoded_data: String).returns([String, T.untyped, String]) }
         def split(encoded_data); end
@@ -51,13 +51,11 @@ module Paseto
       sig { abstract.params(message: String, ek: String, n: String).returns(SymmetricKey) }
       def decrypt(message:, ek:, n:); end
 
+      sig { abstract.params(message: String, ek: String, n: String).returns(String) }
+      def encrypt(message:, ek:, n:); end
+
       sig { abstract.params(ak: String, epk: T.untyped, edk: String).returns(String) }
       def tag(ak:, epk:, edk:); end
-
-      sig(:final) { params(message: String, ek: String, n: String).returns(String) }
-      def crypt(message:, ek:, n:)
-        self.class.crypt(message: message, ek: ek, n: n)
-      end
 
       sig(:final) { params(esk: T.untyped).returns(String) }
       def epk_bytes_from_esk(esk)
@@ -72,6 +70,11 @@ module Paseto
       sig(:final) { returns(String) }
       def header
         self.class.header
+      end
+
+      sig(:final) { returns(Interface::Version) }
+      def protocol
+        self.class.protocol
       end
 
       sig(:final) { params(encoded_data: String).returns([String, T.untyped, String]) }

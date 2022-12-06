@@ -10,11 +10,9 @@ module Paseto
 
         extend Interface::ID
 
-        sig { override.params(type: String, paserk: String).returns(String) }
-        def self.encode(type, paserk)
-          header = "k4.#{type}."
-          d = RbNaCl::Hash.blake2b("#{header}#{paserk}", digest_size: 33)
-          "#{header}#{Util.encode64(d)}"
+        sig { override.returns(Protocol::Version4) }
+        def self.protocol
+          Protocol::Version4.new
         end
       end
     end

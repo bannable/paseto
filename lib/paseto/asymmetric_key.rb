@@ -56,6 +56,11 @@ module Paseto
     end
 
     sig(:final) { override.returns(String) }
+    def pbkw_header
+      protocol.pbkd_secret_header
+    end
+
+    sig(:final) { override.returns(String) }
     def purpose
       'public'
     end

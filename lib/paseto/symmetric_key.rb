@@ -35,6 +35,11 @@ module Paseto
     end
 
     sig(:final) { override.returns(String) }
+    def pbkw_header
+      protocol.pbkd_local_header
+    end
+
+    sig(:final) { override.returns(String) }
     def purpose
       'local'
     end

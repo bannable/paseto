@@ -40,8 +40,6 @@ module Paseto
         @key = ikm
       end
 
-      # rubocop:disable Metrics/AbcSize
-
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
       # If `footer` is provided, it is included as authenticated data in the reuslting `Token``.
       # `n` must not be used outside of tests.
@@ -51,10 +49,7 @@ module Paseto
 
         ek, n2, ak = calc_keys(n)
 
-        cipher = OpenSSL::Cipher.new('aes-256-ctr').encrypt
-        cipher.key = ek
-        cipher.iv = n2
-        c = cipher.update(message) + cipher.final
+        c = protocol.crypt(payload: message, key: ek, nonce: n2)
 
         pre_auth = Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
 
@@ -68,7 +63,7 @@ module Paseto
       # `token` must be a `v3.local` type Token.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def decrypt(token:, implicit_assertion: '')
-        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
+        raise LucidityError unless header == token.header
 
         n, c, t = split_payload(token.payload)
 
@@ -80,15 +75,10 @@ module Paseto
 
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
-        cipher.key = ek
-        cipher.iv = n2
-        plaintext = cipher.update(c) + cipher.final
-        plaintext.encode(Encoding::UTF_8)
+        protocol.crypt(payload: c, key: ek, nonce: n2).encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
       end
-      # rubocop:enable Metrics/AbcSize
 
       sig(:final) { override.returns(String) }
       def to_bytes

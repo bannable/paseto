@@ -5,6 +5,9 @@
 module Paseto
   module Operations
     class PBKW
+      DOMAIN_SEPARATOR_ENCRYPT = T.let("\xFF", String)
+      DOMAIN_SEPARATOR_AUTH = T.let("\xFE", String)
+
       extend T::Sig
 
       sig { params(key: Interface::Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
@@ -27,10 +30,22 @@ module Paseto
 
       sig { params(key: Interface::Key, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
       def encode(key, options)
-        raise LucidityError unless key.version == @coder.version
+        raise LucidityError unless key.protocol == @coder.protocol
 
         opts = default_options.merge(options)
-        @coder.wrap(key, **opts)
+
+        h = key.pbkw_header
+        salt = @coder.random_salt
+        nonce = @coder.random_nonce
+
+        pre_key = @coder.pre_key(salt: salt, params: opts)
+
+        edk = @coder.crypt(payload: key.to_bytes, key: pre_key, nonce: nonce)
+
+        message, t = @coder.authenticate(header: h, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: opts)
+
+        data = Util.encode64("#{message}#{t}")
+        "#{h}#{data}"
       end
 
       sig { params(paserk: String).returns(Interface::Key) }
@@ -39,7 +54,16 @@ module Paseto
         raise LucidityError unless version == @coder.paserk_version
 
         header = "#{version}.#{type}"
-        @coder.unwrap(header, data)
+
+        @coder.decode(data) => {salt:, nonce:, edk:, tag:, params:}
+
+        pre_key = @coder.pre_key(salt: salt, params: params)
+
+        _, t2 = @coder.authenticate(header: header, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: params)
+        raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
+
+        ptk = @coder.crypt(payload: edk, key: pre_key, nonce: nonce)
+        PaserkTypes.deserialize(header).generate(ptk)
       end
 
       private

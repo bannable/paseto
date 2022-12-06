@@ -60,7 +60,7 @@ module Paseto
 
         m2 = Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest('SHA384', m2)
+        data = protocol.digest(m2)
         sig_asn = @key.sign_raw(nil, data)
         sig = ASN1::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
 
@@ -74,7 +74,7 @@ module Paseto
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
       def verify(token:, implicit_assertion: '')
-        raise ParseError, "incorrect header for key type #{header}" unless header == token.header
+        raise LucidityError unless header == token.header
 
         m = token.payload.dup.to_s
         raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN
@@ -84,7 +84,7 @@ module Paseto
 
         m2 = Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
 
-        data = OpenSSL::Digest.digest('SHA384', m2)
+        data = protocol.digest(m2)
         raise InvalidSignature unless @key.verify_raw(nil, s, data)
 
         m.encode(Encoding::UTF_8)
@@ -166,6 +166,7 @@ module Paseto
         return true unless private? && Util.openssl?(3)
 
         priv_key = @key.private_key
+        group = @key.group
 
         # int ossl_ec_key_private_check(const EC_KEY *eckey)
         # {
@@ -180,7 +181,7 @@ module Paseto
         #
         # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L510
         # private keys must be in range [1, order-1]
-        return false if priv_key < OpenSSL::BN.new(1) || priv_key > @key.group.order
+        return false if priv_key < OpenSSL::BN.new(1) || priv_key > group.order
 
         # int ossl_ec_key_pairwise_check(const EC_KEY *eckey, BN_CTX *ctx)
         # {
@@ -198,7 +199,7 @@ module Paseto
         #
         # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L529
         # Check generator * priv_key = pub_key
-        @key.public_key == @key.group.generator.mul(priv_key)
+        @key.public_key == group.generator.mul(priv_key)
       end
 
       # :nocov:

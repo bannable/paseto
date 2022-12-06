@@ -7,31 +7,76 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
+      include Kernel
+
       abstract!
 
-      sig { abstract.returns(Interface::Version) }
-      def protocol; end
+      module ClassMethods
+        extend T::Sig
+        extend T::Helpers
 
-      sig { abstract.returns(String) }
-      def local_header; end
+        interface!
 
-      sig { abstract.returns(String) }
-      def secret_header; end
-
-      sig { abstract.params(key: Key, options: T::Hash[T.untyped, T.untyped]).returns(String) }
-      def wrap(key, options); end
-
-      sig { abstract.params(header: String, data: String).returns(Key) }
-      def unwrap(header, data); end
-
-      sig(:final) { returns(String) }
-      def version
-        protocol.version
+        sig { abstract.returns(Interface::Version) }
+        def protocol; end
       end
+
+      mixes_in_class_methods(ClassMethods)
+
+      sig do
+        abstract.params(
+          header: String,
+          pre_key: String,
+          salt: String,
+          nonce: String,
+          edk: String,
+          params: T::Hash[Symbol, Integer]
+        ).returns([String, String])
+      end
+      def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:); end  # rubocop:disable Metrics/ParameterLists
+
+      sig(:final) { params(payload: String, key: String, nonce: String).returns(String) }
+      def crypt(payload:, key:, nonce:)
+        ek = protocol.digest("#{Operations::PBKW::DOMAIN_SEPARATOR_ENCRYPT}#{key}", digest_size: 32)
+
+        protocol.crypt(key: ek, nonce: nonce, payload: payload)
+      end
+
+      sig do
+        abstract.params(payload: String).returns(
+          {
+            salt: String,
+            nonce: String,
+            edk: String,
+            tag: String,
+            params: T::Hash[Symbol, Integer]
+          }
+        )
+      end
+      def decode(payload); end
+
+      sig { abstract.params(salt: String, params: T::Hash[Symbol, Integer]).returns(String) }
+      def pre_key(salt:, params:); end
 
       sig(:final) { returns(String) }
       def paserk_version
         protocol.paserk_version
+      end
+
+      sig(:final) { returns(Interface::Version) }
+      def protocol
+        self.class.protocol
+      end
+
+      sig { abstract.returns(String) }
+      def random_nonce; end
+
+      sig { abstract.returns(String) }
+      def random_salt; end
+
+      sig(:final) { returns(String) }
+      def version
+        protocol.version
       end
     end
   end

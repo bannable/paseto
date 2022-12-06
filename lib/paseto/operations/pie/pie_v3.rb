@@ -13,6 +13,11 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
+        sig { override.returns(Protocol::Version3) }
+        def self.protocol
+          Protocol::Version3.new
+        end
+
         sig { override.returns(String) }
         def local_header
           'k3.local-wrap.pie.'
@@ -30,12 +35,12 @@ module Paseto
 
         sig { override.params(nonce: String).returns(String) }
         def authentication_key(nonce:)
-          OpenSSL::HMAC.digest('SHA384', @wrapping_key.to_bytes, "#{DOMAIN_SEPARATOR_AUTH}#{nonce}").byteslice(0, 32)
+          protocol.hmac("#{DOMAIN_SEPARATOR_AUTH}#{nonce}", key: @wrapping_key.to_bytes, digest_size: 32)
         end
 
         sig { override.params(payload: String, auth_key: String).returns(String) }
         def authentication_tag(payload:, auth_key:)
-          OpenSSL::HMAC.digest('SHA384', auth_key, payload)
+          protocol.hmac(payload, key: auth_key)
         end
 
         sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
@@ -56,13 +61,10 @@ module Paseto
         sig { override.params(nonce: String, payload: String).returns(String) }
         def crypt(nonce:, payload:)
           x = OpenSSL::HMAC.digest('SHA384', @wrapping_key.to_bytes, "#{DOMAIN_SEPARATOR_ENCRYPT}#{nonce}")
-          ek = x[0, 32]
-          n2 = x[32..]
+          ek = T.must(x[0, 32])
+          n2 = T.must(x[32..])
 
-          cipher = OpenSSL::Cipher.new('aes-256-ctr').decrypt
-          cipher.key = ek
-          cipher.iv = n2
-          cipher.update(payload) + cipher.final
+          protocol.crypt(key: ek, nonce: n2, payload: payload)
         end
       end
     end
