@@ -30,6 +30,9 @@ module Paseto
         sig { abstract.params(data: String, key: String, digest_size: Integer).returns(String) }
         def hmac(data, key:, digest_size:); end
 
+        sig { abstract.returns(Interface::ID) }
+        def id; end
+
         sig do
           abstract.params(
             password: String,
@@ -87,7 +90,12 @@ module Paseto
         self.class.hmac(data, key: key, digest_size: digest_size || digest_bytes)
       end
 
-      sig do
+      sig(:final) { returns(Interface::ID) }
+      def id
+        self.class.id
+      end
+
+      sig(:final) do
         params(
           password: String,
           salt: String,

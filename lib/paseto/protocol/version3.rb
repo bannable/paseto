@@ -33,6 +33,11 @@ module Paseto
         T.must(OpenSSL::HMAC.digest('SHA384', key, data).byteslice(0, digest_size))
       end
 
+      sig(:final) { override.returns(T.class_of(Operations::ID::IDv3)) }
+      def self.id
+        Operations::ID::IDv3
+      end
+
       sig(:final) do
         override.params(
           password: String,

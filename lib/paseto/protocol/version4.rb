@@ -29,6 +29,11 @@ module Paseto
         RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
       end
 
+      sig(:final) { override.returns(T.class_of(Operations::ID::IDv4)) }
+      def self.id
+        Operations::ID::IDv4
+      end
+
       sig(:final) do
         override.params(
           password: String,
