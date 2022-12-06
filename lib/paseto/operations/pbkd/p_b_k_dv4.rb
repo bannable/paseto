@@ -8,9 +8,6 @@ module Paseto
       class PBKDv4
         extend T::Sig
 
-        DOMAIN_SEPARATOR_ENCRYPT = T.let("\xFF".b, String)
-        DOMAIN_SEPARATOR_AUTH = T.let("\xFE".b, String)
-
         include Interface::PBKD
 
         sig { override.returns(Protocol::Version4) }
@@ -40,17 +37,10 @@ module Paseto
 
           message = "#{salt}#{memlimit}#{opslimit}#{para}#{nonce}#{edk}"
 
-          ak = protocol.digest("#{DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
+          ak = protocol.digest("#{Operations::PBKW::DOMAIN_SEPARATOR_AUTH}#{pre_key}", digest_size: 32)
           tag = protocol.hmac("#{header}.#{message}", key: ak, digest_size: 32)
 
           [message, tag]
-        end
-
-        sig { override.params(payload: String, key: String, nonce: String).returns(String) }
-        def crypt(payload:, key:, nonce:)
-          ek = protocol.digest("#{DOMAIN_SEPARATOR_ENCRYPT}#{key}", digest_size: 32)
-
-          protocol.crypt(key: ek, nonce: nonce, payload: payload)
         end
 
         sig { override.params(salt: String, params: T::Hash[Symbol, Integer]).returns(String) }
