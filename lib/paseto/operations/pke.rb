@@ -22,7 +22,7 @@ module Paseto
       end
 
       sig { params(key: SymmetricKey).returns(String) }
-      def encode(key)
+      def seal(key)
         raise LucidityError unless key.protocol == @sealing_key.protocol
 
         esk = @coder.generate_ephemeral_key
@@ -43,7 +43,7 @@ module Paseto
       end
 
       sig { params(paserk: String).returns(Interface::Key) }
-      def decode(paserk)
+      def unseal(paserk)
         paserk.split('.') => [version, type, encoded_data]
         raise LucidityError unless version == @sealing_key.paserk_version
         raise LucidityError unless type == 'seal'
