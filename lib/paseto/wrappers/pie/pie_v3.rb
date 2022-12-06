@@ -13,6 +13,16 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
+        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
+        def self.decode_and_split(data)
+          b = Util.decode64(data)
+          {
+            t: T.must(b.byteslice(0, 48)),
+            n: T.must(b.byteslice(48, 32)),
+            c: T.must(b.byteslice(80..))
+          }
+        end
+
         sig { override.returns(Protocol::Version3) }
         def self.protocol
           Protocol::Version3.new
@@ -43,19 +53,9 @@ module Paseto
           protocol.hmac(payload, key: auth_key)
         end
 
-        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
-        def decode_and_split(data)
-          b = Util.decode64(data)
-          {
-            t: T.must(b.byteslice(0, 48)),
-            n: T.must(b.byteslice(48, 32)),
-            c: T.must(b.byteslice(80..))
-          }
-        end
-
         sig { override.returns(String) }
         def random_nonce
-          SecureRandom.bytes(32)
+          protocol.random(32)
         end
 
         sig { override.params(nonce: String, payload: String).returns(String) }

@@ -18,6 +18,9 @@ module Paseto
 
         interface!
 
+        sig { abstract.params(data: String).returns({ t: String, n: String, c: String }) }
+        def decode_and_split(data); end
+
         sig { abstract.returns(Interface::Version) }
         def protocol; end
       end
@@ -33,8 +36,10 @@ module Paseto
       sig { abstract.params(nonce: String, payload: String).returns(String) }
       def crypt(nonce:, payload:); end
 
-      sig { abstract.params(data: String).returns({ t: String, n: String, c: String }) }
-      def decode_and_split(data); end
+      sig { params(data: String).returns({ t: String, n: String, c: String }) }
+      def decode_and_split(data)
+        self.class.decode_and_split(data)
+      end
 
       sig { abstract.returns(String) }
       def local_header; end

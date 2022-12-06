@@ -13,6 +13,16 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
+        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
+        def self.decode_and_split(data)
+          b = Util.decode64(data)
+          {
+            t: T.must(b.byteslice(0, 32)),
+            n: T.must(b.byteslice(32, 32)),
+            c: T.must(b.byteslice(64..))
+          }
+        end
+
         sig { override.returns(Protocol::Version4) }
         def self.protocol
           Protocol::Version4.new
@@ -45,17 +55,7 @@ module Paseto
 
         sig { override.returns(String) }
         def random_nonce
-          RbNaCl::Random.random_bytes(32)
-        end
-
-        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
-        def decode_and_split(data)
-          b = Util.decode64(data)
-          {
-            t: T.must(b.byteslice(0, 32)),
-            n: T.must(b.byteslice(32, 32)),
-            c: T.must(b.byteslice(64..))
-          }
+          protocol.random(32)
         end
 
         sig { override.params(nonce: String, payload: String).returns(String) }
