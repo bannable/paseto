@@ -3,7 +3,7 @@
 # frozen_string_literal: true
 
 module Paseto
-  module Operations
+  module Wrappers
     class PIE
       class PieV4
         extend T::Sig

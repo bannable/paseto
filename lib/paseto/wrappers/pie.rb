@@ -3,7 +3,7 @@
 # frozen_string_literal: true
 
 module Paseto
-  module Operations
+  module Wrappers
     class PIE
       extend T::Sig
 
@@ -11,16 +11,8 @@ module Paseto
 
       sig { params(wrapping_key: SymmetricKey).void }
       def initialize(wrapping_key)
-        case wrapping_key.protocol
-        in Protocol::Version3
-          coder = PIE::PieV3
-        in Protocol::Version4 if Paseto.rbnacl?
-          coder = PIE::PieV4
-        else
-          raise UnknownProtocol, 'not a valid version'
-        end
         @wrapping_key = wrapping_key
-        @coder = T.let(coder.new(wrapping_key), Interface::PIE)
+        @coder = T.let(wrapping_key.protocol.pie(@wrapping_key), Interface::PIE)
       end
 
       sig { override.params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }

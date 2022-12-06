@@ -66,6 +66,11 @@ module Paseto
         'k3.secret-pw'
       end
 
+      sig(:final) { override.params(key: SymmetricKey).returns(Wrappers::PIE::PieV3) }
+      def self.pie(key)
+        Wrappers::PIE::PieV3.new(key)
+      end
+
       sig(:final) { override.params(size: Integer).returns(String) }
       def self.random(size)
         SecureRandom.random_bytes(size)
