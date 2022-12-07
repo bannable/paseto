@@ -265,14 +265,45 @@ RSpec.describe Paseto::Verify do
     end
   end
 
-  context 'when verifying WPK in the footer' do
+  context 'with a WPK in the footer' do
     let(:footer) do
-      { 'wpk' => 'k3.secret.foo' }
+      { 'wpk' => 'k3.secret-wrap.foo' }
     end
-    let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
 
-    it 'raises ForbiddenValue' do
-      expect { verify }.to raise_error(Paseto::InvalidWPK)
+    it 'succeeds' do
+      expect(verify).to eq(result)
+    end
+
+    context 'when the WPK value type is forbidden' do
+      let(:footer) do
+        { 'wpk' => 'k3.secret.foo' }
+      end
+      let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
+
+      it 'raises InvalidWPK' do
+        expect { verify }.to raise_error(Paseto::InvalidWPK)
+      end
+    end
+  end
+
+  context 'with a KID in the footer' do
+    let(:footer) do
+      { 'kid' => 'k3.lid.foo' }
+    end
+
+    it 'succeeds' do
+      expect(verify).to eq(result)
+    end
+
+    context 'when the KID value type is not permitted' do
+      let(:footer) do
+        { 'kid' => 'k3.secret.foo' }
+      end
+      let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
+
+      it 'raises InvalidKID' do
+        expect { verify }.to raise_error(Paseto::InvalidKID)
+      end
     end
   end
 end

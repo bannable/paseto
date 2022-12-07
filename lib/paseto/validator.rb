@@ -87,11 +87,25 @@ module Paseto
 
       sig { override.void }
       def verify
-        payload.each do |k, v|
-          if k == 'wpk'
-            v.split('.', 3) => [String, String => type, String]
-            raise InvalidWPK unless PERMITTED.include?(type)
-          end
+        return unless (wpk = payload['wpk'])
+
+        wpk.split('.', 3) => [_, String => type, _]
+        raise InvalidWPK unless PERMITTED.include?(type)
+      end
+    end
+
+    class KeyID < Validator
+      PERMITTED = T.let(%w(lid sid pid), T::Array[String])
+
+      sig { override.void }
+      def verify
+        return unless (kid = payload['kid'])
+
+        case kid.split('.')
+        in [_, String => type, _] if PERMITTED.include?(type)
+          nil
+        else
+          raise InvalidKID
         end
       end
     end
