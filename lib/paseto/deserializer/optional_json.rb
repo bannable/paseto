@@ -14,8 +14,8 @@ module Paseto
           options: T::Hash[T.untyped, T.untyped]
         ).returns(T.any(String, T::Hash[String, T.untyped]))
       end
-      def self.deserialize(val, options = {})
-        MultiJson.load(val)
+      def self.deserialize(val, options)
+        MultiJson.load(val, options)
       rescue MultiJson::ParseError
         val
       end

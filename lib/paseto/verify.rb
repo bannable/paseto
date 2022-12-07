@@ -39,7 +39,8 @@ module Paseto
 
     sig { returns(T.self_type) }
     def verify_footer
-      Verifiers::Footer.verify(@result.footer, @options) if @result.footer.is_a?(Hash)
+      footer = @result.footer
+      Verifiers::Footer.verify(footer, @options) if footer.is_a?(Hash)
       self
     end
   end

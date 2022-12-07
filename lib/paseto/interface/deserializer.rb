@@ -10,7 +10,7 @@ module Paseto
       interface!
 
       sig { abstract.params(val: String, options: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
-      def deserialize(val, options = {}); end
+      def deserialize(val, options); end
     end
   end
 end

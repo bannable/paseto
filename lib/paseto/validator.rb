@@ -83,7 +83,7 @@ module Paseto
     end
 
     class WPK < Validator
-      PERMITTED = T.let(%w(seal local-wrap secret-wrap), T::Array[String])
+      PERMITTED = T.let(%w[seal local-wrap secret-wrap].freeze, T::Array[String])
 
       sig { override.void }
       def verify
@@ -95,7 +95,7 @@ module Paseto
     end
 
     class KeyID < Validator
-      PERMITTED = T.let(%w(lid sid pid), T::Array[String])
+      PERMITTED = T.let(%w[lid sid pid].freeze, T::Array[String])
 
       sig { override.void }
       def verify

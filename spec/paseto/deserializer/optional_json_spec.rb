@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Paseto::Deserializer::OptionalJson do
-  subject(:result) { described_class.deserialize(value) }
+  subject(:result) { described_class.deserialize(value, {}) }
 
   context 'when the input is not valid json' do
     let(:value) { 'foo' }
@@ -14,7 +14,7 @@ RSpec.describe Paseto::Deserializer::OptionalJson do
     let(:value) { '{"a":1}' }
 
     it 'returns the deserialized result' do
-      expect(result).to eq({'a' => 1})
+      expect(result).to eq({ 'a' => 1 })
     end
   end
 end

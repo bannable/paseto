@@ -53,7 +53,7 @@ module Paseto
     def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
       body = MultiJson.load(verify(token: token, implicit_assertion: implicit_assertion), **options)
-      footer = serializer.deserialize(token.footer)
+      footer = serializer.deserialize(token.footer, options)
       Result.new(body: body, footer: footer)
     end
 
