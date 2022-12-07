@@ -3,7 +3,7 @@
 
 RSpec.shared_examples 'a token coder' do
   describe '.encode' do
-    subject(:coder) { key.encode(payload: payload, footer: 'foo', implicit_assertion: 'test', n: nonce) }
+    subject(:coder) { key.encode(payload, footer: 'foo', implicit_assertion: 'test', n: nonce) }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
     let(:payload) { { 'data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00' } }
@@ -13,9 +13,9 @@ RSpec.shared_examples 'a token coder' do
   end
 
   describe '.decode' do
-    subject(:decoder) { key.decode(payload: payload, implicit_assertion: 'test') }
+    subject(:decoder) { key.decode(payload, implicit_assertion: 'test') }
 
-    let(:payload) { key.encode(payload: plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
+    let(:payload) { key.encode(plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
     let(:plain) do
       {
         'exp' => (Time.now + 5).iso8601,
@@ -31,7 +31,7 @@ RSpec.shared_examples 'a token coder' do
     it 'raises an error with some other valid payload type' do
       payload = key.purpose == 'local' ? 'v3.public.payload.footer' : 'v3.local.payload.footer'
       expect do
-        key.decode(payload: payload, implicit_assertion: 'test')
+        key.decode(payload, implicit_assertion: 'test')
       end.to raise_error(Paseto::LucidityError)
     end
 
@@ -44,13 +44,13 @@ RSpec.shared_examples 'a token coder' do
     end
 
     context 'with verification' do
-      subject(:decoder) { key.decode!(payload: payload, implicit_assertion: 'test') }
+      subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
 
       it { is_expected.to eq(plain) }
     end
 
     context 'when verification fails' do
-      subject(:decoder) { key.decode!(payload: payload, implicit_assertion: 'test') }
+      subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
 
       let(:plain) do
         {

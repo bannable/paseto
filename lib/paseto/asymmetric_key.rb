@@ -37,7 +37,7 @@ module Paseto
         options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
       ).returns(String)
     end
-    def encode(payload:, footer: '', implicit_assertion: '', **options)
+    def encode(payload, footer: '', implicit_assertion: '', **options)
       message = MultiJson.dump(payload, options)
       sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
     end
@@ -49,7 +49,7 @@ module Paseto
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
       ).returns(T::Hash[String, T.untyped])
     end
-    def decode(payload:, implicit_assertion: '', **options)
+    def decode(payload, implicit_assertion: '', **options)
       token = Token.parse(payload)
 
       MultiJson.load(verify(token: token, implicit_assertion: implicit_assertion), **options)
