@@ -76,6 +76,10 @@ module Paseto
   class InvalidSubject < ValidationError; end
   # Missing or unacceptable jti
   class InvalidTokenIdentifier < ValidationError; end
+  # Footer contains unknown or forbidden payload types
+  class InvalidWPK < ValidationError; end
+  # Footer contains unknown or invalid KID payloads
+  class InvalidKID < ValidationError; end
 
   class PaserkError < Error; end
   class UnknownProtocol < PaserkError; end

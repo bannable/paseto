@@ -8,8 +8,13 @@ module Paseto
 
       extend Interface::Deserializer
 
-      sig(:final) { override.params(val: String).returns(String) }
-      def self.deserialize(val) = val
+      sig(:final) do
+        override.params(
+          val: String,
+          options: T::Hash[T.untyped, T.untyped]
+        ).returns(T.any(String, T::Hash[String, T.untyped]))
+      end
+      def self.deserialize(val, options = {}) = val
     end
   end
 end

@@ -3,7 +3,7 @@
 
 RSpec.describe Paseto::Verify do
   subject(:verify) do
-    described_class.verify_claims(result, options)
+    described_class.verify(result, options).result
   end
 
   let(:options) do
@@ -26,8 +26,9 @@ RSpec.describe Paseto::Verify do
   let(:sub) { 'test.test.test' }
   let(:jti) { '12345' }
 
-  let(:result) { Paseto::Result.new(body: payload) }
+  let(:result) { Paseto::Result.new(body: payload, footer: footer) }
   let(:payload) { claims }
+  let(:footer) { nil }
 
   let(:claims) do
     {
@@ -261,6 +262,17 @@ RSpec.describe Paseto::Verify do
       it 'raises InvalidTokenIdentifier' do
         expect { verify }.to raise_error(Paseto::InvalidTokenIdentifier, 'Missing jti')
       end
+    end
+  end
+
+  context 'when verifying WPK in the footer' do
+    let(:footer) do
+      { 'wpk' => 'k3.secret.foo' }
+    end
+    let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
+
+    it 'raises ForbiddenValue' do
+      expect { verify }.to raise_error(Paseto::InvalidWPK)
     end
   end
 end

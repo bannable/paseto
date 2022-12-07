@@ -82,6 +82,20 @@ module Paseto
       end
     end
 
+    class WPK < Validator
+      PERMITTED = T.let(%w(seal local-wrap secret-wrap), T::Array[String])
+
+      sig { override.void }
+      def verify
+        payload.each do |k, v|
+          if k == 'wpk'
+            v.split('.', 3) => [String, String => type, String]
+            raise InvalidWPK unless PERMITTED.include?(type)
+          end
+        end
+      end
+    end
+
     class NotBefore < Validator
       sig { override.void }
       def verify

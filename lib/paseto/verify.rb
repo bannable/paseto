@@ -16,9 +16,9 @@ module Paseto
         TokenIdentifier = new
       end
 
-      sig { returns(T::Array[T.class_of(Validator)]) }
-      def self.all
-        values.each.map(&:verifier)
+      sig { params(body: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
+      def self.verify(body, options)
+        values.each { |v| v.verifier.new(body, options).verify }
       end
 
       sig { returns(T.class_of(Validator)) }
@@ -39,16 +39,43 @@ module Paseto
       end
     end
 
+    class FooterVerifiers < T::Enum
+      extend T::Sig
+
+      enums do
+        ForbiddenValue = new
+      end
+
+      sig { params(footer: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
+      def self.verify(footer, options)
+        values.each { |v| v.verifier.new(footer, options).verify }
+      end
+
+      sig { returns(T.class_of(Validator)) }
+      def verifier
+        case self
+        when ForbiddenValue then Paseto::Validator::WPK
+        else
+          T.absurd(self)
+        end
+      end
+    end
+
     extend T::Sig
+
+    sig { returns(Result) }
+    attr_reader :result
 
     sig do
       params(
         result: Result,
         options: T::Hash[Symbol, T.untyped]
-      ).returns(Result)
+      ).returns(Verify)
     end
-    def self.verify_claims(result, options = {})
-      new(result, Paseto.config.decode.to_h.merge(options)).verify_claims
+    def self.verify(result, options = {})
+      new(result, Paseto.config.decode.to_h.merge(options))
+        .then(&:verify_footer)
+        .then(&:verify_claims)
     end
 
     sig do
@@ -62,10 +89,16 @@ module Paseto
       @options = options
     end
 
-    sig { returns(Result) }
+    sig { returns(T.self_type) }
     def verify_claims
-      PayloadVerifiers.all.each { |v| v.new(@result.body, @options).verify }
-      @result
+      PayloadVerifiers.verify(@result.body, @options)
+      self
+    end
+
+    sig { returns(T.self_type) }
+    def verify_footer
+      FooterVerifiers.verify(@result.footer, @options) if @result.footer.is_a?(Hash)
+      self
     end
   end
 end
