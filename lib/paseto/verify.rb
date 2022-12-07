@@ -3,7 +3,7 @@
 
 module Paseto
   class Verify
-    class Verifiers < T::Enum
+    class PayloadVerifiers < T::Enum
       extend T::Sig
 
       enums do
@@ -43,24 +43,29 @@ module Paseto
 
     sig do
       params(
-        payload: T::Hash[String, T.untyped],
+        result: Result,
         options: T::Hash[Symbol, T.untyped]
-      ).returns(T::Hash[T.untyped, T.untyped])
+      ).returns(Result)
     end
-    def self.verify_claims(payload, options = {})
-      new(payload, Paseto.config.decode.to_h.merge(options)).verify_claims
+    def self.verify_claims(result, options = {})
+      new(result, Paseto.config.decode.to_h.merge(options)).verify_claims
     end
 
-    sig { params(payload: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
-    def initialize(payload, options)
-      @payload = payload
+    sig do
+      params(
+        result: Result,
+        options: T::Hash[Symbol, T.untyped]
+      ).void
+    end
+    def initialize(result, options)
+      @result = result
       @options = options
     end
 
-    sig { returns(T::Hash[String, T.untyped]) }
+    sig { returns(Result) }
     def verify_claims
-      Verifiers.all.each { |v| v.new(@payload, @options).verify }
-      @payload
+      PayloadVerifiers.all.each { |v| v.new(@result.body, @options).verify }
+      @result
     end
   end
 end

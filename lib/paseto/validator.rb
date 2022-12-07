@@ -8,13 +8,13 @@ module Paseto
 
     abstract!
 
-    sig { returns(T::Hash[T.untyped, T.untyped]) }
+    sig { returns(T::Hash[String, T.untyped]) }
     attr_reader :payload
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
     attr_reader :options
 
-    sig { params(payload: T::Hash[T.untyped, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
+    sig { params(payload: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
     def initialize(payload, options)
       @payload = payload
       @options = options

@@ -27,10 +27,11 @@ module Paseto
         abstract.params(
           payload: String,
           implicit_assertion: String,
+          serializer: Interface::Deserializer,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-        ).returns(T::Hash[String, T.untyped])
+        ).returns(Result)
       end
-      def decode(payload, implicit_assertion: '', **options); end
+      def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
 
       sig { abstract.returns(String) }
       def pbkw_header; end
@@ -52,7 +53,7 @@ module Paseto
           payload: String,
           implicit_assertion: String,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-        ).returns(T::Hash[String, T.untyped])
+        ).returns(Result)
       end
       def decode!(payload, implicit_assertion: '', **options)
         result = decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
