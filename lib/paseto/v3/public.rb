@@ -17,25 +17,27 @@ module Paseto
       # Size of r | s in an ECDSA secp384r1 signature
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
+      sig(:final) { override.returns(Protocol::Version3) }
+      attr_reader :protocol
+
       # Create a new Public instance with a brand new EC key.
       sig(:final) { returns(T.attached_class) }
       def self.generate
-        new(key: OpenSSL::PKey::EC.generate('secp384r1').to_der)
+        OpenSSL::PKey::EC.generate('secp384r1')
+                         .then(&:to_der)
+                         .then { |der| new(key: der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_public_bytes(bytes)
-        new(key: ASN1.p384_public_bytes_to_spki_der(bytes))
+        ASN1.p384_public_bytes_to_spki_der(bytes)
+            .then { |der| new(key: der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_scalar_bytes(bytes)
-        new(key: ASN1.p384_scalar_bytes_to_oak_der(bytes))
-      end
-
-      sig(:final) { override.returns(Protocol::Version3) }
-      def protocol
-        Protocol::Version3.new
+        ASN1.p384_scalar_bytes_to_oak_der(bytes)
+            .then { |der| new(key: der) }
       end
 
       # `key` must be either a DER or PEM encoded secp384r1 key.
@@ -43,9 +45,14 @@ module Paseto
       sig(:final) { params(key: String).void }
       def initialize(key:)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
+        @private = T.let(@key.private?, T::Boolean)
 
         raise LucidityError unless @key.group.curve_name == 'secp384r1'
         raise InvalidKeyPair unless custom_check_key
+
+        @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+
+        super
       rescue OpenSSL::PKey::ECError => e
         raise CryptoError, e.message
       end
@@ -59,6 +66,12 @@ module Paseto
         raise ArgumentError, 'no private key available' unless private?
 
         m2 = Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
+
+        # protocol.digest(m2)
+        # .then { |data| @key.sign_raw(nil, data) }
+        # .then { |sig_asn| ASN1::ECDSASignature.from_asn1(sig_asn) }
+        # .then { |ecdsa_sig| ecdsa_sig.to_rs(SIGNATURE_PART_LEN) }
+        # .then { |sig| Token.new(payload: "#{message}#{sig}", purpose: purpose, version: version, footer: footer)}
 
         data = protocol.digest(m2)
         sig_asn = @key.sign_raw(nil, data)
@@ -95,9 +108,7 @@ module Paseto
       # rubocop:enable Metrics/AbcSize
 
       sig(:final) { override.returns(String) }
-      def public_to_pem
-        @key.public_to_pem
-      end
+      def public_to_pem = @key.public_to_pem
 
       sig(:final) { override.returns(String) }
       def private_to_pem
@@ -114,14 +125,10 @@ module Paseto
       end
 
       sig(:final) { override.returns(T::Boolean) }
-      def private?
-        @key.private?
-      end
+      def private? = @private
 
       sig(:final) { override.returns(String) }
-      def public_bytes
-        @key.public_key.to_octet_string(:compressed)
-      end
+      def public_bytes = @key.public_key.to_octet_string(:compressed)
 
       sig(:final) { override.params(other: T.any(OpenSSL::PKey::EC, OpenSSL::PKey::EC::Point)).returns(String) }
       def ecdh(other)

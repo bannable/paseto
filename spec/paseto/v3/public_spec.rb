@@ -229,13 +229,13 @@ RSpec.describe Paseto::V3::Public do
 
     context 'with a secret key' do
       it 'encodes to the expected k3.secret' do
-        expect(key.to_paserk).to eq('k3.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo-QkZKTlJWWl5iZmpucnZ6f')
+        expect(key.paserk).to eq('k3.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo-QkZKTlJWWl5iZmpucnZ6f')
       end
     end
 
     context 'with a secret key and requesting a public paserk' do
       it 'encodes to the expected k3.public' do
-        expect(key.to_public_paserk).to eq('k3.public.AxqZCCGSmyX74eY91flGwJXKrQTl-5ATZYuDbsha8revply0Jy7BIKjXN1maDP1EJw')
+        expect(key.public_paserk).to eq('k3.public.AxqZCCGSmyX74eY91flGwJXKrQTl-5ATZYuDbsha8revply0Jy7BIKjXN1maDP1EJw')
       end
     end
 
@@ -250,7 +250,7 @@ RSpec.describe Paseto::V3::Public do
       end
 
       it 'encodes to the expected k3.public' do
-        expect(key.to_paserk).to eq('k3.public.AnBxcnN0dXZ3eHl6e3x9fn-AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2enw')
+        expect(key.paserk).to eq('k3.public.AnBxcnN0dXZ3eHl6e3x9fn-AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2enw')
       end
     end
   end

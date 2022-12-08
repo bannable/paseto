@@ -220,7 +220,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
       let(:key) { described_class.new(RbNaCl::SigningKey.new(key_bytes)) }
 
       it 'encodes to the expected k4.secret' do
-        expect(key.to_paserk).to eq('k4.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8c5WpIyC_5kWKhS8VEYSZ05dYfuTF-ZdQFV4D9vLTcNQ')
+        expect(key.paserk).to eq('k4.secret.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8c5WpIyC_5kWKhS8VEYSZ05dYfuTF-ZdQFV4D9vLTcNQ')
       end
     end
 
@@ -228,7 +228,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
       let(:key) { described_class.new(RbNaCl::SigningKey.new(key_bytes)) }
 
       it 'encodes to the expected k4.public' do
-        expect(key.to_public_paserk).to eq('k4.public.HOVqSMgv-ZFioUvFRGEmdOXWH7kxfmXUBVeA_by03DU')
+        expect(key.public_paserk).to eq('k4.public.HOVqSMgv-ZFioUvFRGEmdOXWH7kxfmXUBVeA_by03DU')
       end
     end
 
@@ -236,7 +236,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
       let(:key) { described_class.new(RbNaCl::VerifyKey.new(key_bytes)) }
 
       it 'encodes to the expected k4.public' do
-        expect(key.to_paserk).to eq('k4.public.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+        expect(key.paserk).to eq('k4.public.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
       end
     end
   end

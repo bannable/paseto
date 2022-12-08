@@ -34,6 +34,12 @@ module Paseto
       def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
 
       sig { abstract.returns(String) }
+      def id; end
+
+      sig { abstract.returns(String) }
+      def paserk; end
+
+      sig { abstract.returns(String) }
       def pbkw_header; end
 
       sig { abstract.returns(Version) }
@@ -44,9 +50,6 @@ module Paseto
 
       sig { abstract.returns(String) }
       def to_bytes; end
-
-      sig { abstract.returns(String) }
-      def to_paserk; end
 
       sig(:final) do
         params(

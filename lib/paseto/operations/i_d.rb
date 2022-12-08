@@ -29,19 +29,19 @@ module Paseto
 
       sig(:final) { params(key: SymmetricKey).returns(String) }
       def lid(key)
-        @coder.encode('lid', key.to_paserk)
+        @coder.encode('lid', key.paserk)
       end
 
       sig(:final) { params(key: AsymmetricKey).returns(String) }
       def sid(key)
         raise ArgumentError, 'no private key available' unless key.private?
 
-        @coder.encode('sid', key.to_paserk)
+        @coder.encode('sid', key.paserk)
       end
 
       sig(:final) { params(key: AsymmetricKey).returns(String) }
       def pid(key)
-        @coder.encode('pid', key.to_public_paserk)
+        @coder.encode('pid', key.public_paserk)
       end
     end
   end

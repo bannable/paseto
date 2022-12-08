@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'a token coder' do
-  around(:example) do |example|
+  around do |example|
     Timecop.freeze { example.run }
   end
 

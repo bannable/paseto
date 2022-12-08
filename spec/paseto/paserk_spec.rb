@@ -82,7 +82,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k3.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 
@@ -90,7 +90,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k3.public.AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 
@@ -98,7 +98,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k3.secret.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 
@@ -106,7 +106,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 
@@ -114,7 +114,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k4.public.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 
@@ -122,7 +122,7 @@ RSpec.describe Paseto::Paserk do
     let(:paserk) { 'k4.secret.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7aie8zrakLWKjqNAqbw1zZTIVdx3iQ6Y6wEihi1naKQ' }
 
     it 'deserializes correctly' do
-      expect(key.to_paserk).to eq(paserk)
+      expect(key.paserk).to eq(paserk)
     end
   end
 

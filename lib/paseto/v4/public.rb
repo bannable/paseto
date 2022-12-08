@@ -17,6 +17,9 @@ module Paseto
       sig(:final) { returns(T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey)) }
       attr_reader :key
 
+      sig(:final) { override.returns(Protocol::Version4) }
+      attr_reader :protocol
+
       # Create a new Public instance with a brand new Ed25519 key.
       sig(:final) { returns(T.attached_class) }
       def self.generate
@@ -33,17 +36,17 @@ module Paseto
         new(RbNaCl::VerifyKey.new(bytes))
       end
 
-      sig(:final) { override.returns(Protocol::Version4) }
-      def protocol
-        Protocol::Version4.new
-      end
-
       # If `key` is a String, it must be a PEM- or DER- encoded ED25519 key.
       sig(:final) { params(key: T.any(String, RbNaCl::SigningKey, RbNaCl::VerifyKey)).void }
       def initialize(key)
         key = ed25519_pkey_ossl_to_nacl(key) if key.is_a?(String)
 
         @key = T.let(key, T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey))
+
+        @private = T.let(@key.is_a?(RbNaCl::SigningKey), T::Boolean)
+        @protocol = T.let(Protocol::Version4.new, Paseto::Protocol::Version4)
+
+        super
       end
 
       # Sign `message` and optional non-empty `footer` and return a Token.
@@ -102,9 +105,7 @@ module Paseto
       end
 
       sig(:final) { override.returns(T::Boolean) }
-      def private?
-        @key.is_a? RbNaCl::SigningKey
-      end
+      def private? = @private
 
       sig(:final) { override.returns(String) }
       def public_bytes

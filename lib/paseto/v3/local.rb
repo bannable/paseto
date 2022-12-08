@@ -18,13 +18,7 @@ module Paseto
       final!
 
       sig(:final) { override.returns(Protocol::Version3) }
-      def protocol
-        Protocol::Version3.new
-      end
-
-      # Symmetric encryption key
-      sig(:final) { returns(String) }
-      attr_reader :key
+      attr_reader :protocol
 
       # Create a new Local instance with a randomly generated key.
       sig(:final) { returns(T.attached_class) }
@@ -32,12 +26,11 @@ module Paseto
         new(ikm: SecureRandom.random_bytes(32))
       end
 
-      # `ikm` must be a 32-byte string
       sig(:final) { params(ikm: String).void }
       def initialize(ikm:)
-        raise ArgumentError, 'ikm must be 32 bytes' unless ikm.bytesize == 32
+        @protocol = T.let(Protocol::Version3.new, Paseto::Protocol::Version3)
 
-        @key = ikm
+        super(ikm)
       end
 
       # Encrypts and authenticates `message` with optional binding input `implicit_assertion`, returning a `Token`.
@@ -78,11 +71,6 @@ module Paseto
         protocol.crypt(payload: c, key: ek, nonce: n2).encode(Encoding::UTF_8)
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
-      end
-
-      sig(:final) { override.returns(String) }
-      def to_bytes
-        key
       end
 
       private

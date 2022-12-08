@@ -105,7 +105,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
 
   describe '#to_paserk' do
     it 'encodes to the expected k4.local' do
-      expect(key.to_paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
+      expect(key.paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
     end
   end
 

@@ -8,6 +8,18 @@ module Paseto
 
     abstract!
 
+    sig(:final) { returns(String) }
+    attr_reader :key, :lid, :paserk
+
+    sig { params(ikm: String).void }
+    def initialize(ikm)
+      raise ArgumentError, 'ikm must be 32 bytes' unless ikm.bytesize == 32
+
+      @key = T.let(ikm.freeze, String)
+      @paserk = T.let("#{paserk_version}.#{purpose}.#{Util.encode64(key)}".freeze, String)
+      @lid = T.let(Operations::ID.lid(self).freeze, String)
+    end
+
     sig { abstract.params(message: String, footer: String, implicit_assertion: String, n: T.nilable(String)).returns(Token) }
     def encrypt(message:, footer: '', implicit_assertion: '', n: nil); end # rubocop:disable Naming/MethodParameterName
 
@@ -25,7 +37,7 @@ module Paseto
     def encode(payload, footer: '', implicit_assertion: '', **options)
       n = T.cast(options.delete(:nonce), T.nilable(String))
       default_claims.merge(payload)
-                    .then { |payload| MultiJson.dump(payload, options) }
+                    .then { |claims| MultiJson.dump(claims, options) }
                     .then { |message| encrypt(message: message, footer: footer, implicit_assertion: implicit_assertion, n: n) }
                     .then(&:to_s)
     end
@@ -41,10 +53,13 @@ module Paseto
     def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
       body = decrypt(token: token, implicit_assertion: implicit_assertion)
-             .then { |p| MultiJson.load(p, **options) }
+             .then { |json| MultiJson.load(json, **options) }
       footer = serializer.deserialize(token.footer, options)
       Result.new(body: body, footer: footer)
     end
+
+    sig(:final) { override.returns(String) }
+    def id = @lid
 
     sig(:final) { override.returns(String) }
     def pbkw_header = protocol.pbkd_local_header
@@ -55,16 +70,13 @@ module Paseto
     sig(:final) { override.returns(String) }
     def purpose = 'local'
 
+    sig(:final) { override.returns(String) }
+    def to_bytes = key
+
     sig(:final) { params(paserk: String).returns(Interface::Key) }
     def unwrap(paserk) = Paserk.from_paserk(paserk: paserk, wrapping_key: self)
 
     sig(:final) { params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }
     def wrap(key, nonce: nil) = Paserk.wrap(key: key, wrapping_key: self, nonce: nonce)
-
-    sig(:final) { override.returns(String) }
-    def to_paserk = "#{paserk_version}.#{purpose}.#{Util.encode64(to_bytes)}"
-
-    sig(:final) { returns(String) }
-    def id = Operations::ID.lid(self)
   end
 end
