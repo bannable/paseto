@@ -82,10 +82,10 @@ module Paseto
     end
     def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
-      body = decrypt(token: token, implicit_assertion: implicit_assertion)
+      claims = decrypt(token: token, implicit_assertion: implicit_assertion)
              .then { |json| MultiJson.load(json, **options) }
       footer = serializer.deserialize(token.footer, options)
-      Result.new(body: body, footer: footer)
+      Result.new(claims: claims, footer: footer)
     end
 
     sig(:final) { override.returns(String) }

@@ -32,7 +32,7 @@ RSpec.shared_examples 'a token coder' do
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
 
-    it { expect(decoder.body).to eq(plain) }
+    it { expect(decoder.claims).to eq(plain) }
 
     it 'raises an error with some other valid payload type' do
       payload = key.purpose == 'local' ? 'v3.public.payload.footer' : 'v3.local.payload.footer'
@@ -50,7 +50,15 @@ RSpec.shared_examples 'a token coder' do
     context 'with verification' do
       subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
 
-      it { expect(decoder.body).to eq(plain) }
+      it { expect(decoder.claims).to eq(plain) }
+
+      context 'with JSON serializer options' do
+        subject(:decoder) { key.decode!(payload, implicit_assertion: 'test', symbolize_keys: true) }
+
+        it 'ignores the JSON options and succeeds' do
+          expect(decoder.claims).to eq(plain)
+        end
+      end
     end
 
     context 'when verification fails' do

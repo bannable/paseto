@@ -59,7 +59,7 @@ module Paseto
         ).returns(Result)
       end
       def decode!(payload, implicit_assertion: '', **options)
-        decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
+        decode(payload, **T.unsafe(implicit_assertion: implicit_assertion))
           .then { |result| Verify.verify(result, options) }
       end
 

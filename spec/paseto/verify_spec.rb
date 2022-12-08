@@ -26,7 +26,7 @@ RSpec.describe Paseto::Verify do
   let(:sub) { 'test.test.test' }
   let(:jti) { '12345' }
 
-  let(:result) { Paseto::Result.new(body: payload, footer: footer) }
+  let(:result) { Paseto::Result.new(claims: payload, footer: footer) }
   let(:payload) { claims }
   let(:footer) { nil }
 
