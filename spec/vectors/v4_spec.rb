@@ -162,6 +162,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
 
     verify = pub.verify(token: signed, implicit_assertion: ia)
     expect(verify).to eq(payload)
+
+    verify = priv.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
   end
 
   it '4-S-2', :sodium do
@@ -180,6 +183,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
     expect(verify).to eq(payload)
 
     verify = pub.verify(token: signed, implicit_assertion: ia)
+    expect(verify).to eq(payload)
+
+    verify = priv.verify(token: token, implicit_assertion: ia)
     expect(verify).to eq(payload)
   end
 
@@ -200,6 +206,9 @@ RSpec.describe "PASETO v4 Test Vectors" do
 
     verify = pub.verify(token: signed, implicit_assertion: ia)
     expect(verify).to eq(payload)
+
+    verify = priv.verify(token: token, implicit_assertion: ia)
+    expect(verify).to eq(payload)
   end
 
   it '4-F-1', :sodium do
@@ -217,6 +226,13 @@ RSpec.describe "PASETO v4 Test Vectors" do
 
     message = begin
                 pub.verify(token: token, implicit_assertion: ia)
+              rescue Paseto::InvalidSignature, Paseto::LucidityError, Paseto::ParseError
+                nil
+              end
+    expect(message).to be_nil
+
+    message = begin
+                priv.verify(token: token, implicit_assertion: ia)
               rescue Paseto::InvalidSignature, Paseto::LucidityError, Paseto::ParseError
                 nil
               end
