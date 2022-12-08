@@ -34,7 +34,7 @@ module Paseto
         @footer_deserializer = T.let(Deserializer::OptionalJson, Interface::Deserializer)
         @verify_exp = T.let(true, T::Boolean)
         @verify_nbf = T.let(true, T::Boolean)
-        @verify_iat = T.let(false, T::Boolean)
+        @verify_iat = T.let(true, T::Boolean)
 
         @verify_iss = T.let(false, T.any(FalseClass,
                                          T::Array[
