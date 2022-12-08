@@ -9,6 +9,9 @@ module Paseto
     sig { returns(String) }
     attr_reader :version, :purpose, :payload, :footer
 
+    sig { returns(T.class_of(Interface::Key)) }
+    attr_reader :type
+
     sig { params(str: String).returns(Token) }
     def self.parse(str)
       case str.split('.')
@@ -32,7 +35,7 @@ module Paseto
       @purpose = purpose
       @payload = payload
       @footer = footer
-      validate_header
+      @type = T.let(validate_header, T.class_of(Interface::Key))
     end
 
     sig { returns(String) }
@@ -57,21 +60,12 @@ module Paseto
       to_s <=> other.to_s
     end
 
-    sig { returns(T.class_of(Interface::Key)) }
-    def type
-      T.must(header_to_klass)
-    end
-
     private
 
-    sig { returns(T.nilable(T.class_of(Interface::Key))) }
-    def header_to_klass
-      TokenTypes.deserialize(header).key_klass
-    end
-
-    sig { void }
+    sig { returns(T.class_of(Interface::Key)) }
     def validate_header
-      return if header_to_klass
+      type = TokenTypes.deserialize(header).key_klass
+      return type if type
 
       raise UnsupportedToken, header
     rescue KeyError

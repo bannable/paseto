@@ -8,13 +8,13 @@ module Paseto
 
     abstract!
 
-    sig { returns(T::Hash[T.untyped, T.untyped]) }
+    sig { returns(T::Hash[String, T.untyped]) }
     attr_reader :payload
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
     attr_reader :options
 
-    sig { params(payload: T::Hash[T.untyped, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
+    sig { params(payload: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
     def initialize(payload, options)
       @payload = payload
       @options = options
@@ -78,6 +78,34 @@ module Paseto
           nil
         else
           raise InvalidIssuer, "Invalid issuer. Expected #{permitted}, got #{given || '<none>'}"
+        end
+      end
+    end
+
+    class WPK < Validator
+      PERMITTED = T.let(%w[seal local-wrap secret-wrap].freeze, T::Array[String])
+
+      sig { override.void }
+      def verify
+        return unless (wpk = payload['wpk'])
+
+        wpk.split('.', 3) => [_, String => type, _]
+        raise InvalidWPK unless PERMITTED.include?(type)
+      end
+    end
+
+    class KeyID < Validator
+      PERMITTED = T.let(%w[lid sid pid].freeze, T::Array[String])
+
+      sig { override.void }
+      def verify
+        return unless (kid = payload['kid'])
+
+        case kid.split('.')
+        in [_, String => type, _] if PERMITTED.include?(type)
+          nil
+        else
+          raise InvalidKID
         end
       end
     end

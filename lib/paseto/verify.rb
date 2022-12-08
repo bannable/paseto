@@ -3,64 +3,45 @@
 
 module Paseto
   class Verify
-    class Verifiers < T::Enum
-      extend T::Sig
-
-      enums do
-        Audience = new
-        IssuedAt = new
-        Issuer = new
-        Expiration = new
-        NotBefore = new
-        Subject = new
-        TokenIdentifier = new
-      end
-
-      sig { returns(T::Array[T.class_of(Validator)]) }
-      def self.all
-        values.each.map(&:verifier)
-      end
-
-      sig { returns(T.class_of(Validator)) }
-      def verifier # rubocop:disable Metrics/CyclomaticComplexity
-        case self
-        when Audience then Paseto::Validator::Audience
-        when IssuedAt then Paseto::Validator::IssuedAt
-        when Issuer then Paseto::Validator::Issuer
-        when Expiration then Paseto::Validator::Expiration
-        when NotBefore then Paseto::Validator::NotBefore
-        when Subject then Paseto::Validator::Subject
-        when TokenIdentifier then Paseto::Validator::TokenIdentifier
-        else
-          # :nocov:
-          T.absurd(self)
-          # :nocov:
-        end
-      end
-    end
-
     extend T::Sig
+
+    sig { returns(Result) }
+    attr_reader :result
 
     sig do
       params(
-        payload: T::Hash[String, T.untyped],
+        result: Result,
         options: T::Hash[Symbol, T.untyped]
-      ).returns(T::Hash[T.untyped, T.untyped])
+      ).returns(Verify)
     end
-    def self.verify_claims(payload, options = {})
-      new(payload, Paseto.config.decode.to_h.merge(options)).verify_claims
+    def self.verify(result, options = {})
+      new(result, Paseto.config.decode.to_h.merge(options))
+        .then(&:verify_footer)
+        .then(&:verify_claims)
     end
 
-    sig { params(payload: T::Hash[String, T.untyped], options: T::Hash[Symbol, T.untyped]).void }
-    def initialize(payload, options)
-      @payload = payload
+    sig do
+      params(
+        result: Result,
+        options: T::Hash[Symbol, T.untyped]
+      ).void
+    end
+    def initialize(result, options)
+      @result = result
       @options = options
     end
 
-    sig { returns(T::Hash[String, T.untyped]) }
+    sig { returns(T.self_type) }
     def verify_claims
-      Verifiers.all.each { |v| v.new(@payload, @options).verify }
-      @payload
+      Verifiers::Payload.verify(@result.body, @options)
+      self
+    end
+
+    sig { returns(T.self_type) }
+    def verify_footer
+      footer = @result.footer
+      Verifiers::Footer.verify(footer, @options) if footer.is_a?(Hash)
+      self
     end
   end
 end

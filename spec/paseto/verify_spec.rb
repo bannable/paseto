@@ -3,7 +3,7 @@
 
 RSpec.describe Paseto::Verify do
   subject(:verify) do
-    described_class.verify_claims(payload, options)
+    described_class.verify(result, options).result
   end
 
   let(:options) do
@@ -26,7 +26,9 @@ RSpec.describe Paseto::Verify do
   let(:sub) { 'test.test.test' }
   let(:jti) { '12345' }
 
+  let(:result) { Paseto::Result.new(body: payload, footer: footer) }
   let(:payload) { claims }
+  let(:footer) { nil }
 
   let(:claims) do
     {
@@ -41,14 +43,14 @@ RSpec.describe Paseto::Verify do
   end
 
   it 'returns the claims on success' do
-    expect(verify).to eq payload
+    expect(verify).to eq result
   end
 
   context 'with the global configuration' do
     let(:options) { {} }
 
     it 'succeeds' do
-      expect(verify).to eq payload
+      expect(verify).to eq result
     end
   end
 
@@ -65,7 +67,7 @@ RSpec.describe Paseto::Verify do
       let(:payload) { claims.merge('aud' => ['foo', aud]) }
 
       it 'succeeds' do
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
     end
 
@@ -88,7 +90,7 @@ RSpec.describe Paseto::Verify do
 
       it 'succeeds when verify_exp is false' do
         options[:verify_exp] = false
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
     end
 
@@ -151,26 +153,26 @@ RSpec.describe Paseto::Verify do
     context 'with several permitted issuers' do
       it 'succeeds' do
         options[:verify_iss] = ['example.com', iss]
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
 
       it 'converts symbols to strings' do
         options[:verify_iss] = iss.to_sym
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
     end
 
     context 'with a regexp' do
       it 'succeeds' do
         options[:verify_iss] = /\Aban.paseto.test\z/
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
     end
 
     context 'with a proc' do
       it 'succeeds when the proc is truthy' do
         options[:verify_iss] = ->(v) { v }
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
 
       it 'raises InvalidIssuer when the proc is false' do
@@ -200,7 +202,7 @@ RSpec.describe Paseto::Verify do
 
       it 'succeeds when verify_nbf is false' do
         options[:verify_nbf] = false
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
     end
 
@@ -245,7 +247,7 @@ RSpec.describe Paseto::Verify do
     context 'with a proc' do
       it 'succeeds when truthy' do
         options[:verify_jti] = ->(v) { v }
-        expect(verify).to eq payload
+        expect(verify).to eq result
       end
 
       it 'raises InvalidTokenIdentifier when the proc is false' do
@@ -259,6 +261,48 @@ RSpec.describe Paseto::Verify do
 
       it 'raises InvalidTokenIdentifier' do
         expect { verify }.to raise_error(Paseto::InvalidTokenIdentifier, 'Missing jti')
+      end
+    end
+  end
+
+  context 'with a WPK in the footer' do
+    let(:footer) do
+      { 'wpk' => 'k3.secret-wrap.foo' }
+    end
+
+    it 'succeeds' do
+      expect(verify).to eq(result)
+    end
+
+    context 'when the WPK value type is forbidden' do
+      let(:footer) do
+        { 'wpk' => 'k3.secret.foo' }
+      end
+      let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
+
+      it 'raises InvalidWPK' do
+        expect { verify }.to raise_error(Paseto::InvalidWPK)
+      end
+    end
+  end
+
+  context 'with a KID in the footer' do
+    let(:footer) do
+      { 'kid' => 'k3.lid.foo' }
+    end
+
+    it 'succeeds' do
+      expect(verify).to eq(result)
+    end
+
+    context 'when the KID value type is not permitted' do
+      let(:footer) do
+        { 'kid' => 'k3.secret.foo' }
+      end
+      let(:payload) { claims.except('aud') } # Ensure that footer is always verified before the payload
+
+      it 'raises InvalidKID' do
+        expect { verify }.to raise_error(Paseto::InvalidKID)
       end
     end
   end

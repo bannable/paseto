@@ -37,7 +37,7 @@ module Paseto
         options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
       ).returns(String)
     end
-    def encode(payload:, footer: '', implicit_assertion: '', **options)
+    def encode(payload, footer: '', implicit_assertion: '', **options)
       message = MultiJson.dump(payload, options)
       sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
     end
@@ -46,13 +46,16 @@ module Paseto
       override.params(
         payload: String,
         implicit_assertion: String,
+        serializer: Interface::Deserializer,
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-      ).returns(T::Hash[String, T.untyped])
+      ).returns(Result)
     end
-    def decode(payload:, implicit_assertion: '', **options)
+    def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
-
-      MultiJson.load(verify(token: token, implicit_assertion: implicit_assertion), **options)
+      body = verify(token: token, implicit_assertion: implicit_assertion)
+             .then { |plain| MultiJson.load(plain, **options) }
+      footer = serializer.deserialize(token.footer, options)
+      Result.new(body: body, footer: footer)
     end
 
     sig(:final) { override.returns(String) }

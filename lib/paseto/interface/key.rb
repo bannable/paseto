@@ -21,16 +21,17 @@ module Paseto
           options: T.any(String, Integer, Symbol, T::Boolean)
         ).returns(String)
       end
-      def encode(payload:, footer: '', implicit_assertion: '', **options); end
+      def encode(payload, footer: '', implicit_assertion: '', **options); end
 
       sig do
         abstract.params(
           payload: String,
           implicit_assertion: String,
+          serializer: Interface::Deserializer,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-        ).returns(T::Hash[String, T.untyped])
+        ).returns(Result)
       end
-      def decode(payload:, implicit_assertion: '', **options); end
+      def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
 
       sig { abstract.returns(String) }
       def pbkw_header; end
@@ -52,12 +53,12 @@ module Paseto
           payload: String,
           implicit_assertion: String,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
-        ).returns(T::Hash[String, T.untyped])
+        ).returns(Result)
       end
-      def decode!(payload:, implicit_assertion: '', **options)
-        result = decode(**T.unsafe(payload: payload, implicit_assertion: implicit_assertion, **options))
+      def decode!(payload, implicit_assertion: '', **options)
+        result = decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
 
-        Verify.verify_claims(result, options)
+        Verify.verify(result, options).then(&:result)
       end
 
       sig(:final) { params(other: T.untyped).returns(T::Boolean) }
