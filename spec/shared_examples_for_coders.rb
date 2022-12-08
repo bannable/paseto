@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'a token coder' do
+  around(:example) do |example|
+    Timecop.freeze { example.run }
+  end
+
   describe '.encode' do
     subject(:coder) { key.encode(payload, footer: 'foo', implicit_assertion: 'test', n: nonce) }
 
@@ -17,9 +21,11 @@ RSpec.shared_examples 'a token coder' do
 
     let(:payload) { key.encode(plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
     let(:plain) do
+      now = Time.now
       {
-        'exp' => (Time.now + 5).iso8601,
-        'nbf' => (Time.now - 5).iso8601,
+        'exp' => (now + 5).iso8601,
+        'nbf' => now.iso8601,
+        'iat' => now.iso8601,
         'data' => 'this is a secret message'
       }
     end
@@ -30,9 +36,7 @@ RSpec.shared_examples 'a token coder' do
 
     it 'raises an error with some other valid payload type' do
       payload = key.purpose == 'local' ? 'v3.public.payload.footer' : 'v3.local.payload.footer'
-      expect do
-        key.decode(payload, implicit_assertion: 'test')
-      end.to raise_error(Paseto::LucidityError)
+      expect { key.decode(payload, implicit_assertion: 'test') }.to raise_error(Paseto::LucidityError)
     end
 
     context 'with some entirely unknown payload type' do

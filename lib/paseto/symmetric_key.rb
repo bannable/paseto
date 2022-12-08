@@ -24,9 +24,10 @@ module Paseto
     end
     def encode(payload, footer: '', implicit_assertion: '', **options)
       n = T.cast(options.delete(:nonce), T.nilable(String))
-      MultiJson.dump(payload, options)
-               .then { |message| encrypt(message: message, footer: footer, implicit_assertion: implicit_assertion, n: n) }
-               .then(&:to_s)
+      default_claims.merge(payload)
+                    .then { |payload| MultiJson.dump(payload, options) }
+                    .then { |message| encrypt(message: message, footer: footer, implicit_assertion: implicit_assertion, n: n) }
+                    .then(&:to_s)
     end
 
     sig(:final) do
@@ -46,45 +47,24 @@ module Paseto
     end
 
     sig(:final) { override.returns(String) }
-    def pbkw_header
-      protocol.pbkd_local_header
-    end
+    def pbkw_header = protocol.pbkd_local_header
 
     sig(:final) { returns(Interface::PIE) }
-    def pie
-      protocol.pie(self)
-    end
+    def pie = protocol.pie(self)
 
     sig(:final) { override.returns(String) }
-    def purpose
-      'local'
-    end
+    def purpose = 'local'
 
     sig(:final) { params(paserk: String).returns(Interface::Key) }
-    def unwrap(paserk)
-      Paserk.from_paserk(
-        paserk: paserk,
-        wrapping_key: self
-      )
-    end
+    def unwrap(paserk) = Paserk.from_paserk(paserk: paserk, wrapping_key: self)
 
     sig(:final) { params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }
-    def wrap(key, nonce: nil)
-      Paserk.wrap(
-        key: key,
-        wrapping_key: self,
-        nonce: nonce
-      )
-    end
+    def wrap(key, nonce: nil) = Paserk.wrap(key: key, wrapping_key: self, nonce: nonce)
 
     sig(:final) { override.returns(String) }
-    def to_paserk
-      "#{paserk_version}.#{purpose}.#{Util.encode64(to_bytes)}"
-    end
+    def to_paserk = "#{paserk_version}.#{purpose}.#{Util.encode64(to_bytes)}"
 
     sig(:final) { returns(String) }
-    def id
-      Operations::ID.lid(self)
-    end
+    def id = Operations::ID.lid(self)
   end
 end

@@ -12,12 +12,13 @@ module Paseto
       params(
         result: Result,
         options: T::Hash[Symbol, T.untyped]
-      ).returns(Verify)
+      ).returns(Result)
     end
     def self.verify(result, options = {})
       new(result, Paseto.config.decode.to_h.merge(options))
         .then(&:verify_footer)
         .then(&:verify_claims)
+        .then(&:result)
     end
 
     sig do

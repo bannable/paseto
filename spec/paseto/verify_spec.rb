@@ -3,7 +3,7 @@
 
 RSpec.describe Paseto::Verify do
   subject(:verify) do
-    described_class.verify(result, options).result
+    described_class.verify(result, options)
   end
 
   let(:options) do

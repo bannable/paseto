@@ -38,8 +38,10 @@ module Paseto
       ).returns(String)
     end
     def encode(payload, footer: '', implicit_assertion: '', **options)
-      message = MultiJson.dump(payload, options)
-      sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
+      default_claims.merge(payload)
+                    .then { |payload| MultiJson.dump(payload, options) }
+                    .then { |json| sign(message: json, footer: footer, implicit_assertion: implicit_assertion) }
+                    .then(&:to_s)
     end
 
     sig(:final) do
@@ -59,19 +61,13 @@ module Paseto
     end
 
     sig(:final) { override.returns(String) }
-    def pbkw_header
-      protocol.pbkd_secret_header
-    end
+    def pbkw_header = protocol.pbkd_secret_header
 
     sig(:final) { returns(Interface::PKE) }
-    def pke
-      protocol.pke(self)
-    end
+    def pke = protocol.pke(self)
 
     sig(:final) { override.returns(String) }
-    def purpose
-      'public'
-    end
+    def purpose = 'public'
 
     sig(:final) { override.returns(String) }
     def to_paserk
@@ -81,9 +77,7 @@ module Paseto
     end
 
     sig(:final) { returns(String) }
-    def to_public_paserk
-      "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
-    end
+    def to_public_paserk = "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
 
     sig(:final) { returns(String) }
     def id
@@ -93,23 +87,15 @@ module Paseto
     end
 
     sig(:final) { returns(String) }
-    def pid
-      Operations::ID.pid(self)
-    end
+    def pid = Operations::ID.pid(self)
 
     sig(:final) { returns(String) }
-    def sid
-      Operations::ID.sid(self)
-    end
+    def sid = Operations::ID.sid(self)
 
     sig(:final) { params(other: SymmetricKey).returns(String) }
-    def seal(other)
-      Paserk.seal(sealing_key: self, key: other)
-    end
+    def seal(other) = Paserk.seal(sealing_key: self, key: other)
 
     sig(:final) { params(paserk: String).returns(SymmetricKey) }
-    def unseal(paserk)
-      Paserk.from_paserk(paserk: paserk, unsealing_key: self)
-    end
+    def unseal(paserk) = Paserk.from_paserk(paserk: paserk, unsealing_key: self)
   end
 end
