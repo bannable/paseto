@@ -21,7 +21,7 @@ module Paseto
           options: T.any(String, Integer, Symbol, T::Boolean)
         ).returns(String)
       end
-      def encode(payload, footer: '', implicit_assertion: '', **options); end
+      def encode!(payload, footer: '', implicit_assertion: '', **options); end
 
       sig do
         abstract.params(
@@ -71,6 +71,19 @@ module Paseto
           'iat' => now.iso8601,
           'nbf' => now.iso8601
         }
+      end
+
+      sig(:final) do
+        params(
+          payload: T::Hash[String, T.untyped],
+          footer: String,
+          implicit_assertion: String,
+          options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
+        ).returns(String)
+      end
+      def encode(payload, footer: '', implicit_assertion: '', **options)
+        default_claims.merge(payload)
+                      .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
       end
 
       sig(:final) { params(other: T.untyped).returns(T::Boolean) }

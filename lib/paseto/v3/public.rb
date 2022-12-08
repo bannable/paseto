@@ -85,7 +85,7 @@ module Paseto
         m = T.must(payload.slice(0, payload.bytesize - SIGNATURE_BYTE_LEN))
 
         s = T.must(payload.slice(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
-               .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }
+             .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }
 
         Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
             .then { |m2| protocol.digest(m2) }

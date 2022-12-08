@@ -58,11 +58,10 @@ module Paseto
         options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
       ).returns(String)
     end
-    def encode(payload, footer: '', implicit_assertion: '', **options)
-      default_claims.merge(payload)
-                    .then { |claims| MultiJson.dump(claims, options) }
-                    .then { |json| sign(message: json, footer: footer, implicit_assertion: implicit_assertion) }
-                    .then(&:to_s)
+    def encode!(payload, footer: '', implicit_assertion: '', **options)
+      MultiJson.dump(payload, options)
+               .then { |json| sign(message: json, footer: footer, implicit_assertion: implicit_assertion) }
+               .then(&:to_s)
     end
 
     sig(:final) do
