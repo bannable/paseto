@@ -31,7 +31,7 @@ module Paseto
 
       sig { void }
       def initialize # rubocop:disable Metrics/AbcSize
-        @footer_deserializer = T.let(Deserializer::Raw, Interface::Deserializer)
+        @footer_deserializer = T.let(Deserializer::OptionalJson, Interface::Deserializer)
         @verify_exp = T.let(true, T::Boolean)
         @verify_nbf = T.let(true, T::Boolean)
         @verify_iat = T.let(false, T::Boolean)
