@@ -8,6 +8,27 @@ module Paseto
 
     abstract!
 
+    sig(:final) { override.returns(String) }
+    attr_reader :id, :paserk
+
+    sig(:final) { returns(String) }
+    attr_reader :pid, :public_paserk
+
+    sig { params(_key: T.untyped).void }
+    def initialize(_key)
+      @public_paserk = T.let("#{paserk_version}.public.#{Util.encode64(public_bytes)}".freeze, String)
+
+      @pid = T.let(Operations::ID.pid(self).freeze, String)
+
+      if private?
+        @paserk = T.let("#{paserk_version}.secret.#{Util.encode64(to_bytes)}".freeze, String)
+        @id = T.let(Operations::ID.sid(self).freeze, String)
+      else
+        @paserk = @public_paserk
+        @id = T.let(@pid, String)
+      end
+    end
+
     sig { abstract.params(message: String, footer: String, implicit_assertion: String).returns(Token) }
     def sign(message:, footer: '', implicit_assertion: ''); end
 
@@ -37,9 +58,10 @@ module Paseto
         options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
       ).returns(String)
     end
-    def encode(payload, footer: '', implicit_assertion: '', **options)
-      message = MultiJson.dump(payload, options)
-      sign(message: message, footer: footer, implicit_assertion: implicit_assertion).to_s
+    def encode!(payload, footer: '', implicit_assertion: '', **options)
+      MultiJson.dump(payload, options)
+               .then { |json| sign(message: json, footer: footer, implicit_assertion: implicit_assertion) }
+               .then(&:to_s)
     end
 
     sig(:final) do
@@ -53,63 +75,27 @@ module Paseto
     def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
       body = verify(token: token, implicit_assertion: implicit_assertion)
-             .then { |plain| MultiJson.load(plain, **options) }
+             .then { |json| MultiJson.load(json, **options) }
       footer = serializer.deserialize(token.footer, options)
       Result.new(body: body, footer: footer)
     end
 
     sig(:final) { override.returns(String) }
-    def pbkw_header
-      protocol.pbkd_secret_header
-    end
+    def pbkw_header = protocol.pbkd_secret_header
+
+    sig(:final) { override.returns(String) }
+    def purpose = 'public'
 
     sig(:final) { returns(Interface::PKE) }
-    def pke
-      protocol.pke(self)
-    end
-
-    sig(:final) { override.returns(String) }
-    def purpose
-      'public'
-    end
-
-    sig(:final) { override.returns(String) }
-    def to_paserk
-      return to_public_paserk unless private?
-
-      "#{paserk_version}.secret.#{Util.encode64(to_bytes)}"
-    end
+    def pke = protocol.pke(self)
 
     sig(:final) { returns(String) }
-    def to_public_paserk
-      "#{paserk_version}.public.#{Util.encode64(public_bytes)}"
-    end
-
-    sig(:final) { returns(String) }
-    def id
-      return sid if private?
-
-      pid
-    end
-
-    sig(:final) { returns(String) }
-    def pid
-      Operations::ID.pid(self)
-    end
-
-    sig(:final) { returns(String) }
-    def sid
-      Operations::ID.sid(self)
-    end
+    def sid = @sid ||= T.let(Operations::ID.sid(self), T.nilable(String))
 
     sig(:final) { params(other: SymmetricKey).returns(String) }
-    def seal(other)
-      Paserk.seal(sealing_key: self, key: other)
-    end
+    def seal(other) = Paserk.seal(sealing_key: self, key: other)
 
     sig(:final) { params(paserk: String).returns(SymmetricKey) }
-    def unseal(paserk)
-      Paserk.from_paserk(paserk: paserk, unsealing_key: self)
-    end
+    def unseal(paserk) = Paserk.from_paserk(paserk: paserk, unsealing_key: self)
   end
 end

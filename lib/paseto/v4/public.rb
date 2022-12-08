@@ -17,6 +17,9 @@ module Paseto
       sig(:final) { returns(T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey)) }
       attr_reader :key
 
+      sig(:final) { override.returns(Protocol::Version4) }
+      attr_reader :protocol
+
       # Create a new Public instance with a brand new Ed25519 key.
       sig(:final) { returns(T.attached_class) }
       def self.generate
@@ -33,17 +36,17 @@ module Paseto
         new(RbNaCl::VerifyKey.new(bytes))
       end
 
-      sig(:final) { override.returns(Protocol::Version4) }
-      def protocol
-        Protocol::Version4.new
-      end
-
       # If `key` is a String, it must be a PEM- or DER- encoded ED25519 key.
       sig(:final) { params(key: T.any(String, RbNaCl::SigningKey, RbNaCl::VerifyKey)).void }
       def initialize(key)
         key = ed25519_pkey_ossl_to_nacl(key) if key.is_a?(String)
 
         @key = T.let(key, T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey))
+
+        @private = T.let(@key.is_a?(RbNaCl::SigningKey), T::Boolean)
+        @protocol = T.let(Protocol::Version4.new, Paseto::Protocol::Version4)
+
+        super
       end
 
       # Sign `message` and optional non-empty `footer` and return a Token.
@@ -52,30 +55,27 @@ module Paseto
       def sign(message:, footer: '', implicit_assertion: '')
         raise ArgumentError, 'no private key available' unless @key.is_a?(RbNaCl::SigningKey)
 
-        m2 = Util.pre_auth_encode(pae_header, message, footer, implicit_assertion)
-        sig = @key.sign(m2)
-        payload = "#{message}#{sig}"
-        Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
+        Util.pre_auth_encode(pae_header, message, footer, implicit_assertion)
+            .then { |m2| @key.sign(m2) }
+            .then { |sig| "#{message}#{sig}" }
+            .then { |payload| Token.new(payload: payload, purpose: purpose, version: version, footer: footer) }
       end
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: '')
+      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise LucidityError unless header == token.header
 
-        m = token.payload
-        raise ParseError, 'message too short' if m.size < SIGNATURE_BYTES
+        payload = token.payload
+        raise ParseError, 'message too short' if payload.bytesize < SIGNATURE_BYTES
 
-        s = T.must(m.slice!(-SIGNATURE_BYTES, SIGNATURE_BYTES))
-        m2 = Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
+        m = T.must(payload.slice(0, payload.size - SIGNATURE_BYTES))
+        s = T.must(payload.slice(-SIGNATURE_BYTES, SIGNATURE_BYTES))
 
-        case @key
-        when RbNaCl::VerifyKey then @key.verify(s, m2)
-        when RbNaCl::SigningKey then @key.verify_key.verify(s, m2)
-        end
-
-        m.encode(Encoding::UTF_8)
+        Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
+            .then { |m2| public_key.verify(s, m2) }
+            .then { m.encode(Encoding::UTF_8) }
       rescue RbNaCl::BadSignatureError
         raise InvalidSignature
       rescue Encoding::UndefinedConversionError
@@ -102,16 +102,11 @@ module Paseto
       end
 
       sig(:final) { override.returns(T::Boolean) }
-      def private?
-        @key.is_a? RbNaCl::SigningKey
-      end
+      def private? = @private
 
       sig(:final) { override.returns(String) }
       def public_bytes
-        case @key
-        when RbNaCl::SigningKey then @key.verify_key.to_bytes
-        when RbNaCl::VerifyKey then @key.to_bytes
-        end
+        public_key.to_bytes
       end
 
       sig(:final) { override.params(other: T.any(RbNaCl::PrivateKey, RbNaCl::PublicKey)).returns(String) }
@@ -157,10 +152,17 @@ module Paseto
       def ossl_ed25519_private_key?(key)
         raise LucidityError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
 
-        return false if Util.openssl?(3) && key.to_text.start_with?('ED25519 Public-Key')
-        return false if Util.openssl?(1, 1, 1) && key.to_text == "<INVALID PRIVATE KEY>\n"
+        return key.to_text.start_with?('ED25519 Private-Key') if Util.openssl?(3)
+        return key.to_text != "<INVALID PRIVATE KEY>\n" if Util.openssl?(1, 1, 1)
 
-        true
+        false
+      end
+
+      sig(:final) { returns(RbNaCl::VerifyKey) }
+      def public_key
+        return @key.verify_key if @key.is_a?(RbNaCl::SigningKey)
+
+        @key
       end
     end
   end

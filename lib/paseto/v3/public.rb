@@ -17,25 +17,27 @@ module Paseto
       # Size of r | s in an ECDSA secp384r1 signature
       SIGNATURE_PART_LEN = T.let(SIGNATURE_BYTE_LEN / 2, Integer)
 
+      sig(:final) { override.returns(Protocol::Version3) }
+      attr_reader :protocol
+
       # Create a new Public instance with a brand new EC key.
       sig(:final) { returns(T.attached_class) }
       def self.generate
-        new(key: OpenSSL::PKey::EC.generate('secp384r1').to_der)
+        OpenSSL::PKey::EC.generate('secp384r1')
+                         .then(&:to_der)
+                         .then { |der| new(key: der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_public_bytes(bytes)
-        new(key: ASN1.p384_public_bytes_to_spki_der(bytes))
+        ASN1.p384_public_bytes_to_spki_der(bytes)
+            .then { |der| new(key: der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_scalar_bytes(bytes)
-        new(key: ASN1.p384_scalar_bytes_to_oak_der(bytes))
-      end
-
-      sig(:final) { override.returns(Protocol::Version3) }
-      def protocol
-        Protocol::Version3.new
+        ASN1.p384_scalar_bytes_to_oak_der(bytes)
+            .then { |der| new(key: der) }
       end
 
       # `key` must be either a DER or PEM encoded secp384r1 key.
@@ -43,14 +45,17 @@ module Paseto
       sig(:final) { params(key: String).void }
       def initialize(key:)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
+        @private = T.let(@key.private?, T::Boolean)
 
         raise LucidityError unless @key.group.curve_name == 'secp384r1'
         raise InvalidKeyPair unless custom_check_key
+
+        @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+
+        super
       rescue OpenSSL::PKey::ECError => e
         raise CryptoError, e.message
       end
-
-      # rubocop:disable Metrics/AbcSize
 
       # Sign `message` and optional non-empty `footer` and return a Token.
       # The resulting token may be bound to a particular use by passing a non-empty `implicit_assertion`.
@@ -58,14 +63,12 @@ module Paseto
       def sign(message:, footer: '', implicit_assertion: '')
         raise ArgumentError, 'no private key available' unless private?
 
-        m2 = Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
-
-        data = protocol.digest(m2)
-        sig_asn = @key.sign_raw(nil, data)
-        sig = ASN1::ECDSASignature.from_asn1(sig_asn).to_rs(SIGNATURE_PART_LEN)
-
-        payload = "#{message}#{sig}"
-        Token.new(payload: payload, purpose: purpose, version: version, footer: footer)
+        Util.pre_auth_encode(public_bytes, pae_header, message, footer, implicit_assertion)
+            .then { |m2| protocol.digest(m2) }
+            .then { |data| @key.sign_raw(nil, data) }
+            .then { |sig_asn| ASN1::ECDSASignature.from_asn1(sig_asn) }
+            .then { |ecdsa_sig| ecdsa_sig.to_rs(SIGNATURE_PART_LEN) }
+            .then { |sig| Token.new(payload: "#{message}#{sig}", purpose: purpose, version: version, footer: footer) }
       rescue Encoding::CompatibilityError
         raise ParseError, 'invalid message encoding, must be UTF-8'
       end
@@ -73,31 +76,28 @@ module Paseto
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v3.public` type Token.
       # Returns the verified payload if successful, otherwise raises an exception.
       sig(:final) { override.params(token: Token, implicit_assertion: String).returns(String) }
-      def verify(token:, implicit_assertion: '')
+      def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise LucidityError unless header == token.header
 
-        m = token.payload.dup.to_s
-        raise ParseError, 'message too short' if m.bytesize < SIGNATURE_BYTE_LEN
+        payload = token.payload
+        raise ParseError, 'message too short' if payload.bytesize < SIGNATURE_BYTE_LEN
 
-        sig = T.must(m.slice!(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
-        s = ASN1::ECDSASignature.from_rs(sig, SIGNATURE_PART_LEN).to_der
+        m = T.must(payload.slice(0, payload.bytesize - SIGNATURE_BYTE_LEN))
 
-        m2 = Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
+        s = T.must(payload.slice(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
+             .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }
 
-        data = protocol.digest(m2)
-        raise InvalidSignature unless @key.verify_raw(nil, s, data)
-
-        m.encode(Encoding::UTF_8)
+        Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
+            .then { |m2| protocol.digest(m2) }
+            .then { |data| @key.verify_raw(nil, s, data) }
+            .then { |valid| raise InvalidSignature unless valid }
+            .then { m.encode(Encoding::UTF_8) }
       rescue Encoding::UndefinedConversionError
         raise ParseError, 'invalid payload encoding'
       end
 
-      # rubocop:enable Metrics/AbcSize
-
       sig(:final) { override.returns(String) }
-      def public_to_pem
-        @key.public_to_pem
-      end
+      def public_to_pem = @key.public_to_pem
 
       sig(:final) { override.returns(String) }
       def private_to_pem
@@ -114,14 +114,10 @@ module Paseto
       end
 
       sig(:final) { override.returns(T::Boolean) }
-      def private?
-        @key.private?
-      end
+      def private? = @private
 
       sig(:final) { override.returns(String) }
-      def public_bytes
-        @key.public_key.to_octet_string(:compressed)
-      end
+      def public_bytes = @key.public_key.to_octet_string(:compressed)
 
       sig(:final) { override.params(other: T.any(OpenSSL::PKey::EC, OpenSSL::PKey::EC::Point)).returns(String) }
       def ecdh(other)

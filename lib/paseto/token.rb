@@ -31,10 +31,10 @@ module Paseto
 
     sig { params(payload: String, purpose: String, version: String, footer: String).void }
     def initialize(payload:, purpose:, version:, footer: '')
-      @version = version
-      @purpose = purpose
-      @payload = payload
-      @footer = footer
+      @version = T.let(version.freeze, String)
+      @purpose = T.let(purpose.freeze, String)
+      @payload = T.let(payload.freeze, String)
+      @footer = T.let(footer.freeze, String)
       @type = T.let(validate_header, T.class_of(Interface::Key))
     end
 

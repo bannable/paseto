@@ -21,7 +21,7 @@ module Paseto
           options: T.any(String, Integer, Symbol, T::Boolean)
         ).returns(String)
       end
-      def encode(payload, footer: '', implicit_assertion: '', **options); end
+      def encode!(payload, footer: '', implicit_assertion: '', **options); end
 
       sig do
         abstract.params(
@@ -32,6 +32,12 @@ module Paseto
         ).returns(Result)
       end
       def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
+
+      sig { abstract.returns(String) }
+      def id; end
+
+      sig { abstract.returns(String) }
+      def paserk; end
 
       sig { abstract.returns(String) }
       def pbkw_header; end
@@ -45,9 +51,6 @@ module Paseto
       sig { abstract.returns(String) }
       def to_bytes; end
 
-      sig { abstract.returns(String) }
-      def to_paserk; end
-
       sig(:final) do
         params(
           payload: String,
@@ -56,9 +59,31 @@ module Paseto
         ).returns(Result)
       end
       def decode!(payload, implicit_assertion: '', **options)
-        result = decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
+        decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
+          .then { |result| Verify.verify(result, options) }
+      end
 
-        Verify.verify(result, options).then(&:result)
+      sig(:final) { returns({ 'exp' => String, 'iat' => String, 'nbf' => String }) }
+      def default_claims
+        now = Time.new
+        {
+          'exp' => (now + (60 * 60)).iso8601,
+          'iat' => now.iso8601,
+          'nbf' => now.iso8601
+        }
+      end
+
+      sig(:final) do
+        params(
+          payload: T::Hash[String, T.untyped],
+          footer: String,
+          implicit_assertion: String,
+          options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
+        ).returns(String)
+      end
+      def encode(payload, footer: '', implicit_assertion: '', **options)
+        default_claims.merge(payload)
+                      .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
       end
 
       sig(:final) { params(other: T.untyped).returns(T::Boolean) }
@@ -68,24 +93,16 @@ module Paseto
       end
 
       sig(:final) { returns(String) }
-      def header
-        "#{version}.#{purpose}"
-      end
+      def header = "#{version}.#{purpose}"
 
       sig(:final) { returns(String) }
-      def paserk_version
-        protocol.paserk_version
-      end
+      def paserk_version = protocol.paserk_version
 
       sig(:final) { returns(String) }
-      def pae_header
-        "#{header}."
-      end
+      def pae_header = "#{header}."
 
       sig(:final) { returns(String) }
-      def version
-        protocol.version
-      end
+      def version = protocol.version
     end
   end
 end
