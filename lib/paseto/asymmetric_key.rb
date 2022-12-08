@@ -72,7 +72,7 @@ module Paseto
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
       ).returns(Result)
     end
-    def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
+    def decode!(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
       token = Token.parse(payload)
       claims = verify(token: token, implicit_assertion: implicit_assertion)
              .then { |json| MultiJson.load(json, **options) }

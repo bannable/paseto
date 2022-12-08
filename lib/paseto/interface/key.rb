@@ -31,7 +31,7 @@ module Paseto
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(Result)
       end
-      def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
+      def decode!(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
 
       sig { abstract.returns(String) }
       def id; end
@@ -58,8 +58,8 @@ module Paseto
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(Result)
       end
-      def decode!(payload, implicit_assertion: '', **options)
-        decode(payload, **T.unsafe(implicit_assertion: implicit_assertion))
+      def decode(payload, implicit_assertion: '', **options)
+        decode!(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
           .then { |result| Verify.verify(result, options) }
       end
 
@@ -82,7 +82,7 @@ module Paseto
         ).returns(String)
       end
       def encode(payload, footer: '', implicit_assertion: '', **options)
-        footer = MultiJson.dump(footer) if footer.is_a?(Hash)
+        footer = MultiJson.dump(footer, mode: :object) if footer.is_a?(Hash)
         default_claims.merge(payload)
                       .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
       end

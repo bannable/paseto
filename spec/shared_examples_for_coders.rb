@@ -14,10 +14,20 @@ RSpec.shared_examples 'a token coder' do
 
     it { is_expected.to start_with(key.header) }
     it { is_expected.to end_with('.Zm9v') }
+
+    context 'with JSON serializer options' do
+      let(:footer) { {'time' => Time.now} }
+      let(:paseto) { key.encode(payload, footer: footer, implicit_assertion: 'test', mode: :object) }
+      let(:token) { Paseto::Token.parse(paseto) }
+
+      it 'respects the serializer options' do
+        expect(token.footer).to start_with('{"time":{"^t":"')
+      end
+    end
   end
 
   describe '.decode' do
-    subject(:decoder) { key.decode(payload, implicit_assertion: 'test') }
+    subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
 
     let(:payload) { key.encode(plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
     let(:plain) do
@@ -48,21 +58,25 @@ RSpec.shared_examples 'a token coder' do
     end
 
     context 'with verification' do
-      subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
+      subject(:decoder) { key.decode(payload, implicit_assertion: 'test') }
 
       it { expect(decoder.claims).to eq(plain) }
 
       context 'with JSON serializer options' do
-        subject(:decoder) { key.decode!(payload, implicit_assertion: 'test', symbolize_keys: true) }
+        subject(:decoder) { key.decode!(payload, implicit_assertion: 'test', mode: :object) }
 
-        it 'ignores the JSON options and succeeds' do
+        let(:footer) { {'time' => Time.now} }
+        let(:payload) { key.encode(plain, footer: footer, implicit_assertion: 'test', mode: :object) }
+        let(:token) { Paseto::Token.parse(payload) }
+
+        it 'succeeds' do
           expect(decoder.claims).to eq(plain)
         end
       end
     end
 
     context 'when verification fails' do
-      subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
+      subject(:decoder) { key.decode(payload, implicit_assertion: 'test') }
 
       let(:plain) do
         {

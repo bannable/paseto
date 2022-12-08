@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'oj'
 require 'timecop'
 require 'simplecov'
 

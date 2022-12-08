@@ -7,6 +7,7 @@ gemspec
 gem 'debug', '>= 1.0'
 gem 'parallel_tests'
 gem 'parlour'
+gem 'oj'
 gem 'reek'
 gem 'rspec_junit_formatter'
 gem 'simplecov_json_formatter'
