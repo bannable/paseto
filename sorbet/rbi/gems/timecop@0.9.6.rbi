@@ -9,19 +9,19 @@ class Date
   include ::Comparable
 
   class << self
-    # source://timecop//lib/timecop/time_extensions.rb#109
+    # source://timecop//lib/timecop/time_extensions.rb#104
     def closest_wday(wday); end
 
     # source://timecop//lib/timecop/time_extensions.rb#33
     def mock_date; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#105
+    # source://timecop//lib/timecop/time_extensions.rb#100
     def mocked_time_stack_item; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#83
+    # source://timecop//lib/timecop/time_extensions.rb#78
     def parse(*args); end
 
-    # source://timecop//lib/timecop/time_extensions.rb#83
+    # source://timecop//lib/timecop/time_extensions.rb#78
     def parse_with_mock_date(*args); end
 
     # source://timecop//lib/timecop/time_extensions.rb#47
@@ -41,25 +41,25 @@ end
 # source://date/3.2.2/date.rb#7
 Date::VERSION = T.let(T.unsafe(nil), String)
 
-# source://timecop//lib/timecop/time_extensions.rb#118
+# source://timecop//lib/timecop/time_extensions.rb#113
 class DateTime < ::Date
   class << self
-    # source://timecop//lib/timecop/time_extensions.rb#120
+    # source://timecop//lib/timecop/time_extensions.rb#115
     def mock_time; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#155
+    # source://timecop//lib/timecop/time_extensions.rb#150
     def mocked_time_stack_item; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#124
+    # source://timecop//lib/timecop/time_extensions.rb#119
     def now; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#124
+    # source://timecop//lib/timecop/time_extensions.rb#119
     def now_with_mock_time; end
 
-    # source://timecop//lib/timecop/time_extensions.rb#132
+    # source://timecop//lib/timecop/time_extensions.rb#127
     def parse(*args); end
 
-    # source://timecop//lib/timecop/time_extensions.rb#132
+    # source://timecop//lib/timecop/time_extensions.rb#127
     def parse_with_mock_date(*args); end
   end
 end
