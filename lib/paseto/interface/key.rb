@@ -76,12 +76,13 @@ module Paseto
       sig(:final) do
         params(
           payload: T::Hash[String, T.untyped],
-          footer: String,
+          footer: T.any(T::Hash[String, T.untyped], String),
           implicit_assertion: String,
           options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
         ).returns(String)
       end
       def encode(payload, footer: '', implicit_assertion: '', **options)
+        footer = MultiJson.dump(footer) if footer.is_a?(Hash)
         default_claims.merge(payload)
                       .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
       end

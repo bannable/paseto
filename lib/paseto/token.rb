@@ -7,7 +7,7 @@ module Paseto
     include Comparable
 
     sig { returns(String) }
-    attr_reader :version, :purpose, :payload, :footer
+    attr_reader :version, :purpose, :raw_payload, :footer
 
     sig { returns(T.class_of(Interface::Key)) }
     attr_reader :type
@@ -33,9 +33,26 @@ module Paseto
     def initialize(payload:, purpose:, version:, footer: '')
       @version = T.let(version.freeze, String)
       @purpose = T.let(purpose.freeze, String)
-      @payload = T.let(payload.freeze, String)
+      @raw_payload = T.let(payload.freeze, String)
+      @payload = T.let(nil, T.nilable(T::Hash[String, T.untyped]))
       @footer = T.let(footer.freeze, String)
       @type = T.let(validate_header, T.class_of(Interface::Key))
+
+      raw = [version, purpose, Util.encode64(raw_payload)]
+      raw << Util.encode64(footer) unless footer.empty?
+      @str = T.let(raw.join('.').freeze, String)
+    end
+
+    sig do
+      params(
+        key: Interface::Key,
+        implicit_assertion: String,
+        options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
+      ).returns(T::Hash[String, T.untyped])
+    end
+    def decode!(key, implicit_assertion: '', **options)
+      key.decode(@str, implicit_assertion: implicit_assertion, **options)
+      .then { |result| @payload = result.claims }
     end
 
     sig { returns(String) }
@@ -44,16 +61,18 @@ module Paseto
     end
 
     sig { returns(String) }
-    def to_s
-      parts = [version, purpose, Util.encode64(payload)]
-      parts << Util.encode64(footer) unless footer.empty?
-      parts.join('.')
-    end
-
-    sig { returns(String) }
     def inspect
       to_s
     end
+
+    sig { returns(T::Hash[String, T.untyped]) }
+    def payload
+      return @payload if @payload
+      raise ParseError, 'token not yet decoded, call #decode! first'
+    end
+
+    sig { returns(String) }
+    def to_s = @str
 
     sig { params(other: T.any(Token, String)).returns(T.nilable(Integer)) }
     def <=>(other)

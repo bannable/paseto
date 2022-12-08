@@ -44,7 +44,7 @@ module Paseto
     def decrypt(token:, implicit_assertion: '')
       raise LucidityError unless header == token.header
 
-      n, c, t = split_payload(token.payload)
+      n, c, t = split_payload(token.raw_payload)
 
       ek, n2, ak = calc_keys(n)
 

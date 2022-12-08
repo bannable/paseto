@@ -23,7 +23,7 @@ RSpec.describe Paseto::Token do
     end
 
     it 'decodes the payload' do
-      expect(token.payload).to eq(payload)
+      expect(token.raw_payload).to eq(payload)
     end
 
     it 'has no footer' do
@@ -59,7 +59,7 @@ RSpec.describe Paseto::Token do
       end
 
       it 'decodes the payload' do
-        expect(token.payload).to eq(payload)
+        expect(token.raw_payload).to eq(payload)
       end
 
       it 'decodes the footer' do
@@ -110,6 +110,38 @@ RSpec.describe Paseto::Token do
 
       it 'decodes the footer' do
         expect(token.footer).to eq('asdf')
+      end
+    end
+  end
+
+  describe '#decode!' do
+    let(:key) { Paseto::V3::Local.generate }
+    let(:payload) { {'foo' => 'bar'} }
+    let(:message) { key.encode(payload)}
+    let(:token) { described_class.parse(message) }
+
+    it 'returns the deserialized claims' do
+      expect(token.decode!(key)).to include(payload)
+    end
+  end
+
+  describe '#payload' do
+    let(:key) { Paseto::V3::Local.generate }
+    let(:payload) { {'foo' => 'bar'} }
+    let(:message) { key.encode(payload)}
+    let(:token) { described_class.parse(message) }
+
+    context 'when called before decoding' do
+      it 'raises an ArgumentError' do
+        expect { token.payload }.to raise_error(Paseto::ParseError, 'token not yet decoded, call #decode! first')
+      end
+    end
+
+    context 'when called after decoding' do
+      before { token.decode!(key) }
+
+      it 'returns the deserialized claims' do
+        expect(token.payload).to include(payload)
       end
     end
   end
