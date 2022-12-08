@@ -25,7 +25,7 @@ module Paseto
       end
 
       sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
-      def self.hmac(data, key:, digest_size:)
+      def self.hmac(data, key:, digest_size: 32)
         RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
       end
 
