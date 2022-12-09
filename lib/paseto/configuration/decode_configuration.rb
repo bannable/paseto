@@ -6,8 +6,8 @@ module Paseto
     class DecodeConfiguration
       extend T::Sig
 
-      sig { returns(Interface::Deserializer) }
-      attr_accessor :footer_deserializer
+      sig { returns(Interface::Serializer) }
+      attr_accessor :footer_serializer
 
       sig { returns(T::Boolean) }
       attr_accessor :verify_exp, :verify_nbf, :verify_iat
@@ -31,7 +31,7 @@ module Paseto
 
       sig { void }
       def initialize # rubocop:disable Metrics/AbcSize
-        @footer_deserializer = T.let(Deserializer::OptionalJson, Interface::Deserializer)
+        @footer_serializer = T.let(Serializer::OptionalJson, Interface::Serializer)
         @verify_exp = T.let(true, T::Boolean)
         @verify_nbf = T.let(true, T::Boolean)
         @verify_iat = T.let(true, T::Boolean)

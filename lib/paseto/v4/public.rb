@@ -73,7 +73,7 @@ module Paseto
         m = T.must(payload.slice(0, payload.size - SIGNATURE_BYTES))
         s = T.must(payload.slice(-SIGNATURE_BYTES, SIGNATURE_BYTES))
 
-        Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
+        Util.pre_auth_encode(pae_header, m, token.raw_footer, implicit_assertion)
             .then { |m2| public_key.verify(s, m2) }
             .then { m.encode(Encoding::UTF_8) }
       rescue RbNaCl::BadSignatureError

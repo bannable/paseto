@@ -116,8 +116,8 @@ RSpec.describe Paseto::Token do
 
   describe '#decode!' do
     let(:key) { Paseto::V3::Local.generate }
-    let(:payload) { {'foo' => 'bar'} }
-    let(:message) { key.encode(payload)}
+    let(:payload) { { 'foo' => 'bar' } }
+    let(:message) { key.encode(payload) }
     let(:token) { described_class.parse(message) }
 
     it 'returns the deserialized claims' do
@@ -127,8 +127,8 @@ RSpec.describe Paseto::Token do
 
   describe '#payload' do
     let(:key) { Paseto::V3::Local.generate }
-    let(:payload) { {'foo' => 'bar'} }
-    let(:message) { key.encode(payload)}
+    let(:payload) { { 'foo' => 'bar' } }
+    let(:message) { key.encode(payload) }
     let(:token) { described_class.parse(message) }
 
     context 'when called before decoding' do

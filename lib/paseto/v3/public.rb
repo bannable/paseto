@@ -87,7 +87,7 @@ module Paseto
         s = T.must(payload.slice(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
              .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }
 
-        Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
+        Util.pre_auth_encode(public_bytes, pae_header, m, token.raw_footer, implicit_assertion)
             .then { |m2| protocol.digest(m2) }
             .then { |data| @key.verify_raw(nil, s, data) }
             .then { |valid| raise InvalidSignature unless valid }

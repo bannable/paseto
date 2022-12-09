@@ -27,11 +27,10 @@ module Paseto
         abstract.params(
           payload: String,
           implicit_assertion: String,
-          serializer: Interface::Deserializer,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(Result)
       end
-      def decode!(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
+      def decode!(payload, implicit_assertion: '', **options); end
 
       sig { abstract.returns(String) }
       def id; end

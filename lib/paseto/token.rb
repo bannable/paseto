@@ -7,14 +7,23 @@ module Paseto
     include Comparable
 
     sig { returns(String) }
-    attr_reader :version, :purpose, :raw_payload, :footer
+    attr_reader :version, :purpose, :raw_payload, :raw_footer
+
+    sig { returns(T.any(String, T::Hash[String, T.untyped])) }
+    attr_reader :footer
 
     sig { returns(T.class_of(Interface::Key)) }
     attr_reader :type
 
-    sig { params(str: String).returns(Token) }
-    def self.parse(str)
-      case str.split('.')
+    sig do
+      params(
+        paseto: String,
+        serializer: Interface::Serializer,
+        options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
+      ).returns(Token)
+    end
+    def self.parse(paseto, serializer: Paseto.config.decode.footer_serializer, **options)
+      case paseto.split('.')
       in [String => version, String => purpose, String => payload, String => footer]
         nil
       in [String => version, String => purpose, String => payload]
@@ -24,22 +33,33 @@ module Paseto
       end
 
       payload = Util.decode64(payload)
-      footer = Util.decode64(footer)
-
-      new(version: version, purpose: purpose, payload: payload, footer: footer)
+      Util.decode64(footer)
+          .then { |f| serializer.deserialize(f, options) }
+          .then { |f| new(version: version, purpose: purpose, payload: payload, footer: f) }
     end
 
-    sig { params(payload: String, purpose: String, version: String, footer: String).void }
-    def initialize(payload:, purpose:, version:, footer: '')
+    sig do
+      params(
+        payload: String,
+        purpose: String,
+        version: String,
+        footer: T.any(String, T::Hash[String, T.untyped]),
+        serializer: Interface::Serializer,
+        options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
+      ).void
+    end
+    def initialize(payload:, purpose:, version:, footer: '', serializer: Paseto.config.decode.footer_serializer, **options)
       @version = T.let(version.freeze, String)
       @purpose = T.let(purpose.freeze, String)
       @raw_payload = T.let(payload.freeze, String)
-      @payload = T.let(nil, T.nilable(T::Hash[String, T.untyped]))
-      @footer = T.let(footer.freeze, String)
+      @result = T.let(nil, T.nilable(Result))
       @type = T.let(validate_header, T.class_of(Interface::Key))
 
+      @footer = T.let(footer.freeze, T.any(String, T::Hash[String, T.untyped]))
+      @raw_footer = T.let(serializer.serialize(footer, options), String)
+
       raw = [version, purpose, Util.encode64(raw_payload)]
-      raw << Util.encode64(footer) unless footer.empty?
+      raw << Util.encode64(@raw_footer) unless @raw_footer.empty?
       @str = T.let(raw.join('.').freeze, String)
     end
 
@@ -52,7 +72,8 @@ module Paseto
     end
     def decode!(key, implicit_assertion: '', **options)
       key.decode(@str, implicit_assertion: implicit_assertion, **options)
-      .then { |result| @payload = result.claims }
+         .then { |result| @result = result }
+         .then(&:claims)
     end
 
     sig { returns(String) }
@@ -67,7 +88,8 @@ module Paseto
 
     sig { returns(T::Hash[String, T.untyped]) }
     def payload
-      return @payload if @payload
+      return @result.claims if @result
+
       raise ParseError, 'token not yet decoded, call #decode! first'
     end
 

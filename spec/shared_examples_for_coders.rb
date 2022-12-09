@@ -16,12 +16,12 @@ RSpec.shared_examples 'a token coder' do
     it { is_expected.to end_with('.Zm9v') }
 
     context 'with JSON serializer options' do
-      let(:footer) { {'time' => Time.now} }
+      let(:footer) { { 'time' => Time.now } }
       let(:paseto) { key.encode(payload, footer: footer, implicit_assertion: 'test', mode: :object) }
       let(:token) { Paseto::Token.parse(paseto) }
 
       it 'respects the serializer options' do
-        expect(token.footer).to start_with('{"time":{"^t":"')
+        expect(token.footer).to match('time' => { '^t' => an_instance_of(String) })
       end
     end
   end
@@ -65,7 +65,7 @@ RSpec.shared_examples 'a token coder' do
       context 'with JSON serializer options' do
         subject(:decoder) { key.decode!(payload, implicit_assertion: 'test', mode: :object) }
 
-        let(:footer) { {'time' => Time.now} }
+        let(:footer) { { 'time' => Time.now } }
         let(:payload) { key.encode(plain, footer: footer, implicit_assertion: 'test', mode: :object) }
         let(:token) { Paseto::Token.parse(payload) }
 
