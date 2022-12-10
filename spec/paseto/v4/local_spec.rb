@@ -13,7 +13,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
   let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
   let(:key) { described_class.new(ikm: Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f))) }
 
-  it_behaves_like 'a SymmetricKey'
+  include_examples 'SymmetricKey'
 
   describe '.new' do
     context 'when the ikm is the wrong length' do

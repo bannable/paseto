@@ -22,7 +22,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
   end
   let(:key) { described_class.new(priv_pem) }
 
-  it_behaves_like 'an AsymmetricKey'
+  include_examples 'AsymmetricKey'
 
   describe '.new' do
     it 'succeds' do

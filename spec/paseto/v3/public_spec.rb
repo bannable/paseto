@@ -4,9 +4,9 @@
 require 'shared_examples_for_keys'
 
 RSpec.describe Paseto::V3::Public do
-  subject(:key) { described_class.new(key_pem) }
+  subject(:key) { described_class.new(priv_pem) }
 
-  let(:key_pem) do
+  let(:priv_pem) do
     # secp384r1 private key
     <<~PKEY
       -----BEGIN EC PRIVATE KEY-----
@@ -20,14 +20,14 @@ RSpec.describe Paseto::V3::Public do
   let(:pub_pem) do
     <<~PUBLIC_KEY
       -----BEGIN PUBLIC KEY-----
-      MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEmZZ5XSxUkU31FZSuQ6zzAY4IaGXT6b6f
-      lqQMbw/me7x++1vEufDnSdLEjLCGNY16OWtexCsigBTd6sxblgEKfXUYKZ/L8snJ
-      7RFBJ9CqUU8ZYKRZb7v1gkkLfK2JZb2M
+      MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE88bly7dA6jChAVYBh+G4bLcVJEycCHuu
+      qNPJFVNcwpeAyNcyMQyn8KxUHOn6YkRFgTXB6qwonqpJBEUoSpjU6Lo8CIAY0qNr
+      4AT/tzNHzGnn7Hn+rE+MhSuIFVfyBiyo
       -----END PUBLIC KEY-----
     PUBLIC_KEY
   end
 
-  it_behaves_like 'an AsymmetricKey'
+  include_examples 'AsymmetricKey'
 
   describe '.new' do
     it { is_expected.to be_a described_class }
@@ -41,7 +41,7 @@ RSpec.describe Paseto::V3::Public do
     end
 
     context 'when the key is an invalid point' do
-      let(:key_pem) do
+      let(:priv_pem) do
         <<~INVALID_KEY
           -----BEGIN EC PRIVATE KEY-----
           MIGkAgEBBDDA1Tm0m7YhkfeVpFuarAJYVlHp2tQj+1fOBiLa10t9E8TiQO/hVfxB
@@ -58,7 +58,7 @@ RSpec.describe Paseto::V3::Public do
     end
 
     context 'when the key is for a different EC group' do
-      let(:key_pem) do
+      let(:priv_pem) do
         <<~PRIME256V1
           -----BEGIN EC PRIVATE KEY-----
           MHcCAQEEIM1jvFNkK2dQc/zMb/qkGQfCGuhDNyYQauo6Foyn7BD9oAoGCCqGSM49
@@ -75,7 +75,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   context 'when the private key value is 0' do
-    let(:key_pem) do
+    let(:priv_pem) do
       <<~P384_ZERO
         -----BEGIN EC PRIVATE KEY-----
         MIGkAgEBBDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -100,20 +100,20 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#public_to_pem' do
-    let(:key_pem) { pub_pem }
+    let(:priv_pem) { pub_pem }
 
     it 'equals the input PEM' do
-      expect(key.public_to_pem).to eq key_pem
+      expect(key.public_to_pem).to eq priv_pem
     end
   end
 
   describe '#private_to_pem' do
     it 'equals the input PEM' do
-      expect(key.private_to_pem).to eq key_pem
+      expect(key.private_to_pem).to eq priv_pem
     end
 
     context 'with only a public key' do
-      let(:key_pem) { pub_pem }
+      let(:key) { described_class.new(pub_pem) }
 
       it 'raises an ArgumentError' do
         expect { key.private_to_pem }.to raise_error(ArgumentError, 'no private key available')
@@ -127,7 +127,7 @@ RSpec.describe Paseto::V3::Public do
     it { is_expected.to be_a(Paseto::Token) }
 
     context 'with only a public key' do
-      let(:key_pem) { pub_pem }
+      let(:key) { described_class.new(pub_pem) }
 
       it 'raises an error' do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
@@ -208,7 +208,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#to_paserk' do
-    let(:key_pem) do
+    let(:priv_pem) do
       <<~P384
         -----BEGIN EC PRIVATE KEY-----
         MD4CAQEEMHBxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeY
@@ -230,7 +230,7 @@ RSpec.describe Paseto::V3::Public do
     end
 
     context 'with a public key' do
-      let(:key_pem) do
+      let(:priv_pem) do
         <<~P384
           -----BEGIN PUBLIC KEY-----
           MEYwEAYHKoZIzj0CAQYFK4EEACIDMgACcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaH

@@ -1,8 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.shared_examples 'a SymmetricKey' do
-  include_examples 'a Key'
+RSpec.shared_examples 'SymmetricKey' do
+  include_examples 'Key'
 
   let(:protocol) do
 
@@ -16,17 +16,43 @@ RSpec.shared_examples 'a SymmetricKey' do
 end
 
 
-RSpec.shared_examples 'an AsymmetricKey' do
-  include_examples 'a Key'
+RSpec.shared_examples 'AsymmetricKey' do
+  include_examples 'Key'
 
   describe '#purpose' do
     it 'is public' do
       expect(key.purpose).to eq('public')
     end
   end
+
+  describe '#public_to_pem' do
+    subject { key.public_to_pem }
+
+    it { is_expected.to eq(pub_pem) }
+
+    context 'with a public key' do
+      let(:key) { described_class.new(pub_pem) }
+
+      it { is_expected.to eq(pub_pem) }
+    end
+  end
+
+  describe '#private_to_pem' do
+    subject(:private_to_pem) { key.private_to_pem }
+
+    it { is_expected.to eq(priv_pem) }
+
+    context 'with a public key' do
+      let(:key) { described_class.new(pub_pem) }
+
+      it 'raises an ArgumentError' do
+        expect { private_to_pem }.to raise_error(ArgumentError, 'no private key available')
+      end
+    end
+  end
 end
 
-RSpec.shared_examples 'a Key' do
+RSpec.shared_examples 'Key' do
   around do |example|
     Timecop.freeze { example.run }
   end
