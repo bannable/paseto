@@ -128,9 +128,9 @@ encrypter.decode(encrypted_token)
 # => {"foo" => "bar", "baz" => 2022-12-08 20:26:55 15023727/70368744177664 +0000}
 ```
 
-See [Registered Claims](#registered-claims-support) for more information on registered claim validation.
+See [Registered Claims](#registered-claims) for more information on registered claim validation.
 
-## Encryption and Decryption
+### Encryption and Decryption
 
 These operations are performed with `Local` key instances, which are always initialized with a 256-bit raw key.
 
@@ -146,12 +146,12 @@ result.claims                          # => {'foo' => 'bar'}
 
 # exporting key material
 crypt.key    # => The IKM used for this key as raw bytes
-crypt.lid    # => "k4.lid.uGj..." (lid PASERK)
+crypt.lid    # => "k4.lid.uGj..." (PASERK type lid)
 crypt.id     # => same as above
-crypt.paserk # => "k4.local.tnVpN4t..." (local PASERK)
+crypt.paserk # => "k4.local.tnVpN4t..." (PASERK Type local)
 ```
 
-## Message Signing and Verification
+### Message Signing and Verification
 
 These options are performed with `Public` key instances, which may be initialized with a DER- or PEM-encoded public or private key.
 
@@ -174,9 +174,9 @@ verifier.encode({'foo' => 'bar'}) # => ArgumentError
 # exporting key material
 signer.public_to_pem  # => PEM
 signer.private_to_pem # => PEM if private material available, otherwise ArgumentError
-signer.sid            # => "k4.sid.y5x..." (sid PASERK)
+signer.sid            # => "k4.sid.y5x..." (PASERK Type sid)
 signer.id             # => same as above
-signer.pid            # => "k4.pid.5g4..." (pid PASERK)
+signer.pid            # => "k4.pid.5g4..." (PASERK Type pid)
 verifier.pid          # => same as above!
 verifier.id           # => same as above
 ```
@@ -184,11 +184,9 @@ verifier.id           # => same as above
 
 [Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version4.md).
 
+The `rbnacl` gem is required for access to any v4 algorithm.
+
 ### Encryption and Decryption
-
-V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem.
-
-To use `v4` tokens, `rbnacl` must be available when the library is required.
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -210,6 +208,8 @@ signer = Paseto::V4::Public.new(pem)
 
 [Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-3-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version3.md).
 
+The `openssl` gem is required for access to any v3 algorithm.
+
 ### Encryption and Decryption
 
 ```ruby
@@ -227,7 +227,121 @@ signer = Paseto::V3::Public.generate # => Paseto::V3::Public
 signer = Paseto::V3::Public.new(signer.private_to_pem)
 ```
 
-# Registered Claims Support
+# PASERK
+
+## Accessing the PASETO Footer Before Decoding
+
+`Paseto::Token` is used for decoding and accessing the different components of a PASETO, and can be used for retrieving a `kid` or `wpk` footer claim before decoding the full token.
+
+`Token` objects respond to `#inspect` and `to_s` with the PASETO token that they represent.
+
+```ruby
+signer = Paseto::V4::Public.generate
+
+claims = { "foo" => "bar", "baz" => 1, "time" => Time.now }
+footer = '"foo"'
+signed_token = signer.encode(claims, footer: footer)
+
+t = Paseto::Token.parse(signed_token) # => the signed_token value
+t.class                               # => Paseto::Token
+t.footer                              # => "\"foo\""
+
+# You must decode! a Token with the correct Key before accessing the payload
+t.payload                             # => Paseto::ParseError
+t.decode!(signer)                     # => {"exp"=> ...}
+t.payload                             # => {"exp"=> ...}
+
+# The footer is automatically deserialized to a Hash when appropriate
+signed_token = signer.encode(claims, footer: {'kid' => signer.pid})
+t = Paseto::Token.parse(signed_token) # => "v4.public.fOQ2s..."
+
+t.footer                              # => {"kid"=>"k4.pid.h5u7u..."}
+t.footer['kid'] == signer.pid         # => true
+key = MyKeyStore.fetch(footer['kid'])
+t.decode!(key)                        # => {"exp"=> ...}
+```
+
+## [ID](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/ID.md), PASERK IDs
+
+See [Basic Usage](#basic-usage).
+
+## [Wrap](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/Wrap.md), Symmetric-Key Wrapping
+
+Encrypt a symmetric key with another symmetric key using the PIE wrapping algorithm. Other wrapping algorithms are not supported.
+
+```ruby
+wrapping_key = Paseto::V4::Local.generate
+local_secret = Paseto::V4::Local.generate
+
+# Encrypt local_secret with wrapping_key using the PIE algorithm
+paserk = wrapping_key.wrap(local_secret)  # => "k4.local-wrap.pie.8qQp..."
+
+# Decrypt a secret-wrap or local-wrap PASERK
+unwrapped = wrapping_key.unwrap(paserk)   # => #<Paseto::V4::Local ...>
+unwrapped == local_secret                 # => true
+```
+
+## [PKE](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/PKE.md), Public-Key Encryption
+
+Encrypt a symmetric key with a public key, and decrypt with a private key.
+
+```ruby
+wrapping_key = Paseto::V4::Public.generate
+local_secret = Paseto::V4::Local.generate
+
+# Seal a Local key with a Public key
+paserk = wrapping_key.seal(local_secret)  # => "k4.seal.I1Hn..."
+
+# Unseal a sealed PASERK
+unwrapped = wrapping_key.unseal(paserk)   # => #<Paseto::V4::Local ...>
+unwrapped == local_secret                 # => true
+```
+
+## [PBKD](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/PBKW.md), Password-Based Key Wrapping
+
+**Note:** This operation is slow.
+
+This operation encrypts any key with a password-derived encryption key.
+
+Different parameters for the derivation may be provided depending on the version of the key being encrypted.
+
+```ruby
+secret_key = Paseto::V4::Local.generate # May be either Local or Public
+
+# Equivelant to :sensitive for both values
+options = { opslimit: 4, memlimit: 1_073_741_824 }
+
+paserk = secret_key.pbkd(password: 'hunter2', options: options)
+# => k4.local-pw.hSmzsCmWhiT...
+
+key = Paseto::Paserk.from_paserk(paserk: paserk, password: 'hunter2')
+# => #<Paseto::V4::Local ...>
+
+key == secret_key
+# => true
+```
+
+### Version 4, Argon2id Parameters
+
+| param | allowed values | default |
+| :--------: | :---------: | :-----: |
+| `opslimit` | Symbol \| Integer | `:interactive` |
+| `memlimit` | Symbol \| Integer | `:interactive` |
+
+Allowed symbol values are `:interactive`, `:moderate` and `:sensitive` as described in [RbNaCl documentation](https://rubydoc.info/github/rubycrypto/rbnacl/RbNaCl%2FPasswordHash%2FArgon2:initialize).
+
+You most likely do not want to use the `:interactive` default in production. See [libsodium's documentation](https://libsodium.gitbook.io/doc/~/revisions/-LL5wcLSbESuQhMZUBZo/password_hashing/the_argon2i_function#guidelines-for-choosing-the-parameters) for parameter guidance.
+
+
+### Version 3, PBKDF2 Parameters
+
+| param | allowed values | default |
+| :--------: | :---------: | :-----: |
+| `iterations` | Integer | `100_000` |
+
+As with the Version 4 parameters above, you most likely do not want to use the default value and should pick an `iterations` value with time objectives similar to the argon2 guidance.
+
+# Registered Claims
 
 PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md) for particular use in the protocol, and this gem supports verification of all reserved claims.
 
@@ -241,9 +355,9 @@ See the appropriate section below for more information on configuring each `veri
 ```ruby
 Paseto.configure do |config|
   # Controls the behavior of footer deserialization in Result objects.
-  # Paseto::Deserializer::Raw is the other built-in option,
+  # Paseto::Serializer::Raw is the other built-in option,
   # but is incompatible with registered claim validation.
-  config.footer_serializer = Paseto::Deserializer::OptionalJson
+  config.footer_serializer = Paseto::Serializer::OptionalJson
 
   config.verify_exp = true
   config.verify_nbf = true
