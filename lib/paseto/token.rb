@@ -18,11 +18,10 @@ module Paseto
     sig do
       params(
         paseto: String,
-        serializer: Interface::Serializer,
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
       ).returns(Token)
     end
-    def self.parse(paseto, serializer: Paseto.config.decode.footer_serializer, **options)
+    def self.parse(paseto, **options)
       case paseto.split('.')
       in [String => version, String => purpose, String => payload, String => footer]
         nil
@@ -38,29 +37,36 @@ module Paseto
           .then { |f| new(version: version, purpose: purpose, payload: payload, footer: f) }
     end
 
+    sig { returns(Paseto::Interface::Serializer) }
+    def self.serializer
+      Paseto.config.decode.footer_serializer
+    end
+
     sig do
       params(
         payload: String,
         purpose: String,
         version: String,
         footer: T.any(String, T::Hash[String, T.untyped]),
-        serializer: Interface::Serializer,
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
       ).void
     end
-    def initialize(payload:, purpose:, version:, footer: '', serializer: Paseto.config.decode.footer_serializer, **options)
-      @version = T.let(version.freeze, String)
-      @purpose = T.let(purpose.freeze, String)
-      @raw_payload = T.let(payload.freeze, String)
-      @result = T.let(nil, T.nilable(Result))
-      @type = T.let(validate_header, T.class_of(Interface::Key))
+    def initialize(payload:, purpose:, version:, footer: '', **options) # rubocop:disable Metrics/AbcSize
+      raw_footer = serializer.serialize(footer, options)
+      encoded_footer = ".#{Util.encode64(raw_footer)}" unless raw_footer.empty?
 
-      @footer = T.let(footer.freeze, T.any(String, T::Hash[String, T.untyped]))
-      @raw_footer = T.let(serializer.serialize(footer, options), String)
+      paseto = Util.encode64(payload)
+                   .then { |data| "#{data}#{encoded_footer}" }
+                   .then { |data| "#{version}.#{purpose}.#{data}" }
+                   .then(&:freeze)
 
-      raw = [version, purpose, Util.encode64(raw_payload)]
-      raw << Util.encode64(@raw_footer) unless @raw_footer.empty?
-      @str = T.let(raw.join('.').freeze, String)
+      @version =     T.let(version.freeze,             String)
+      @purpose =     T.let(purpose.freeze,             String)
+      @raw_payload = T.let(payload.freeze,             String)
+      @type =        T.let(validate_header,            T.class_of(Interface::Key))
+      @footer =      T.let(footer,                     T.any(String, T::Hash[String, T.untyped]))
+      @raw_footer =  T.let(raw_footer,                 String)
+      @str =         T.let(paseto,                     String)
     end
 
     sig do
@@ -71,8 +77,10 @@ module Paseto
       ).returns(T::Hash[String, T.untyped])
     end
     def decode!(key, implicit_assertion: '', **options)
+      return @result.claims if @result
+
       key.decode(@str, implicit_assertion: implicit_assertion, **options)
-         .then { |result| @result = result }
+         .then { |result| @result = T.let(result, T.nilable(Result)) }
          .then(&:claims)
     end
 
@@ -102,6 +110,9 @@ module Paseto
     end
 
     private
+
+    sig { returns(Paseto::Interface::Serializer) }
+    def serializer = self.class.serializer
 
     sig { returns(T.class_of(Interface::Key)) }
     def validate_header
