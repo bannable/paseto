@@ -4,8 +4,14 @@
 RSpec.shared_examples 'SymmetricKey' do
   include_examples 'Key'
 
-  let(:protocol) do
+  describe '.new' do
+    context 'when the ikm is the wrong length' do
+      let(:key_material) { "\x00" * 31 }
 
+      it 'raises an ArgumentError' do
+        expect { key }.to raise_error(ArgumentError, 'ikm must be 32 bytes')
+      end
+    end
   end
 
   describe '#purpose' do
@@ -14,7 +20,6 @@ RSpec.shared_examples 'SymmetricKey' do
     end
   end
 end
-
 
 RSpec.shared_examples 'AsymmetricKey' do
   include_examples 'Key'

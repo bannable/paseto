@@ -15,16 +15,6 @@ RSpec.describe Paseto::V3::Local do
 
   include_examples 'SymmetricKey'
 
-  describe '.new' do
-    context 'when the ikm is the wrong length' do
-      let(:key_material) { "\x00" * 31 }
-
-      it 'raises an ArgumentError' do
-        expect { key }.to raise_error(ArgumentError, 'ikm must be 32 bytes')
-      end
-    end
-  end
-
   describe '#encrypt' do
     subject(:token) { key.encrypt(message: message, n: nonce, implicit_assertion: 'test') }
 
