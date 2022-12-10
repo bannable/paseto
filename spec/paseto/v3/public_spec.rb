@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe Paseto::V3::Public do
   subject(:key) { described_class.new(key: key_pem) }
@@ -27,7 +27,7 @@ RSpec.describe Paseto::V3::Public do
     PUBLIC_KEY
   end
 
-  include_examples 'a token coder'
+  it_behaves_like 'a Key'
 
   describe '.generate' do
     subject(:key) { described_class.generate }

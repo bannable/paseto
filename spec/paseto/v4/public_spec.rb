@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe 'Paseto::V4::Public', :sodium do
   let(:described_class) { Paseto::V4::Public }
@@ -22,7 +22,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
   end
   let(:key) { described_class.new(priv_pem) }
 
-  include_examples 'a token coder'
+  it_behaves_like 'a Key'
 
   describe '.generate' do
     it 'returns a new instance' do

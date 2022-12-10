@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe Paseto::V3::Local do
   subject(:key) { described_class.new(ikm: key_material) }
@@ -13,7 +13,7 @@ RSpec.describe Paseto::V3::Local do
       '-sRaWjfLU-yn9OJH1J_B8GKtOQ9gSQlb8yk9Iza9dIejh8Ytookad0Q-TQ2B8MYS2YVAXKEgHIYkKRC6efYSo2T18JEVBj45qJ2fgxA'
   end
 
-  include_examples 'a token coder'
+  it_behaves_like 'a Key'
 
   describe '.generate' do
     it 'returns a new instance' do

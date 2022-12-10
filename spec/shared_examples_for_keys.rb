@@ -1,12 +1,12 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.shared_examples 'a token coder' do
+RSpec.shared_examples 'a Key' do
   around do |example|
     Timecop.freeze { example.run }
   end
 
-  describe '.encode' do
+  describe '#encode' do
     subject(:coder) { key.encode(payload, footer: 'foo', implicit_assertion: 'test', n: nonce) }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
@@ -17,8 +17,8 @@ RSpec.shared_examples 'a token coder' do
 
     context 'with JSON serializer options' do
       let(:footer) { { 'time' => Time.now } }
-      let(:paseto) { key.encode(payload, footer: footer, implicit_assertion: 'test', mode: :object) }
-      let(:token) { Paseto::Token.parse(paseto) }
+      let(:coder) { key.encode(payload, footer: footer, implicit_assertion: 'test', mode: :object) }
+      let(:token) { Paseto::Token.parse(coder) }
 
       it 'respects the serializer options' do
         expect(token.footer).to match('time' => { '^t' => an_instance_of(String) })
@@ -26,7 +26,7 @@ RSpec.shared_examples 'a token coder' do
     end
   end
 
-  describe '.decode' do
+  describe '#decode' do
     subject(:decoder) { key.decode!(payload, implicit_assertion: 'test') }
 
     let(:payload) { key.encode(plain, footer: 'foo', implicit_assertion: 'test', n: nonce) }
