@@ -42,7 +42,7 @@ And run `bundle install`
 ## Supported PASETO versions
 
 `paseto` supports these PASETO versions and purposes:
-|          |  v4  |  v3  |
+| purpose  |  v4  |  v3  |
 | ---------| ---- | ---- |
 | `local`  |  ✅  |  ✅  |
 | `public` |  ✅  |  ✅  |
@@ -51,17 +51,17 @@ And run `bundle install`
 
 |               |  v4  |  v3  |
 | ------------- | ---- | ---- |
-| `lid`         |  ✅  |  ✅  |
-| `sid`         |  ✅  |  ✅  |
-| `pid`         |  ✅  |  ✅  |
-| `local`       |  ✅  |  ✅  |
-| `secret`      |  ✅  |  ✅  |
-| `public`      |  ✅  |  ✅  |
-| `seal`        |  ✅  |  ✅  |
-| `local-wrap`  |  ✅  |  ✅  |
-| `secret-wrap` |  ✅  |  ✅  |
-| `local-pw`    |  ✅  |  ✅  |
-| `secret-pw`   |  ✅  |  ✅  |
+| [`lid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/lid.md)         |  ✅  |  ✅  |
+| [`sid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/sid.md)         |  ✅  |  ✅  |
+| [`pid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/pid.md)         |  ✅  |  ✅  |
+| [`local`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local.md)       |  ✅  |  ✅  |
+| [`secret`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret.md)      |  ✅  |  ✅  |
+| [`public`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/public.md)      |  ✅  |  ✅  |
+| [`seal`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/seal.md)        |  ✅  |  ✅  |
+| [`local-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-wrap.md)  |  ✅  |  ✅  |
+| [`secret-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-wrap.md) |  ✅  |  ✅  |
+| [`local-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-pw.md)    |  ✅  |  ✅  |
+| [`secret-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-pw.md)   |  ✅  |  ✅  |
 
 ## Implementation Guideline compliance
 
@@ -69,136 +69,308 @@ And run `bundle install`
 - [x] enforce JSON encoding of payload
   - [x] require topmost object to be an object, map, or associative array
 - [x] protect against loading off-curve public keys
-- [ ] support "expected footer" inputs during public#verify and local#decrypt operations
 - [x] support for [Validators](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/02-Validators.md)
-- [ ] protect against arbitrary/invalid data in [Registered Claims](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md)
+- [x] protect against arbitrary/invalid data in [Registered Claims](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md)
 - [x] [Key-ID support](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md#key-id-support)
 
-## Usage
+## Basic Usage
 
 ```ruby
-signer = Paseto::V3::Public.generate
-encrypter = Paseto::V4::Local.generate
+claims = { "foo" => "bar", "baz" => 1, "time" => Time.now }
+symmetric = Paseto::V4::Local.generate
+asymmetric = Paseto::V4::Public.generate
 
-h = { "foo" => "bar", "baz" => 1 }
-signed_token = signer.encode(payload: h) # => v3.public...
-encrypted_token = encrypter.encode(payload: h) # => v4.local...
+footer = {'kid' => asymmetric.pid}
+signed_token = asymmetric.encode(claims, footer: footer)
+# => "v4.public.eyJ..."
 
-signer.decode(payload: signed_token) # => {"foo"=>"bar", "baz"=>1}
-encrypter.decode(payload: encrypted_token) # => {"foo"=>"bar", "baz"=>1}
-encrypter.decode(payload: signed_token) # => Paseto::ParseError
+result = asymmetric.decode(signed_token)
+# => <Paseto::Result claims={"exp"=>"2022-12-...", "iat"=>"2022-12-...",
+#     "nbf"=>"2022-12-...", "foo"=>"bar", "baz"=>1, "time"=>"2022-12-..."},
+#     footer={"kid"=>"k4.pid.Mu7prut6-zPCIkJ..."}>
+
+result.claims == claims
+# => false
+
+result.claims['foo'] == 'bar'
+# => true
+
+# To opt out of default claims use `encode!`
+# When using encode!, footer must be a string if provided
+encrypted_token = symmetric.encode!(claims, footer: JSON.dump(footer))
+# => "v4.local.aM0k..."
+
+result = symmetric.decode(encrypted_token)
+# => <Paseto::Result claims={"foo"=>"bar", "baz"=>1, "time"=>"2022-12-..."},
+#     footer={"kid"=>"k4.pid.h8fe-zLYEss_..."}>
+
+result.claims == claims
+# => true
 ```
-The `encode` and `decode` interfaces ensure that your token payloads always comply with the [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
-This library uses `multi_json` to provide serialization and deserialization, so you may configure your adapter as you please.
+The `encode` and `decode` methods always comply with the [PASETO Payload Processing guidelines](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md).
 
-If you want to handle serialization and claim verification yourself, you may instead use `encrypt`/`decrypt` and `sign`/`verify`.
+`paseto` uses `multi_json` to handle JSON serialization and deserialization, so you may configure your adapter as you please.
+
+**Symbol keys are always converted to strings.** Serializer configurations or options which cause keys to decode as non-string values, such as `symbolize_keys`, or cause registered claim values to decode as non-strings, are unsupported.
 
 ```ruby
+encrypter.decode(encrypted_token)
+# => {"foo" => "bar", "baz" => {"^t"=>"2022-12-08T20:26:55.213+00:00"}}
+
 # You may pass JSON adapter options to encode and decode
-encrypter.decode(payload: encrypted_token, symbolize_keys: true) # => {:foo => "bar", :baz => 1}
+encrypter.decode(encrypted_token, mode: :object)
+# => {"foo" => "bar", "baz" => 2022-12-08 20:26:55 15023727/70368744177664 +0000}
+
 # Or setting default options with Oj
-Oj.default_options = {symbol_keys: true}
-encrypter.decode(payload: encrypted_token) # => {:foo => "bar", :baz => 1}
+Oj.default_options = {mode: :object}
+encrypter.decode(encrypted_token)
+# => {"foo" => "bar", "baz" => 2022-12-08 20:26:55 15023727/70368744177664 +0000}
 ```
 
-You may optionally enforce validation of claims by calling `decode!` instead of `decode`. See [Registered Claims](#registered-claims-support) for more information on configuration validation.
+See [Registered Claims](#registered-claims) for more information on registered claim validation.
 
-### PASETO v4, Sodium Modern
+### Encryption and Decryption
 
-[Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version4.md).
-
-#### Encryption and Decryption
-
-V4 encryption with `paseto` uses the XChaCha20 stream cipher provided by libsodium, and requires the `RbNaCl` gem.
-
-To use `v4.local` tokens, ensure that `rbnacl` is installed.
-
+These operations are performed with `Local` key instances, which are always initialized with a 256-bit raw key.
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-# or initialize with a known key
-ikm = SecureRandom.bytes(32)
-crypt = Paseto::V4::Local.new(ikm:)
-
-token = crypt.encrypt(message: '{"foo":"bar"}') # => Token("v4.local....")
-token = crypt.encrypt(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
-crypt.decrypt(token:) # => '{"foo":"bar"}'
+token = crypt.encode({'foo' => 'bar'}) # => "v4.local.DhLZ..." (local PASETO)
+token = crypt.encode({'foo' => 'bar'},
+  footer: '',
+  implicit_assertion: ''
+)                                      # same as above
+result = crypt.decode(token)           # => <Paseto::Result ...>
+result.claims                          # => {'foo' => 'bar'}
 
 # exporting key material
-crypt.key # => ikm
+crypt.key    # => The IKM used for this key as raw bytes
+crypt.lid    # => "k4.lid.uGj..." (PASERK type lid)
+crypt.id     # => same as above
+crypt.paserk # => "k4.local.tnVpN4t..." (PASERK Type local)
 ```
 
-#### Message Signing and Verification
+### Message Signing and Verification
+
+These options are performed with `Public` key instances, which may be initialized with a DER- or PEM-encoded public or private key.
+
+```ruby
+signer = Paseto::V4::Public.generate
+token = signer.encode({'foo' => 'bar'}) # => "v4.public.sKd3..." (public PASETO)
+token = signer.encode(
+  {'foo' => 'bar'},
+  footer: '',
+  implicit_assertion: ''
+)                                       # same as above
+result = signer.decode(token)           # => <Paseto::Result ...>
+result.claims                           # => {'foo' => 'bar'}
+
+# or initialize only for verification
+verifier = Paseto::V4::Public.new(signer.public_to_pem)
+verifier.decode(token)            # => <Paseto::Result ...>
+verifier.encode({'foo' => 'bar'}) # => ArgumentError
+
+# exporting key material
+signer.public_to_pem  # => PEM
+signer.private_to_pem # => PEM if private material available, otherwise ArgumentError
+signer.sid            # => "k4.sid.y5x..." (PASERK Type sid)
+signer.id             # => same as above
+signer.pid            # => "k4.pid.5g4..." (PASERK Type pid)
+verifier.pid          # => same as above!
+verifier.id           # => same as above
+```
+## PASETO/PASERK v4, Sodium Modern
+
+[Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version4.md).
+
+The `rbnacl` gem is required for access to any v4 algorithm.
+
+### Encryption and Decryption
+
+```ruby
+crypt = Paseto::V4::Local.generate
+# or initialize with a known 256-bit string
+ikm = SecureRandom.bytes(32)
+crypt = Paseto::V4::Local.new(ikm: ikm)
+```
+
+### Message Signing and Verification
 
 ```ruby
 signer = Paseto::V4::Public.generate # => Paseto::V4::Public
-# or initialize from a DER- or PEM-encoded input
+# or initialize from a DER- or PEM-encoded Ed25519 key
 pem = File.read('my.pem')
-signer = Paseto::V4::Public.new(key: pem)
-
-token = signer.sign(message: '{"foo":"bar"}') # => Token("v4.public....")
-token = signer.sign(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
-signer.verify(token:) # => '{"foo":"bar"}'
-
-# or initialize only for verification
-verifier = Paseto::V4::Public.new(public_key: signer.public_key.to_s)
-verifier.verify(token:) # => '{"foo":"bar"}'
-verifier.verify(token:, implicit_assertion: '') # same as above
-verifier.sign(message: '{"foo":"bar"}') # => ArgumentError
-
-# exporting key material
-signer.public_to_pem # => PEM
-signer.private_to_pem # => PEM
+signer = Paseto::V4::Public.new(pem)
 ```
 
-### PASETO v3, NIST Modern
+## PASETO v3, NIST Modern
 
 [Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-3-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version3.md).
 
-#### Encryption and Decryption
+The `openssl` gem is required for access to any v3 algorithm.
+
+### Encryption and Decryption
 
 ```ruby
 crypt = Paseto::V3::Local.generate
 # or initialize with a known key
 ikm = SecureRandom.bytes(32)
-crypt = Paseto::V3::Local.new(ikm:)
-
-token = crypt.encrypt(message: '{"foo":"bar"}') # => Token("v3.local....")
-token = crypt.encrypt(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
-crypt.decrypt(token:) # => '{"foo":"bar"}'
-
-# exporting key material
-crypt.key # => ikm
+crypt = Paseto::V3::Local.new(ikm: ikm)
 ```
 
-#### Message Signing and Verification
+### Message Signing and Verification
 
 ```ruby
-signer = Paseto::V3::Public.generate # => Paseto::V4::Public
-# or initialize from a PEM or DER encoded key. May be either a public or private key.
-signer = Paseto::V3::Public.new(key: signer.key.private_key.to_der)
-
-token = signer.sign(message: '{"foo":"bar"}') # => Token("v3.public....")
-token = signer.sign(message: '{"foo":"bar"}', footer: '', implicit_assertion: '') # same as above
-signer.verify(token:) # => '{"foo":"bar"}'
-
-# or initialize only for verification
-verifier = Paseto::V3::Public.new(key: signer.key.public_key.to_pem)
-verifier.verify(token:) # => '{"foo":"bar"}'
-verifier.verify(token:, implicit_assertion: '') # same as above
-verifier.sign(message: '{"foo":"bar"}') # => ArgumentError
-
-# exporting key material
-signer.public_to_pem # => PEM encoded public key
-signer.private_to_pem # => PEM encoded private key
+signer = Paseto::V3::Public.generate # => Paseto::V3::Public
+# or initialize from a PEM- or DER-encoded secp384r1 key
+signer = Paseto::V3::Public.new(signer.private_to_pem)
 ```
 
-## Registered Claims Support
+# PASERK
 
-PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md) for particular use in the protocol. `paseto` supports verification of all reserved claims through the `decode!` interface. In the default configuration, only `exp` and `iat` claims are verified.
+## Accessing the PASETO Footer Before Decoding
 
-### Audience Claim
+`Paseto::Token` is used for decoding and accessing the different components of a PASETO, and can be used for retrieving a `kid` or `wpk` footer claim before decoding the full token.
+
+`Token` objects respond to `#inspect` and `to_s` with the PASETO token that they represent.
+
+```ruby
+signer = Paseto::V4::Public.generate
+
+claims = { "foo" => "bar", "baz" => 1, "time" => Time.now }
+footer = '"foo"'
+signed_token = signer.encode(claims, footer: footer)
+
+t = Paseto::Token.parse(signed_token) # => the signed_token value
+t.class                               # => Paseto::Token
+t.footer                              # => "\"foo\""
+
+# You must decode! a Token with the correct Key before accessing the payload
+t.payload                             # => Paseto::ParseError
+t.decode!(signer)                     # => {"exp"=> ...}
+t.payload                             # => {"exp"=> ...}
+
+# The footer is automatically deserialized to a Hash when appropriate
+signed_token = signer.encode(claims, footer: {'kid' => signer.pid})
+t = Paseto::Token.parse(signed_token) # => "v4.public.fOQ2s..."
+
+t.footer                              # => {"kid"=>"k4.pid.h5u7u..."}
+t.footer['kid'] == signer.pid         # => true
+key = MyKeyStore.fetch(footer['kid'])
+t.decode!(key)                        # => {"exp"=> ...}
+```
+
+## [ID](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/ID.md), PASERK IDs
+
+See [Basic Usage](#basic-usage).
+
+## [Wrap](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/Wrap.md), Symmetric-Key Wrapping
+
+Encrypt a symmetric key with another symmetric key using the PIE wrapping algorithm. Other wrapping algorithms are not supported.
+
+```ruby
+wrapping_key = Paseto::V4::Local.generate
+local_secret = Paseto::V4::Local.generate
+
+# Encrypt local_secret with wrapping_key using the PIE algorithm
+paserk = wrapping_key.wrap(local_secret)  # => "k4.local-wrap.pie.8qQp..."
+
+# Decrypt a secret-wrap or local-wrap PASERK
+unwrapped = wrapping_key.unwrap(paserk)   # => #<Paseto::V4::Local ...>
+unwrapped == local_secret                 # => true
+```
+
+## [PKE](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/PKE.md), Public-Key Encryption
+
+Encrypt a symmetric key with a public key, and decrypt with a private key.
+
+```ruby
+wrapping_key = Paseto::V4::Public.generate
+local_secret = Paseto::V4::Local.generate
+
+# Seal a Local key with a Public key
+paserk = wrapping_key.seal(local_secret)  # => "k4.seal.I1Hn..."
+
+# Unseal a sealed PASERK
+unwrapped = wrapping_key.unseal(paserk)   # => #<Paseto::V4::Local ...>
+unwrapped == local_secret                 # => true
+```
+
+## [PBKD](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/operations/PBKW.md), Password-Based Key Wrapping
+
+**Note:** This operation is slow.
+
+This operation encrypts any key with a password-derived encryption key.
+
+Different parameters for the derivation may be provided depending on the version of the key being encrypted.
+
+```ruby
+secret_key = Paseto::V4::Local.generate # May be either Local or Public
+
+# Equivelant to :sensitive for both values
+options = { opslimit: 4, memlimit: 1_073_741_824 }
+
+paserk = secret_key.pbkd(password: 'hunter2', options: options)
+# => k4.local-pw.hSmzsCmWhiT...
+
+key = Paseto::Paserk.from_paserk(paserk: paserk, password: 'hunter2')
+# => #<Paseto::V4::Local ...>
+
+key == secret_key
+# => true
+```
+
+### Version 4, Argon2id Parameters
+
+| param | allowed values | default |
+| :--------: | :---------: | :-----: |
+| `opslimit` | Symbol \| Integer | `:interactive` |
+| `memlimit` | Symbol \| Integer | `:interactive` |
+
+Allowed symbol values are `:interactive`, `:moderate` and `:sensitive` as described in [RbNaCl documentation](https://rubydoc.info/github/rubycrypto/rbnacl/RbNaCl%2FPasswordHash%2FArgon2:initialize).
+
+You most likely do not want to use the `:interactive` default in production. See [libsodium's documentation](https://libsodium.gitbook.io/doc/~/revisions/-LL5wcLSbESuQhMZUBZo/password_hashing/the_argon2i_function#guidelines-for-choosing-the-parameters) for parameter guidance.
+
+
+### Version 3, PBKDF2 Parameters
+
+| param | allowed values | default |
+| :--------: | :---------: | :-----: |
+| `iterations` | Integer | `100_000` |
+
+As with the Version 4 parameters above, you most likely do not want to use the default value and should pick an `iterations` value with time objectives similar to the argon2 guidance.
+
+# Registered Claims
+
+PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md) for particular use in the protocol, and this gem supports verification of all reserved claims.
+
+In the default configuration, the follow claims are verified when present: `exp`, `nbf` and `iat`
+
+Verification behavior can be controlled by passing a kwarg for the setting to `decode` calls, or through library-level configuration.
+
+## Default Configuration
+
+See the appropriate section below for more information on configuring each `verify_foo`.
+```ruby
+Paseto.configure do |config|
+  # Controls the behavior of footer deserialization in Result objects.
+  # Paseto::Serializer::Raw is the other built-in option,
+  # but is incompatible with registered claim validation.
+  config.footer_serializer = Paseto::Serializer::OptionalJson
+
+  config.verify_exp = true
+  config.verify_nbf = true
+  config.verify_iat = true
+
+  config.verify_iss = false
+  config.verify_aud = false
+  config.verify_sub = false
+  config.verify_jti = false
+end
+```
+
+## Audience Claim
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
@@ -206,17 +378,17 @@ PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spe
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, aud: 'example.com', data: 'data' }
-payload = crypt.encode(payload: hash)
+hash = { aud: 'example.com', data: 'data' }
+payload = crypt.encode(hash)
 
-options = { verify_aud: 'some.example.com' }
-crypt.decode!(payload:, options:) # => Paseto::InvalidAudience
+audience = 'some.example.com'
+crypt.decode(payload, verify_aud: audience) # => Paseto::InvalidAudience
 
-options = { verify_aud: ['some.example.com', 'another.example.com', 'example.com']}
-crypt.decode!(payload:, options:) # => { exp: ... }
+audience = ['some.example.com', 'another.example.com', 'example.com']
+crypt.decode(payload, verify_aud: audience) # => { 'aud' => ... }
 ```
 
-### Expiration Claim
+## Expiration Claim
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
@@ -224,16 +396,16 @@ crypt.decode!(payload:, options:) # => { exp: ... }
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now - 1).iso8601, iat: (Time.now - 5).iso8601, data: 'data' }
-payload = crypt.encode(payload: hash)
+# Override the default value by specifying a new value in your hash
+hash = { exp: (Time.now - 1).iso8601, data: 'data' }
+payload = crypt.encode(hash)
 
-crypt.decode!(payload:) # => Paseto::ExpiredToken
+crypt.decode(payload) # => Paseto::ExpiredToken
 
-options = { verify_exp: false }
-crypt.decode!(payload:, options:) # { exp: ... }
+crypt.decode(payload, verify_exp: false) # { 'exp' => ... }
 ```
 
-### Issued At Claim
+## Issued At Claim
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
@@ -241,13 +413,13 @@ crypt.decode!(payload:, options:) # { exp: ... }
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: (Time.now + 5).iso8601, data: 'data' }
+# Override the default value by specifying a new value in your hash
+hash = { iat: (Time.now + 5).iso8601, data: 'data' }
 payload = crypt.encode(payload: hash)
 
-crypt.decode!(payload:) # => Paseto::ImmatureToken
+crypt.decode(payload) # => Paseto::ImmatureToken
 
-options = { verify_iat: false }
-crypt.decode!(payload:, options:) # { exp: ... }
+crypt.decode(payload, verify_iat: false) # { 'iat' => ... }
 ```
 
 ### Issuer Claim
@@ -258,38 +430,39 @@ crypt.decode!(payload:, options:) # { exp: ... }
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, iss: 'example.com', data: 'data' }
+hash = { iss: 'example.com', data: 'data' }
 payload = crypt.encode(payload: hash)
 
-options = { verify_issuer: 'not.example.com' }
-crypt.decode!(payload:, options:) # => Paseto::InvalidIssuer
+crypt.decode(payload, verify_iss: 'not.example.com') # => Paseto::InvalidIssuer
 ```
 
 You may also pass a Regexp or Proc with arity 1, and verification will succeed if the regexp matches or the proc returns truthy.
 
 ```ruby
-opts = { verify_issuer: /\Aexample\.com\z/}
-crypt.decode!(payload: options: opts) # { exp: ... }
+issuer = /\Aexample\.com\z/
+crypt.decode(payload, verify_issuer: issuer) # { 'iss' => ... }
 
-opts = { verify_issuer: ->(iss) { iss.end_with?('example.com') } }
-crypt.decode!(payload:, options: opts) # { exp: ... }
+issuer_proc = ->(iss) { iss.end_with?('example.com') }
+crypt.decode(payload, verify_issuer: issuer_proc) # { 'iss' => ... }
 
 # or verify only presence
-crypt.decode!(payload:, options: { verify_issuer: true }) # { exp: ... }
+crypt.decode(payload, verify_issuer: true) # { 'iss' => ... }
 ```
 
 ### Not Before Claim
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
-| DateTime | Boolean | `false` |
+| DateTime | Boolean | `true` |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, nbf: (Time.now + 5).iso8601, data: 'data' }
+# Override the default value by specifying a new value in your hash
+hash = { nbf: (Time.now + 5).iso8601, data: 'data' }
 payload = crypt.encode(payload: hash)
 
-crypt.decode!(payload: options: { verify_nbf: true}) # => Paseto::InactiveToken
+crypt.decode(payload) # => Paseto::InactiveToken
+crypt.decode(payload, verify_nbf: false) # => { 'nbf' => ... }
 ```
 
 ### Subject Claim
@@ -300,11 +473,11 @@ crypt.decode!(payload: options: { verify_nbf: true}) # => Paseto::InactiveToken
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, sub: 'example.com', data: 'data' }
+hash = { sub: 'example.com', data: 'data' }
 payload = crypt.encode(payload: hash)
 
-crypt.decode!(payload: options: { verify_sub: 'example.com'}) # { exp: ... }
-crypt.decode!(payload: options: { verify_sub: 'example.org'}) # => Paseto::InvalidSubject
+crypt.decode(payload, verify_sub: 'example.com') # { 'sub' => ... }
+crypt.decode(payload, verify_sub: 'example.org') # => Paseto::InvalidSubject
 ```
 
 ### Token Identifier Claim
@@ -315,18 +488,21 @@ crypt.decode!(payload: options: { verify_sub: 'example.org'}) # => Paseto::Inval
 
 ```ruby
 crypt = Paseto::V4::Local.generate
-hash = { exp: (Time.now + 60).iso8601, iat: Time.now.iso8601, data: 'data' }
-payload = crypt.encode(payload: hash)
+hash = { data: 'data' }
+payload = crypt.encode(hash)
 
-crypt.decode!(payload:, options: { verify_jti: true})) # => Paseto::InvalidTokenIdentifier
+# Require presence
+crypt.decode(payload, verify_jti: true)) # => Paseto::InvalidTokenIdentifier
 
+# Require exact value
 hash[:jti] = 'foo'
 payload = crypt.encode(payload: hash)
-crypt.decode!(payload:, options: { verify_jti: 'foo'})) #  # { exp: ... }
-crypt.decode!(payload:, options: { verify_jti: 'bar'})) # Paseto::InvalidTokenIdentifier
+crypt.decode(payload, verify_jti: 'foo')) # { 'data' => ... }
+crypt.decode(payload, verify_jti: 'bar')) # Paseto::InvalidTokenIdentifier
 
-options = { verify_jti: ->(jti) { jti == 'bar'} }
-crypt.decode!(payload:, options:)) # Paseto::InvalidTokenIdentifier
+# Or something more complex
+jti_proc = ->(jti) { jti == 'bar'}
+crypt.decode(payload, verify_jti: jti_proc)) # Paseto::InvalidTokenIdentifier
 ```
 
 ## Development

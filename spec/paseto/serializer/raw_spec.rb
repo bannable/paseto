@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-RSpec.describe Paseto::Deserializer::Raw do
+RSpec.describe Paseto::Serializer::Raw do
   subject(:result) { described_class.deserialize(value, {}) }
 
   let(:value) { 'foo' }

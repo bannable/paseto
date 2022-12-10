@@ -1,6 +1,6 @@
   it '<%= name %>' do
-    pub = Paseto::V3::Public.new(key: <%= public_key_pem %>)
-    priv = Paseto::V3::Public.new(key: <%= secret_key_pem %>)
+    pub = Paseto::V3::Public.new(<%= public_key_pem %>)
+    priv = Paseto::V3::Public.new(<%= secret_key_pem %>)
     tok = %[<%= token %>]
     <%- if payload -%>
     payload = %[<%= payload %>]

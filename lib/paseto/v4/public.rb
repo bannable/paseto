@@ -67,13 +67,13 @@ module Paseto
       def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise LucidityError unless header == token.header
 
-        payload = token.payload
+        payload = token.raw_payload
         raise ParseError, 'message too short' if payload.bytesize < SIGNATURE_BYTES
 
         m = T.must(payload.slice(0, payload.size - SIGNATURE_BYTES))
         s = T.must(payload.slice(-SIGNATURE_BYTES, SIGNATURE_BYTES))
 
-        Util.pre_auth_encode(pae_header, m, token.footer, implicit_assertion)
+        Util.pre_auth_encode(pae_header, m, token.raw_footer, implicit_assertion)
             .then { |m2| public_key.verify(s, m2) }
             .then { m.encode(Encoding::UTF_8) }
       rescue RbNaCl::BadSignatureError

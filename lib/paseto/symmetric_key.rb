@@ -44,11 +44,11 @@ module Paseto
     def decrypt(token:, implicit_assertion: '')
       raise LucidityError unless header == token.header
 
-      n, c, t = split_payload(token.payload)
+      n, c, t = split_payload(token.raw_payload)
 
       ek, n2, ak = calc_keys(n)
 
-      pre_auth = Util.pre_auth_encode(pae_header, n, c, token.footer, implicit_assertion)
+      pre_auth = Util.pre_auth_encode(pae_header, n, c, token.raw_footer, implicit_assertion)
       t2 = protocol.hmac(pre_auth, key: ak)
       raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
@@ -76,16 +76,15 @@ module Paseto
       override.params(
         payload: String,
         implicit_assertion: String,
-        serializer: Interface::Deserializer,
         options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
       ).returns(Result)
     end
-    def decode(payload, implicit_assertion: '', serializer: Paseto.config.decode.footer_deserializer, **options)
+    def decode!(payload, implicit_assertion: '', **options)
       token = Token.parse(payload)
-      body = decrypt(token: token, implicit_assertion: implicit_assertion)
-             .then { |json| MultiJson.load(json, **options) }
-      footer = serializer.deserialize(token.footer, options)
-      Result.new(body: body, footer: footer)
+
+      decrypt(token: token, implicit_assertion: implicit_assertion)
+        .then { |json| MultiJson.load(json, **options) }
+        .then { |claims| Result.new(claims: claims, footer: token.footer) }
     end
 
     sig(:final) { override.returns(String) }

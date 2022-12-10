@@ -37,7 +37,7 @@ module Paseto
         message, t = @coder.authenticate(header: h, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: opts)
 
         data = Util.encode64("#{message}#{t}")
-        "#{h}#{data}"
+        "#{h}.#{data}"
       end
 
       sig { params(paserk: String).returns(Interface::Key) }

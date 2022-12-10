@@ -1,38 +1,24 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe 'Paseto::V4::Local', :sodium do
+  subject(:key) { described_class.new(ikm: key_material) }
+
   let(:described_class) { Paseto::V4::Local }
 
+  let(:key_material) { Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f)) }
+  let(:message) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
   let(:token_str) do
     'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAr68PS4AXe7If_ZgesdkUMvSwscFlAl1pk5HC0e8kApeaqMfGo_7OpBn' \
       'wJOAbY9V7WU6abu74MmcUE8YWAiaArVI8XJ5hOb_4v9RmDkneN0S92dx0OW4pgy7omxgf3S8c3LlQg'
   end
-  let(:payload) { %({"data":"this is a secret message","exp":"2022-01-01T00:00:00+00:00"}) }
-  let(:key) { described_class.new(ikm: Paseto::Util.decode_hex(%(707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f))) }
 
-  include_examples 'a token coder'
-
-  describe '.generate' do
-    it 'returns a new instance' do
-      expect(described_class.generate).to be_a(described_class)
-    end
-  end
-
-  describe '.new' do
-    context 'when the ikm is the wrong length' do
-      let(:key) { described_class.new(ikm: "\x00" * 31) }
-
-      it 'raises an ArgumentError' do
-        expect { key }.to raise_error(ArgumentError, 'ikm must be 32 bytes')
-      end
-    end
-  end
+  include_examples 'SymmetricKey'
 
   describe '#encrypt' do
-    subject(:token) { key.encrypt(message: payload, n: nonce) }
+    subject(:token) { key.encrypt(message: message, n: nonce) }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
 
@@ -48,7 +34,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
 
     let(:token) { Paseto::Token.parse(token_str) }
 
-    it { is_expected.to eq(payload) }
+    it { is_expected.to eq(message) }
 
     it 'returns a UTF-8 encoded string' do
       expect(plaintext.encoding).to eq(Encoding::UTF_8)
@@ -91,27 +77,46 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
     end
   end
 
-  describe '#version' do
-    it { expect(key.version).to eq('v4') }
-  end
-
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('local') }
-  end
-
   describe '#header' do
     it { expect(key.header).to eq('v4.local') }
-  end
-
-  describe '#to_paserk' do
-    it 'encodes to the expected k4.local' do
-      expect(key.paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
-    end
   end
 
   describe '#id' do
     it 'encodes to the expected k4.lid' do
       expect(key.id).to eq('k4.lid.iVtYQDjr5gEijCSjJC3fQaJm7nCeQSeaty0Jixy8dbsk')
+    end
+  end
+
+  describe '#pkbd' do
+    subject(:pbkd) { key.pbkd(password: password, options: options) }
+
+    let(:options) { { memlimit: 8_192, opslimit: 1 } }
+    let(:password) { 'test' }
+
+    it { is_expected.to start_with('k4.local-pw.') }
+
+    context 'when options are valid symbols' do
+      let(:options) { { memlimit: :interactive, opslimit: 1 } }
+
+      it { is_expected.to start_with('k4.local-pw.') }
+    end
+
+    context 'when options are not valid symbols' do
+      let(:options) { { memlimit: :foo, opslimit: 1 } }
+
+      it 'raises an ArgumentError' do
+        expect { pbkd }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe '#version' do
+    it { expect(key.version).to eq('v4') }
+  end
+
+  describe '#to_paserk' do
+    it 'encodes to the expected k4.local' do
+      expect(key.paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
     end
   end
 end

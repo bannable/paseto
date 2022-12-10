@@ -34,7 +34,7 @@ module Paseto
 
     sig { returns(T.self_type) }
     def verify_claims
-      Verifiers::Payload.verify(@result.body, @options)
+      Verifiers::Payload.verify(@result.claims, @options)
       self
     end
 

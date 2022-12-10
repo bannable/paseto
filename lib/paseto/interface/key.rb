@@ -27,11 +27,10 @@ module Paseto
         abstract.params(
           payload: String,
           implicit_assertion: String,
-          serializer: Interface::Deserializer,
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(Result)
       end
-      def decode(payload, implicit_assertion: '', serializer: Paseto::Deserializer::Raw, **options); end
+      def decode!(payload, implicit_assertion: '', **options); end
 
       sig { abstract.returns(String) }
       def id; end
@@ -58,8 +57,8 @@ module Paseto
           options: T.nilable(T.any(Proc, String, Integer, Symbol, T::Boolean))
         ).returns(Result)
       end
-      def decode!(payload, implicit_assertion: '', **options)
-        decode(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
+      def decode(payload, implicit_assertion: '', **options)
+        decode!(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
           .then { |result| Verify.verify(result, options) }
       end
 
@@ -76,12 +75,13 @@ module Paseto
       sig(:final) do
         params(
           payload: T::Hash[String, T.untyped],
-          footer: String,
+          footer: T.any(T::Hash[String, T.untyped], String),
           implicit_assertion: String,
           options: T.nilable(T.any(String, Integer, Symbol, T::Boolean))
         ).returns(String)
       end
       def encode(payload, footer: '', implicit_assertion: '', **options)
+        footer = MultiJson.dump(footer, mode: :object) if footer.is_a?(Hash)
         default_claims.merge(payload)
                       .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
       end
@@ -100,6 +100,11 @@ module Paseto
 
       sig(:final) { returns(String) }
       def pae_header = "#{header}."
+
+      sig(:final) { params(password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+      def pbkd(password:, options: {})
+        Operations::PBKW.pbkw(self, password, options)
+      end
 
       sig(:final) { returns(String) }
       def version = protocol.version

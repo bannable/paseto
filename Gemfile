@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'debug', '>= 1.0'
+gem 'oj'
 gem 'parallel_tests'
 gem 'parlour'
 gem 'reek'

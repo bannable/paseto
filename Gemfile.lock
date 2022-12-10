@@ -30,6 +30,7 @@ GEM
     kwalify (0.7.2)
     multi_json (1.15.0)
     netrc (0.11.0)
+    oj (3.13.23)
     openssl (3.0.1)
     parallel (1.22.1)
     parallel_tests (4.0.0)
@@ -138,6 +139,7 @@ DEPENDENCIES
   appraisal
   bundler (~> 2)
   debug (>= 1.0)
+  oj
   parallel_tests
   parlour
   paseto!

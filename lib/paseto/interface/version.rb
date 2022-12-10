@@ -100,7 +100,7 @@ module Paseto
           password: String,
           salt: String,
           length: Integer,
-          parameters: Integer
+          parameters: T.any(Symbol, Integer)
         ).returns(String)
       end
       def kdf(password, salt:, length:, **parameters)

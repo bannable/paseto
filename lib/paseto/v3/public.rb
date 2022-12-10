@@ -25,25 +25,25 @@ module Paseto
       def self.generate
         OpenSSL::PKey::EC.generate('secp384r1')
                          .then(&:to_der)
-                         .then { |der| new(key: der) }
+                         .then { |der| new(der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_public_bytes(bytes)
         ASN1.p384_public_bytes_to_spki_der(bytes)
-            .then { |der| new(key: der) }
+            .then { |der| new(der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_scalar_bytes(bytes)
         ASN1.p384_scalar_bytes_to_oak_der(bytes)
-            .then { |der| new(key: der) }
+            .then { |der| new(der) }
       end
 
       # `key` must be either a DER or PEM encoded secp384r1 key.
       # Encrypted PEM inputs are not supported.
       sig(:final) { params(key: String).void }
-      def initialize(key:)
+      def initialize(key)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
         @private = T.let(@key.private?, T::Boolean)
 
@@ -79,7 +79,7 @@ module Paseto
       def verify(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
         raise LucidityError unless header == token.header
 
-        payload = token.payload
+        payload = token.raw_payload
         raise ParseError, 'message too short' if payload.bytesize < SIGNATURE_BYTE_LEN
 
         m = T.must(payload.slice(0, payload.bytesize - SIGNATURE_BYTE_LEN))
@@ -87,7 +87,7 @@ module Paseto
         s = T.must(payload.slice(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
              .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }
 
-        Util.pre_auth_encode(public_bytes, pae_header, m, token.footer, implicit_assertion)
+        Util.pre_auth_encode(public_bytes, pae_header, m, token.raw_footer, implicit_assertion)
             .then { |m2| protocol.digest(m2) }
             .then { |data| @key.verify_raw(nil, s, data) }
             .then { |valid| raise InvalidSignature unless valid }

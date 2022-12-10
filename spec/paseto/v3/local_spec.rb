@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe Paseto::V3::Local do
   subject(:key) { described_class.new(ikm: key_material) }
@@ -13,23 +13,7 @@ RSpec.describe Paseto::V3::Local do
       '-sRaWjfLU-yn9OJH1J_B8GKtOQ9gSQlb8yk9Iza9dIejh8Ytookad0Q-TQ2B8MYS2YVAXKEgHIYkKRC6efYSo2T18JEVBj45qJ2fgxA'
   end
 
-  include_examples 'a token coder'
-
-  describe '.generate' do
-    it 'returns a new instance' do
-      expect(described_class.generate).to be_a described_class
-    end
-  end
-
-  describe '.new' do
-    context 'when the ikm is the wrong length' do
-      let(:key_material) { "\x00" * 31 }
-
-      it 'raises an ArgumentError' do
-        expect { key }.to raise_error(ArgumentError, 'ikm must be 32 bytes')
-      end
-    end
-  end
+  include_examples 'SymmetricKey'
 
   describe '#encrypt' do
     subject(:token) { key.encrypt(message: message, n: nonce, implicit_assertion: 'test') }
@@ -80,12 +64,17 @@ RSpec.describe Paseto::V3::Local do
     end
   end
 
-  describe '#version' do
-    it { expect(key.version).to eq('v3') }
+  describe '#pkbd' do
+    subject(:pbkd) { key.pbkd(password: password, options: options) }
+
+    let(:options) { { iterations: 100 } }
+    let(:password) { 'test' }
+
+    it { is_expected.to start_with('k3.local-pw.') }
   end
 
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('local') }
+  describe '#version' do
+    it { expect(key.version).to eq('v3') }
   end
 
   describe '#header' do

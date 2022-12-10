@@ -1,7 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
-require 'shared_examples_for_coders'
+require 'shared_examples_for_keys'
 
 RSpec.describe 'Paseto::V4::Public', :sodium do
   let(:described_class) { Paseto::V4::Public }
@@ -22,13 +22,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
   end
   let(:key) { described_class.new(priv_pem) }
 
-  include_examples 'a token coder'
-
-  describe '.generate' do
-    it 'returns a new instance' do
-      expect(described_class.generate).to be_a(described_class)
-    end
-  end
+  include_examples 'AsymmetricKey'
 
   describe '.new' do
     it 'succeds' do
@@ -82,10 +76,6 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
 
   describe '#version' do
     it { expect(key.version).to eq('v4') }
-  end
-
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('public') }
   end
 
   describe '#header' do
@@ -261,6 +251,29 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
 
       it 'encodes to the expected k4.sid' do
         expect(key.id).to eq('k4.sid.gHYyx8y5YzqKEZeYoMDqUOKejdSnY_AWhYZiSCMjR1V5')
+      end
+    end
+  end
+
+  describe '#pkbd' do
+    subject(:pbkd) { key.pbkd(password: password, options: options) }
+
+    let(:options) { { memlimit: 8_192, opslimit: 1 } }
+    let(:password) { 'test' }
+
+    it { is_expected.to start_with('k4.secret-pw.') }
+
+    context 'when options are valid symbols' do
+      let(:options) { { memlimit: :interactive, opslimit: 1 } }
+
+      it { is_expected.to start_with('k4.secret-pw.') }
+    end
+
+    context 'when options are not valid symbols' do
+      let(:options) { { memlimit: :foo, opslimit: 1 } }
+
+      it 'raises an ArgumentError' do
+        expect { pbkd }.to raise_error(ArgumentError)
       end
     end
   end
