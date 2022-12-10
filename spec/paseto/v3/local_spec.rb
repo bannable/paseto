@@ -66,7 +66,8 @@ RSpec.describe Paseto::V3::Local do
 
   describe '#pkbd' do
     subject(:pbkd) { key.pbkd(password: password, options: options) }
-    let(:options) { {iterations: 100} }
+
+    let(:options) { { iterations: 100 } }
     let(:password) { 'test' }
 
     it { is_expected.to start_with('k3.local-pw.') }

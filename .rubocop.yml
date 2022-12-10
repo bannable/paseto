@@ -60,8 +60,8 @@ Naming/VariableNumber:
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:
-    - 'spec/paseto/token_validator_spec.rb'
     - 'spec/paseto/verify_spec.rb'
+    - 'spec/paseto/v4/*'
 
 Sorbet/ConstantsFromStrings:
   Exclude:

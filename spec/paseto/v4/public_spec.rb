@@ -257,19 +257,20 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
 
   describe '#pkbd' do
     subject(:pbkd) { key.pbkd(password: password, options: options) }
-    let(:options) { {memlimit: 8_192, opslimit: 1} }
+
+    let(:options) { { memlimit: 8_192, opslimit: 1 } }
     let(:password) { 'test' }
 
     it { is_expected.to start_with('k4.secret-pw.') }
 
     context 'when options are valid symbols' do
-      let(:options) { {memlimit: :interactive, opslimit: 1} }
+      let(:options) { { memlimit: :interactive, opslimit: 1 } }
 
       it { is_expected.to start_with('k4.secret-pw.') }
     end
 
     context 'when options are not valid symbols' do
-      let(:options) { {memlimit: :foo, opslimit: 1} }
+      let(:options) { { memlimit: :foo, opslimit: 1 } }
 
       it 'raises an ArgumentError' do
         expect { pbkd }.to raise_error(ArgumentError)
