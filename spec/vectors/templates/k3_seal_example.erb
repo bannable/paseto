@@ -17,8 +17,8 @@
     paserk = %[<%= paserk %>]
     secret_key = <%= sealing_secret_key.inspect %>
     public_key = <%= sealing_public_key.inspect %>
-    sk = Paseto::V3::Public.new(key: secret_key)
-    pk = Paseto::V3::Public.new(key: public_key)
+    sk = Paseto::V3::Public.new(secret_key)
+    pk = Paseto::V3::Public.new(public_key)
     <%- if expect_fail -%>
     expect { sk.unseal(paserk) }.to raise_error(Paseto::InvalidAuthenticator)
     <%- else -%>

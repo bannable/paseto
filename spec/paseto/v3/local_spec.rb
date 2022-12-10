@@ -13,13 +13,7 @@ RSpec.describe Paseto::V3::Local do
       '-sRaWjfLU-yn9OJH1J_B8GKtOQ9gSQlb8yk9Iza9dIejh8Ytookad0Q-TQ2B8MYS2YVAXKEgHIYkKRC6efYSo2T18JEVBj45qJ2fgxA'
   end
 
-  it_behaves_like 'a Key'
-
-  describe '.generate' do
-    it 'returns a new instance' do
-      expect(described_class.generate).to be_a described_class
-    end
-  end
+  it_behaves_like 'a SymmetricKey'
 
   describe '.new' do
     context 'when the ikm is the wrong length' do
@@ -82,10 +76,6 @@ RSpec.describe Paseto::V3::Local do
 
   describe '#version' do
     it { expect(key.version).to eq('v3') }
-  end
-
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('local') }
   end
 
   describe '#header' do

@@ -1,9 +1,40 @@
 # typed: false
 # frozen_string_literal: true
 
+RSpec.shared_examples 'a SymmetricKey' do
+  include_examples 'a Key'
+
+  let(:protocol) do
+
+  end
+
+  describe '#purpose' do
+    it 'is local' do
+      expect(key.purpose).to eq('local')
+    end
+  end
+end
+
+
+RSpec.shared_examples 'an AsymmetricKey' do
+  include_examples 'a Key'
+
+  describe '#purpose' do
+    it 'is public' do
+      expect(key.purpose).to eq('public')
+    end
+  end
+end
+
 RSpec.shared_examples 'a Key' do
   around do |example|
     Timecop.freeze { example.run }
+  end
+
+  describe '.generate' do
+    it 'returns a new instance' do
+      expect(described_class.generate).to be_a(described_class)
+    end
   end
 
   describe '#encode' do

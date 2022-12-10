@@ -22,13 +22,7 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
   end
   let(:key) { described_class.new(priv_pem) }
 
-  it_behaves_like 'a Key'
-
-  describe '.generate' do
-    it 'returns a new instance' do
-      expect(described_class.generate).to be_a(described_class)
-    end
-  end
+  it_behaves_like 'an AsymmetricKey'
 
   describe '.new' do
     it 'succeds' do
@@ -82,10 +76,6 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
 
   describe '#version' do
     it { expect(key.version).to eq('v4') }
-  end
-
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('public') }
   end
 
   describe '#header' do

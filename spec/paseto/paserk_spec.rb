@@ -158,7 +158,7 @@ RSpec.describe Paseto::Paserk do
         -----END EC PRIVATE KEY-----
       P384
     end
-    let(:unsealing_key) { Paseto::V3::Public.new(key: pem) }
+    let(:unsealing_key) { Paseto::V3::Public.new(pem) }
 
     it 'deserializes correctly' do
       expect(key.to_bytes).to eq("\x00" * 32)

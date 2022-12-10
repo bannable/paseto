@@ -25,25 +25,25 @@ module Paseto
       def self.generate
         OpenSSL::PKey::EC.generate('secp384r1')
                          .then(&:to_der)
-                         .then { |der| new(key: der) }
+                         .then { |der| new(der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_public_bytes(bytes)
         ASN1.p384_public_bytes_to_spki_der(bytes)
-            .then { |der| new(key: der) }
+            .then { |der| new(der) }
       end
 
       sig(:final) { params(bytes: String).returns(T.attached_class) }
       def self.from_scalar_bytes(bytes)
         ASN1.p384_scalar_bytes_to_oak_der(bytes)
-            .then { |der| new(key: der) }
+            .then { |der| new(der) }
       end
 
       # `key` must be either a DER or PEM encoded secp384r1 key.
       # Encrypted PEM inputs are not supported.
       sig(:final) { params(key: String).void }
-      def initialize(key:)
+      def initialize(key)
         @key = T.let(OpenSSL::PKey::EC.new(key), OpenSSL::PKey::EC)
         @private = T.let(@key.private?, T::Boolean)
 

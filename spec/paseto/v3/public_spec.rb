@@ -4,7 +4,7 @@
 require 'shared_examples_for_keys'
 
 RSpec.describe Paseto::V3::Public do
-  subject(:key) { described_class.new(key: key_pem) }
+  subject(:key) { described_class.new(key_pem) }
 
   let(:key_pem) do
     # secp384r1 private key
@@ -27,23 +27,17 @@ RSpec.describe Paseto::V3::Public do
     PUBLIC_KEY
   end
 
-  it_behaves_like 'a Key'
-
-  describe '.generate' do
-    subject(:key) { described_class.generate }
-
-    it { is_expected.to be_a(described_class) }
-  end
+  it_behaves_like 'an AsymmetricKey'
 
   describe '.new' do
     it { is_expected.to be_a described_class }
 
     it 'raises an error when the key is empty' do
-      expect { described_class.new(key: '') }.to raise_error(Paseto::CryptoError, 'invalid curve name')
+      expect { described_class.new('') }.to raise_error(Paseto::CryptoError, 'invalid curve name')
     end
 
     it 'raises an error when the key is the wrong type' do
-      expect { described_class.new(key: nil) }.to raise_error(TypeError)
+      expect { described_class.new(nil) }.to raise_error(TypeError)
     end
 
     context 'when the key is an invalid point' do
@@ -99,10 +93,6 @@ RSpec.describe Paseto::V3::Public do
 
   describe '#version' do
     it { expect(key.version).to eq('v3') }
-  end
-
-  describe '#purpose' do
-    it { expect(key.purpose).to eq('public') }
   end
 
   describe '#header' do
