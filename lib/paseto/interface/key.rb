@@ -101,6 +101,11 @@ module Paseto
       sig(:final) { returns(String) }
       def pae_header = "#{header}."
 
+      sig(:final) { params(password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }
+      def pbkd(password:, options: {})
+        Operations::PBKW.pbkw(self, password, options)
+      end
+
       sig(:final) { returns(String) }
       def version = protocol.version
     end

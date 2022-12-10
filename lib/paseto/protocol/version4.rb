@@ -39,15 +39,18 @@ module Paseto
           password: String,
           salt: String,
           length: Integer,
-          parameters: Integer
+          parameters: T.any(Symbol, Integer)
         ).returns(String)
       end
       def self.kdf(password, salt:, length:, **parameters)
+        memlimit = RbNaCl::PasswordHash::Argon2.memlimit_value(parameters[:memlimit])
+        opslimit = RbNaCl::PasswordHash::Argon2.opslimit_value(parameters[:opslimit])
+
         RbNaCl::PasswordHash.argon2id(
           password,
           salt,
-          T.must(parameters[:opslimit]),
-          T.must(parameters[:memlimit]),
+          opslimit,
+          memlimit,
           length
         )
       end

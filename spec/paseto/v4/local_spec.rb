@@ -77,23 +77,45 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
     end
   end
 
-  describe '#version' do
-    it { expect(key.version).to eq('v4') }
-  end
-
   describe '#header' do
     it { expect(key.header).to eq('v4.local') }
-  end
-
-  describe '#to_paserk' do
-    it 'encodes to the expected k4.local' do
-      expect(key.paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
-    end
   end
 
   describe '#id' do
     it 'encodes to the expected k4.lid' do
       expect(key.id).to eq('k4.lid.iVtYQDjr5gEijCSjJC3fQaJm7nCeQSeaty0Jixy8dbsk')
+    end
+  end
+
+  describe '#pkbd' do
+    subject(:pbkd) { key.pbkd(password: password, options: options) }
+    let(:options) { {memlimit: 8_192, opslimit: 1} }
+    let(:password) { 'test' }
+
+    it { is_expected.to start_with('k4.local-pw.') }
+
+    context 'when options are valid symbols' do
+      let(:options) { {memlimit: :interactive, opslimit: 1} }
+
+      it { is_expected.to start_with('k4.local-pw.') }
+    end
+
+    context 'when options are not valid symbols' do
+      let(:options) { {memlimit: :foo, opslimit: 1} }
+
+      it 'raises an ArgumentError' do
+        expect { pbkd }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe '#version' do
+    it { expect(key.version).to eq('v4') }
+  end
+
+  describe '#to_paserk' do
+    it 'encodes to the expected k4.local' do
+      expect(key.paserk).to eq('k4.local.cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8')
     end
   end
 end

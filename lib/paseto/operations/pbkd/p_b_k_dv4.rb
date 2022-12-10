@@ -31,8 +31,10 @@ module Paseto
           ).returns([String, String])
         end
         def authenticate(header:, pre_key:, salt:, nonce:, edk:, params:) # rubocop:disable Metrics/ParameterLists
-          memlimit = Util.int_to_be64(T.must(params[:memlimit]))
-          opslimit = Util.int_to_be32(T.must(params[:opslimit]))
+          memlimit_int = RbNaCl::PasswordHash::Argon2.memlimit_value(params[:memlimit])
+          opslimit_int = RbNaCl::PasswordHash::Argon2.opslimit_value(params[:opslimit])
+          memlimit = Util.int_to_be64(memlimit_int)
+          opslimit = Util.int_to_be32(opslimit_int)
           para = Util.int_to_be32(1)
 
           message = "#{salt}#{memlimit}#{opslimit}#{para}#{nonce}#{edk}"

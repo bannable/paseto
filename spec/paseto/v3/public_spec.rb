@@ -99,6 +99,14 @@ RSpec.describe Paseto::V3::Public do
     it { expect(key.header).to eq('v3.public') }
   end
 
+  describe '#pkbd' do
+    subject(:pbkd) { key.pbkd(password: password, options: options) }
+    let(:options) { {iterations: 100} }
+    let(:password) { 'test' }
+
+    it { is_expected.to start_with('k3.secret-pw.') }
+  end
+
   describe '#public_to_pem' do
     let(:priv_pem) { pub_pem }
 
