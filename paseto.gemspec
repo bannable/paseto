@@ -3,17 +3,17 @@
 require_relative 'lib/paseto/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'paseto'
+  spec.name = 'ruby-paseto'
   spec.version = Paseto::VERSION
   spec.platform = Gem::Platform::RUBY
   spec.authors = ['Joe Truba']
   spec.email = ['joe@bannable.net']
 
-  spec.summary = 'A ruby implementation of PASETO tokens.'
+  spec.summary = 'A ruby implementation of PASETO and PASERK tokens'
   spec.description = <<-DESCRIPTION
     Platform Agnostic SEcurity TOkens are a specification for secure stateless tokens.
-    This is an implementation of PASETO tokens for use in ruby, with runtime static type
-    checking provided by Sorbet.
+    This is an implementation of PASETO tokens, and the PASERK key management extensions,
+    in ruby, with runtime static type checking provided by Sorbet.
   DESCRIPTION
   spec.homepage = 'https://github.com/bannable/paseto'
   spec.license = 'MIT'

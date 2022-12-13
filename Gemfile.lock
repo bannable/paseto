@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paseto (0.1.0)
+    ruby-paseto (0.1.0)
       multi_json (~> 1.15.0)
       openssl (~> 3.0.0)
       sorbet-runtime
@@ -142,7 +142,6 @@ DEPENDENCIES
   oj
   parallel_tests
   parlour
-  paseto!
   rake
   reek
   rspec
@@ -151,6 +150,7 @@ DEPENDENCIES
   rubocop-performance (~> 1.15.0)
   rubocop-rspec (~> 2.14.2)
   rubocop-sorbet (~> 0.6.11)
+  ruby-paseto!
   simplecov
   simplecov_json_formatter
   sorbet

@@ -19,26 +19,13 @@ If you do not intend to create or parse `v4.local` tokens, feel free to skip thi
 
 Add the following to your Gemfile:
 ```
-gem 'paseto', git: 'git://github.com/bannable/paseto.git'
+gem 'ruby-paseto'
 # and optionally:
 gem 'rbnacl', '~> 7.1.1'
 ```
 
-And run `bundle install`.
-<!--
-### Using Rubygems:
-```bash
-gem install paseto
-```
+Then, run `bundle install` and `require 'paseto'`.
 
-### Using Bundler:
-Add the following to your Gemfile
-```
-gem 'paseto'
-```
-And run `bundle install`
-
--->
 ## Supported PASETO versions
 
 `paseto` supports these PASETO versions and purposes:
