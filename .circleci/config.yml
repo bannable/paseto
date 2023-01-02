@@ -92,7 +92,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
+            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
             - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
             - gem-cache-v4-<< parameters.version >>-{{ arch }}
       - install-bundler:
@@ -108,7 +108,7 @@ jobs:
             bundle install
             bundle exec appraisal install
       - save_cache:
-          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
+          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
           paths:
             - ./vendor/bundle
       - persist_to_workspace:
@@ -260,6 +260,7 @@ workflows:
               appraisal:
                 - standalone
                 - rbnacl
+                - openssl_3.0
           requires:
             - codeclimate-setup
             - install-dependencies-<< matrix.version >>
