@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.0] - 2023-01-02
+
+- Relax the version constraint on openssl depedency
+
 ## [0.1.0] - 2022-12-13
 
 - Initial release of ruby-paseto
