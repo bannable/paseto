@@ -38,21 +38,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'multi_json', '~> 1.15.0'
-  spec.add_runtime_dependency 'openssl', '~> 3.0'
+  spec.add_runtime_dependency 'openssl', '~> 3'
   spec.add_runtime_dependency 'sorbet-runtime'
   spec.add_runtime_dependency 'zeitwerk'
-
-  spec.add_development_dependency 'appraisal'
-  spec.add_development_dependency 'bundler', '~> 2'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '~> 1.38.0'
-  spec.add_development_dependency 'rubocop-performance', '~> 1.15.0'
-  spec.add_development_dependency 'rubocop-rspec', '~> 2.14.2'
-  spec.add_development_dependency 'rubocop-sorbet', '~> 0.6.11'
-  spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'sorbet'
-  spec.add_development_dependency 'timecop'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

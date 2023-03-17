@@ -10,7 +10,7 @@ gem:
   - parallel_tests
   - parlour
   - parser
-  - paseto
+  - ruby-paseto
   - rbi
   - reek
   - rspec_junit_formatter

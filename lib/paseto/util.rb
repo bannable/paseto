@@ -98,8 +98,7 @@ module Paseto
     def self.openssl?(major, minor = 0, fix = 0, patch = 0)
       return false if OpenSSL::OPENSSL_VERSION.include?('LibreSSL')
 
-      OpenSSL::OPENSSL_VERSION_NUMBER >=
-        (major * 0x10000000) + (minor * 0x100000) + (fix * 0x1000) + (patch * 0x10)
+      (major * 0x10000000) + (minor * 0x100000) + (fix * 0x1000) + (patch * 0x10) <= OpenSSL::OPENSSL_VERSION_NUMBER
     end
   end
 end

@@ -48,7 +48,7 @@ RSpec.describe 'Paseto::Sodium::Stream::XChaCha20Xor', :sodium do
     TEST_VECTORS.each_with_index do |vector, idx|
       # With the provided `key` and `nonce`, an array of 0's sized to match
       # the output should encrypt to `out` and then back to 0's for each vector
-      context "test vector #{idx}" do
+      context "with test vector #{idx}" do
         let(:key) { Paseto::Util.decode_hex(vector[0]) }
 
         it 'decrypts correctly' do

@@ -24,7 +24,7 @@ module Paseto
     end
 
     sig { params(input: String).returns(Interface::Key) }
-    def generate(input) # rubocop:disable Metrics/MethodLength
+    def generate(input) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       case self
       in K3LocalWrap | K3LocalPBKW | K3Local if input.bytesize == 32
         V3::Local.new(ikm: input)

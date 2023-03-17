@@ -946,12 +946,13 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   #    rsa.private_decrypt(string, padding) -> String
   #
   # Decrypt +string+, which has been encrypted with the public key, with the
-  # private key. +padding+ defaults to PKCS1_PADDING.
+  # private key. +padding+ defaults to PKCS1_PADDING, which is known to be
+  # insecure but is kept for backwards compatibility.
   #
   # <b>Deprecated in version 3.0</b>.
   # Consider using PKey::PKey#encrypt and PKey::PKey#decrypt instead.
   #
-  # source://openssl//openssl/pkey.rb#435
+  # source://openssl//openssl/pkey.rb#439
   def private_decrypt(data, padding = T.unsafe(nil)); end
 
   # :call-seq:
@@ -959,14 +960,15 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   #    rsa.private_encrypt(string, padding) -> String
   #
   # Encrypt +string+ with the private key.  +padding+ defaults to
-  # PKCS1_PADDING. The encrypted string output can be decrypted using
+  # PKCS1_PADDING, which is known to be insecure but is kept for backwards
+  # compatibility. The encrypted string output can be decrypted using
   # #public_decrypt.
   #
   # <b>Deprecated in version 3.0</b>.
   # Consider using PKey::PKey#sign_raw and PKey::PKey#verify_raw, and
   # PKey::PKey#verify_recover instead.
   #
-  # source://openssl//openssl/pkey.rb#372
+  # source://openssl//openssl/pkey.rb#373
   def private_encrypt(string, padding = T.unsafe(nil)); end
 
   # :call-seq:
@@ -974,13 +976,14 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   #    rsa.public_decrypt(string, padding) -> String
   #
   # Decrypt +string+, which has been encrypted with the private key, with the
-  # public key.  +padding+ defaults to PKCS1_PADDING.
+  # public key.  +padding+ defaults to PKCS1_PADDING which is known to be
+  # insecure but is kept for backwards compatibility.
   #
   # <b>Deprecated in version 3.0</b>.
   # Consider using PKey::PKey#sign_raw and PKey::PKey#verify_raw, and
   # PKey::PKey#verify_recover instead.
   #
-  # source://openssl//openssl/pkey.rb#394
+  # source://openssl//openssl/pkey.rb#396
   def public_decrypt(string, padding = T.unsafe(nil)); end
 
   # :call-seq:
@@ -988,13 +991,14 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   #    rsa.public_encrypt(string, padding) -> String
   #
   # Encrypt +string+ with the public key.  +padding+ defaults to
-  # PKCS1_PADDING. The encrypted string output can be decrypted using
+  # PKCS1_PADDING, which is known to be insecure but is kept for backwards
+  # compatibility. The encrypted string output can be decrypted using
   # #private_decrypt.
   #
   # <b>Deprecated in version 3.0</b>.
   # Consider using PKey::PKey#encrypt and PKey::PKey#decrypt instead.
   #
-  # source://openssl//openssl/pkey.rb#415
+  # source://openssl//openssl/pkey.rb#418
   def public_encrypt(data, padding = T.unsafe(nil)); end
 
   # :call-seq:
@@ -1014,7 +1018,7 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
 
   private
 
-  # source://openssl//openssl/pkey.rb#452
+  # source://openssl//openssl/pkey.rb#456
   def translate_padding_mode(num); end
 
   class << self
@@ -1044,23 +1048,23 @@ end
 module OpenSSL::SSL
   private
 
-  # source://openssl//openssl/ssl.rb#273
+  # source://openssl//openssl/ssl.rb#276
   def verify_certificate_identity(cert, hostname); end
 
-  # source://openssl//openssl/ssl.rb#306
+  # source://openssl//openssl/ssl.rb#309
   def verify_hostname(hostname, san); end
 
-  # source://openssl//openssl/ssl.rb#339
+  # source://openssl//openssl/ssl.rb#342
   def verify_wildcard(domain_component, san_component); end
 
   class << self
-    # source://openssl//openssl/ssl.rb#273
+    # source://openssl//openssl/ssl.rb#276
     def verify_certificate_identity(cert, hostname); end
 
-    # source://openssl//openssl/ssl.rb#306
+    # source://openssl//openssl/ssl.rb#309
     def verify_hostname(hostname, san); end
 
-    # source://openssl//openssl/ssl.rb#339
+    # source://openssl//openssl/ssl.rb#342
     def verify_wildcard(domain_component, san_component); end
   end
 end
@@ -1099,7 +1103,7 @@ class OpenSSL::SSL::SSLContext
   #
   # @return [SSLContext] a new instance of SSLContext
   #
-  # source://openssl//openssl/ssl.rb#124
+  # source://openssl//openssl/ssl.rb#127
   def initialize(version = T.unsafe(nil)); end
 
   # call-seq:
@@ -1110,7 +1114,7 @@ class OpenSSL::SSL::SSLContext
   # Sets the upper bound of the supported SSL/TLS protocol version. See
   # #min_version= for the possible values.
   #
-  # source://openssl//openssl/ssl.rb#187
+  # source://openssl//openssl/ssl.rb#190
   def max_version=(version); end
 
   # call-seq:
@@ -1134,7 +1138,7 @@ class OpenSSL::SSL::SSLContext
   #   sock = OpenSSL::SSL::SSLSocket.new(tcp_sock, ctx)
   #   sock.connect # Initiates a connection using either TLS 1.1 or TLS 1.2
   #
-  # source://openssl//openssl/ssl.rb#175
+  # source://openssl//openssl/ssl.rb#178
   def min_version=(version); end
 
   # A callback invoked at connect time to distinguish between multiple
@@ -1143,7 +1147,7 @@ class OpenSSL::SSL::SSLContext
   # The callback is invoked with an SSLSocket and a server name.  The
   # callback must return an SSLContext for the server name or nil.
   #
-  # source://openssl//openssl/ssl.rb#112
+  # source://openssl//openssl/ssl.rb#115
   def servername_cb; end
 
   # A callback invoked at connect time to distinguish between multiple
@@ -1152,7 +1156,7 @@ class OpenSSL::SSL::SSLContext
   # The callback is invoked with an SSLSocket and a server name.  The
   # callback must return an SSLContext for the server name or nil.
   #
-  # source://openssl//openssl/ssl.rb#112
+  # source://openssl//openssl/ssl.rb#115
   def servername_cb=(_arg0); end
 
   # call-seq:
@@ -1167,7 +1171,7 @@ class OpenSSL::SSL::SSLContext
   # cert_store are not set then the system default certificate store is
   # used.
   #
-  # source://openssl//openssl/ssl.rb#143
+  # source://openssl//openssl/ssl.rb#146
   def set_params(params = T.unsafe(nil)); end
 
   # call-seq:
@@ -1185,7 +1189,7 @@ class OpenSSL::SSL::SSLContext
   # the context. As of Ruby/OpenSSL 2.1, this accessor method is
   # implemented to call #min_version= and #max_version= instead.
   #
-  # source://openssl//openssl/ssl.rb#206
+  # source://openssl//openssl/ssl.rb#209
   def ssl_version=(meth); end
 
   # A callback invoked when DH parameters are required for ephemeral DH key
@@ -1200,7 +1204,7 @@ class OpenSSL::SSL::SSLContext
   #
   # <b>Deprecated in version 3.0.</b> Use #tmp_dh= instead.
   #
-  # source://openssl//openssl/ssl.rb#105
+  # source://openssl//openssl/ssl.rb#108
   def tmp_dh_callback; end
 
   # A callback invoked when DH parameters are required for ephemeral DH key
@@ -1215,23 +1219,23 @@ class OpenSSL::SSL::SSLContext
   #
   # <b>Deprecated in version 3.0.</b> Use #tmp_dh= instead.
   #
-  # source://openssl//openssl/ssl.rb#105
+  # source://openssl//openssl/ssl.rb#108
   def tmp_dh_callback=(_arg0); end
 end
 
-# source://openssl//openssl/ssl.rb#34
+# source://openssl//openssl/ssl.rb#37
 OpenSSL::SSL::SSLContext::DEFAULT_2048 = T.let(T.unsafe(nil), OpenSSL::PKey::DH)
 
-# source://openssl//openssl/ssl.rb#46
+# source://openssl//openssl/ssl.rb#49
 OpenSSL::SSL::SSLContext::DEFAULT_TMP_DH_CALLBACK = T.let(T.unsafe(nil), Proc)
 
 # The list of available SSL/TLS methods. This constant is only provided
 # for backwards compatibility.
 #
-# source://openssl//openssl/ssl.rb#232
+# source://openssl//openssl/ssl.rb#235
 OpenSSL::SSL::SSLContext::METHODS = T.let(T.unsafe(nil), Array)
 
-# source://openssl//openssl/ssl.rb#220
+# source://openssl//openssl/ssl.rb#223
 OpenSSL::SSL::SSLContext::METHODS_MAP = T.let(T.unsafe(nil), Hash)
 
 class OpenSSL::SSL::SSLErrorWaitReadable < ::OpenSSL::SSL::SSLError
@@ -1252,42 +1256,42 @@ class OpenSSL::SSL::SSLServer
   #
   # @return [SSLServer] a new instance of SSLServer
   #
-  # source://openssl//openssl/ssl.rb#488
+  # source://openssl//openssl/ssl.rb#491
   def initialize(svr, ctx); end
 
   # Works similar to TCPServer#accept.
   #
-  # source://openssl//openssl/ssl.rb#516
+  # source://openssl//openssl/ssl.rb#519
   def accept; end
 
   # See IO#close for details.
   #
-  # source://openssl//openssl/ssl.rb#537
+  # source://openssl//openssl/ssl.rb#540
   def close; end
 
   # See TCPServer#listen for details.
   #
-  # source://openssl//openssl/ssl.rb#506
+  # source://openssl//openssl/ssl.rb#509
   def listen(backlog = T.unsafe(nil)); end
 
   # See BasicSocket#shutdown for details.
   #
-  # source://openssl//openssl/ssl.rb#511
+  # source://openssl//openssl/ssl.rb#514
   def shutdown(how = T.unsafe(nil)); end
 
   # When true then #accept works exactly the same as TCPServer#accept
   #
-  # source://openssl//openssl/ssl.rb#483
+  # source://openssl//openssl/ssl.rb#486
   def start_immediately; end
 
   # When true then #accept works exactly the same as TCPServer#accept
   #
-  # source://openssl//openssl/ssl.rb#483
+  # source://openssl//openssl/ssl.rb#486
   def start_immediately=(_arg0); end
 
   # Returns the TCPServer passed to the SSLServer when initialized.
   #
-  # source://openssl//openssl/ssl.rb#501
+  # source://openssl//openssl/ssl.rb#504
   def to_io; end
 end
 
@@ -1298,17 +1302,17 @@ class OpenSSL::SSL::SSLSocket
 
   # The SSLContext object used in this connection.
   #
-  # source://openssl//openssl/ssl.rb#368
+  # source://openssl//openssl/ssl.rb#371
   def context; end
 
   # Returns the value of attribute hostname.
   #
-  # source://openssl//openssl/ssl.rb#361
+  # source://openssl//openssl/ssl.rb#364
   def hostname; end
 
   # The underlying IO object.
   #
-  # source://openssl//openssl/ssl.rb#364
+  # source://openssl//openssl/ssl.rb#367
   def io; end
 
   # call-seq:
@@ -1319,7 +1323,7 @@ class OpenSSL::SSL::SSLSocket
   # This method MUST be called after calling #connect to ensure that the
   # hostname of a remote peer has been verified.
   #
-  # source://openssl//openssl/ssl.rb#394
+  # source://openssl//openssl/ssl.rb#397
   def post_connection_check(hostname); end
 
   # call-seq:
@@ -1328,19 +1332,19 @@ class OpenSSL::SSL::SSLSocket
   # Returns the SSLSession object currently used, or nil if the session is
   # not established.
   #
-  # source://openssl//openssl/ssl.rb#415
+  # source://openssl//openssl/ssl.rb#418
   def session; end
 
   # Whether to close the underlying socket as well, when the SSL/TLS
   # connection is shut down. This defaults to +false+.
   #
-  # source://openssl//openssl/ssl.rb#372
+  # source://openssl//openssl/ssl.rb#375
   def sync_close; end
 
   # Whether to close the underlying socket as well, when the SSL/TLS
   # connection is shut down. This defaults to +false+.
   #
-  # source://openssl//openssl/ssl.rb#372
+  # source://openssl//openssl/ssl.rb#375
   def sync_close=(_arg0); end
 
   # call-seq:
@@ -1351,31 +1355,31 @@ class OpenSSL::SSL::SSLSocket
   #
   # If sync_close is set to +true+, the underlying IO is also closed.
   #
-  # source://openssl//openssl/ssl.rb#381
+  # source://openssl//openssl/ssl.rb#384
   def sysclose; end
 
   # The underlying IO object.
   #
-  # source://openssl//openssl/ssl.rb#364
+  # source://openssl//openssl/ssl.rb#367
   def to_io; end
 
   private
 
-  # source://openssl//openssl/ssl.rb#429
+  # source://openssl//openssl/ssl.rb#432
   def client_cert_cb; end
 
-  # source://openssl//openssl/ssl.rb#441
+  # source://openssl//openssl/ssl.rb#444
   def session_get_cb; end
 
-  # source://openssl//openssl/ssl.rb#437
+  # source://openssl//openssl/ssl.rb#440
   def session_new_cb; end
 
-  # source://openssl//openssl/ssl.rb#433
+  # source://openssl//openssl/ssl.rb#436
   def tmp_dh_callback; end
 
   # @return [Boolean]
   #
-  # source://openssl//openssl/ssl.rb#423
+  # source://openssl//openssl/ssl.rb#426
   def using_anon_cipher?; end
 
   class << self
@@ -1400,38 +1404,38 @@ class OpenSSL::SSL::SSLSocket
     #   sock = OpenSSL::SSL::SSLSocket.open('localhost', 443, context: ctx)
     #   sock.connect # Initiates a connection to localhost:443 with SSLContext
     #
-    # source://openssl//openssl/ssl.rb#467
+    # source://openssl//openssl/ssl.rb#470
     def open(remote_host, remote_port, local_host = T.unsafe(nil), local_port = T.unsafe(nil), context: T.unsafe(nil)); end
   end
 end
 
 module OpenSSL::SSL::SocketForwarder
-  # source://openssl//openssl/ssl.rb#244
+  # source://openssl//openssl/ssl.rb#247
   def addr; end
 
   # @return [Boolean]
   #
-  # source://openssl//openssl/ssl.rb#264
+  # source://openssl//openssl/ssl.rb#267
   def closed?; end
 
-  # source://openssl//openssl/ssl.rb#268
+  # source://openssl//openssl/ssl.rb#271
   def do_not_reverse_lookup=(flag); end
 
-  # source://openssl//openssl/ssl.rb#260
+  # source://openssl//openssl/ssl.rb#263
   def fcntl(*args); end
 
   # The file descriptor for the socket.
   #
-  # source://openssl//openssl/ssl.rb#240
+  # source://openssl//openssl/ssl.rb#243
   def fileno; end
 
-  # source://openssl//openssl/ssl.rb#256
+  # source://openssl//openssl/ssl.rb#259
   def getsockopt(level, optname); end
 
-  # source://openssl//openssl/ssl.rb#248
+  # source://openssl//openssl/ssl.rb#251
   def peeraddr; end
 
-  # source://openssl//openssl/ssl.rb#252
+  # source://openssl//openssl/ssl.rb#255
   def setsockopt(level, optname, optval); end
 end
 

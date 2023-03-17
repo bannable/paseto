@@ -3,18 +3,12 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
-			"VARIANT": "3-bullseye",
+			"VARIANT": "3.2-bullseye",
 			"SODIUM": "libsodium23"
 		}
 	},
 
 	"workspaceFolder": "/workspaces/paseto",
-
-	"features": {
-		"ghcr.io/devcontainers/features/ruby:1": {
-			"version": "3.2"
-		}
-	},
 
 	"customizations": {
 		"vscode": {

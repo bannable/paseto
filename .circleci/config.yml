@@ -5,13 +5,14 @@ version: 2.1
 shared_env: &shared_env
   TEST_QUEUE_WORKERS: 2
   CC_TEST_REPORTER_ID: 9643f9411ff1c1d359175e948cf67205d2c35883e9dc2a6d45ffde54829abfb2
+  SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: true
 
 executors:
   ruby-other:
     parameters:
       version:
         type: string
-        default: "3.1"
+        default: "3.2"
     docker:
       - image: cimg/ruby:<< parameters.version >>
     environment:
@@ -21,7 +22,7 @@ executors:
     parameters:
       version:
         type: string
-        default: "3.1"
+        default: "3.2"
     docker:
       - image: cimg/ruby:<< parameters.version >>
     environment:
@@ -45,8 +46,9 @@ commands:
           command : |
             #!/usr/bin/env bash
 
-            bundle config set deployment 'true'
-            bundle config set path "./vendor/bundle"
+            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install --gemfile="$PWD/$GEMFILE"
+          environment:
+            GEMFILE: gemfiles/<< parameters.appraisal >>.gemfile
 
   install-bundler:
     description: "Install the appropriate bundler version for an appraisal lockfile"
@@ -59,9 +61,7 @@ commands:
           command : |
             #!/usr/bin/env bash
 
-            TARGET_GEMFILE="./gemfiles/$PARAM_APPRAISAL.gemfile.lock"
-
-            APP_BUNDLER_VERSION=$(tail -1 $TARGET_GEMFILE | tr -d " ")
+            APP_BUNDLER_VERSION=$(tail -1 $BUNDLE_GEMFILE | tr -d " ")
             if [ -z "$APP_BUNDLER_VERSION" ]; then
               echo "Could not find bundler version from lockfile."
               exit 1
@@ -76,7 +76,7 @@ commands:
               echo "bundler $APP_BUNDLER_VERSION is already installed."
             fi
           environment:
-            PARAM_APPRAISAL: << parameters.appraisal >>
+            BUNDLE_GEMFILE: ./gemfiles/<< parameters.appraisal >>.gemfile.lock
 
 jobs:
   install-dependencies:
@@ -84,7 +84,7 @@ jobs:
     parameters:
       version:
         type: string
-        default: "3.1"
+        default: "3.2"
     executor:
       name: ruby-other
       version: << parameters.version >>
@@ -92,9 +92,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
-            - gem-cache-v4-<< parameters.version >>-{{ arch }}
+            - gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
       - install-bundler:
           appraisal: rbnacl
       - run:
@@ -102,24 +100,23 @@ jobs:
           command : |
             #!/usr/bin/env bash
 
-            bundle config set deployment 'true'
-            bundle config set path "./vendor/bundle"
+            BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install
 
-            bundle install
-            bundle exec appraisal install
+            for f in `ls gemfiles/*.gemfile`; do BUNDLE_DEPLOYMENT=1 BUNDLE_NO_PRUNE=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" BUNDLE_GEMFILE=$f bundle install; done
       - save_cache:
-          key: gem-cache-v4-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+          key: gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
           paths:
             - ./vendor/bundle
       - persist_to_workspace:
           root: vendor
           paths:
             - bundle/
+
   specs:
     parameters:
       version:
         type: string
-        default: "3.1"
+        default: "3.2"
       appraisal:
         type: string
         default: standalone
@@ -152,9 +149,11 @@ jobs:
             IFS="$o_ifs"
 
             set -x
-            bundle exec appraisal << parameters.appraisal >> rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            BUNDLE_GEMFILE="$PWD/$GEMFILE" BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB-$CIRCLE_NODE_INDEX.json
+          environment:
+            GEMFILE: gemfiles/<< parameters.appraisal >>.gemfile
       - store_test_results:
           path: /tmp/test-results/rspec
       - persist_to_workspace:
@@ -224,7 +223,7 @@ jobs:
       - run:
           name: "Rubocop"
           command: |
-            bundle exec rubocop --parallel
+            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rubocop --parallel
 
   typecheck:
     executor: ruby-other
@@ -234,7 +233,7 @@ jobs:
       - run:
           name: "Sorbet Typecheck"
           command: |
-            bundle exec srb tc
+            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/srb tc
 
 workflows:
   build:
@@ -249,7 +248,7 @@ workflows:
                 - "3.2"
       - typecheck:
           requires:
-            - install-dependencies-3.1
+            - install-dependencies-3.2
       - specs:
           matrix:
             parameters:
@@ -266,7 +265,7 @@ workflows:
             - install-dependencies-<< matrix.version >>
       - rubocop:
           requires:
-            - install-dependencies-3.1
+            - install-dependencies-3.2
       - codeclimate-upload:
           requires:
             - specs
