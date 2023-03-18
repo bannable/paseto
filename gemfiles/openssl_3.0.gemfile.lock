@@ -3,7 +3,7 @@ PATH
   specs:
     ruby-paseto (0.1.1)
       multi_json (~> 1.15.0)
-      openssl (~> 3)
+      openssl (~> 3, >= 3.0.2)
       sorbet-runtime
       zeitwerk
 
@@ -89,7 +89,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 2)
   oj
-  openssl (~> 3.0.0)
+  openssl (~> 3.0.0, >= 3.0.2)
   parallel_tests
   rake (~> 13)
   reek

@@ -13,7 +13,7 @@ PATH
   specs:
     ruby-paseto (0.1.1)
       multi_json (~> 1.15.0)
-      openssl (~> 3)
+      openssl (~> 3, >= 3.0.2)
       sorbet-runtime
       zeitwerk
 
