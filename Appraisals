@@ -32,5 +32,5 @@ appraise 'openssl_3.0' do
     remove_gem 'spoom'
     remove_gem 'tapioca'
   end
-  gem 'openssl', '~> 3.0.0'
+  gem 'openssl', '~> 3.0.0', '>= 3.0.2'
 end

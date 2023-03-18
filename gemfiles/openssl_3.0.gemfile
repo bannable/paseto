@@ -16,7 +16,7 @@ gem "simplecov", "~> 0"
 gem "simplecov_json_formatter"
 gem "sorbet", "~> 0"
 gem "timecop", "~> 0"
-gem "openssl", "~> 3.0.0"
+gem "openssl", "~> 3.0.0", ">= 3.0.2"
 
 group :development do
   gem "bundler", "~> 2"

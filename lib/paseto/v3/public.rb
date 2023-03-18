@@ -131,74 +131,12 @@ module Paseto
 
       private
 
-      # TODO: Figure out how to get SimpleCov to cover this consistently. With OSSL1.1.1, most of
-      # this doesn't run. With OSSL3, check_key never raises...
-      # :nocov:
-
-      # The openssl gem as of 3.0.0 will prefer EVP_PKEY_public_check over EC_KEY_check_key
-      # whenever the EVP api is available, which is always for the library here as we're requiring
-      # 3.0.0 or greater. However, this has some problems.
-      #
-      # The behavior of EVP_PKEY_public_check is different between 1.1.1 and 3.x. Specifically,
-      # it no longer calls the custom verifier method in EVP_PKEY_METHOD, and only checks the
-      # correctness of the public component. This leads to a problem when calling EC#key_check,
-      # as the private component is NEVER verified for an ECDSA key through the APIs that the gem
-      # makes available to us.
-      #
-      # Until this is fixed in ruby/openssl, I am working around this by implementing the algorithm
-      # used by EVP_PKEY_pairwise_check through the OpenSSL API.
-      #
-      # BUG: https://github.com/ruby/openssl/issues/563
-      # https://www.openssl.org/docs/man1.1.1/man3/EVP_PKEY_public_check.html
-      # https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_public_check.html
       sig(:final) { returns(T::Boolean) }
       def custom_check_key
-        begin
-          @key.check_key
-        rescue StandardError
-          return false
-        end
-
-        return true unless private? && Util.openssl?(3)
-
-        priv_key = @key.private_key
-        group = @key.group
-
-        # int ossl_ec_key_private_check(const EC_KEY *eckey)
-        # {
-        # ...
-        #   if (BN_cmp(eckey->priv_key, BN_value_one()) < 0
-        #     || BN_cmp(eckey->priv_key, eckey->group->order) >= 0) {
-        #     ERR_raise(ERR_LIB_EC, EC_R_INVALID_PRIVATE_KEY);
-        #     return 0;
-        #   }
-        # ...
-        # }
-        #
-        # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L510
-        # private keys must be in range [1, order-1]
-        return false if priv_key < OpenSSL::BN.new(1) || priv_key > group.order
-
-        # int ossl_ec_key_pairwise_check(const EC_KEY *eckey, BN_CTX *ctx)
-        # {
-        # ...
-        #   if (!EC_POINT_mul(eckey->group, point, eckey->priv_key, NULL, NULL, ctx)) {
-        #       ERR_raise(ERR_LIB_EC, ERR_R_EC_LIB);
-        #       goto err;
-        #   }
-        #   if (EC_POINT_cmp(eckey->group, point, eckey->pub_key, ctx) != 0) {
-        #       ERR_raise(ERR_LIB_EC, EC_R_INVALID_PRIVATE_KEY);
-        #       goto err;
-        #   }
-        # ...
-        # }
-        #
-        # https://github.com/openssl/openssl/blob/5ac7cfb56211d18596e3c35baa942542f3c0189a/crypto/ec/ec_key.c#L529
-        # Check generator * priv_key = pub_key
-        @key.public_key == group.generator.mul(priv_key)
+        @key.check_key
+      rescue StandardError
+        false
       end
-
-      # :nocov:
     end
   end
 end
