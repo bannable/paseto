@@ -1,6 +1,11 @@
 ## [Unreleased]
 
-## [0.1.0] - 2023-01-02
+## [0.1.2]
+
+- Fixed versioning in 0.1.1 changelog
+- Removed support for ruby/openssl < 3.0.2
+
+## [0.1.1] - 2023-01-02
 
 - Relax the version constraint on openssl depedency
 
