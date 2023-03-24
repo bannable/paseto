@@ -8,16 +8,16 @@ shared_env: &shared_env
   SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: true
 
 executors:
-  ruby-other:
-    parameters:
-      version:
-        type: string
-        default: "3.2"
-    docker:
-      - image: cimg/ruby:<< parameters.version >>
-    environment:
-      <<: *shared_env
-    resource_class: medium+
+  # ruby-other:
+  #   parameters:
+  #     version:
+  #       type: string
+  #       default: "3.2"
+  #   docker:
+  #     - image: cimg/ruby:<< parameters.version >>
+  #   environment:
+  #     <<: *shared_env
+  #   resource_class: medium+
   ruby-specs:
     parameters:
       version:
@@ -52,8 +52,8 @@ commands:
             
             export BUNDLE_DEPLOYMENT=1
             export BUNDLE_WITHOUT=development
-            export BUNDLE_PATH="$PWD/vendor/bundle"
-            export BUNDLE_GEMFILE="$PWD/$GEMFILE" 
+            export BUNDLE_PATH=$PWD/vendor/bundle
+            export BUNDLE_GEMFILE=$PWD/$GEMFILE
 
             bundle check || bundle install
           environment:
@@ -95,7 +95,7 @@ jobs:
         type: string
         default: "3.2"
     executor:
-      name: ruby-other
+      name: ruby-specs
       version: << parameters.version >>
     steps:
       - checkout
@@ -114,7 +114,7 @@ jobs:
 
             export BUNDLE_DEPLOYMENT=1
             export BUNDLE_WITHOUT=development
-            export BUNDLE_PATH="$PWD/vendor/bundle"
+            export BUNDLE_PATH=$PWD/vendor/bundle
 
             bundle install
             bundle clean --force
@@ -124,8 +124,10 @@ jobs:
             for f in `ls gemfiles/*.gemfile`
             do
               export BUNDLE_GEMFILE=$f
+              echo "Installing gems for $f"
               bundle check || bundle install
             done
+            ls -l vendor/bundle/
       - save_cache:
           key: *gem-cache
           paths:
@@ -170,7 +172,7 @@ jobs:
             IFS="$o_ifs"
 
             set -x
-            BUNDLE_GEMFILE="$PWD/$GEMFILE" BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            BUNDLE_GEMFILE=$PWD/$GEMFILE BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB-$CIRCLE_NODE_INDEX.json
           environment:
@@ -183,7 +185,7 @@ jobs:
             - codeclimate.*.json
 
   codeclimate-setup:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - run:
           name: Download latest cc-test-reporter signature
@@ -222,7 +224,7 @@ jobs:
             - cc-test-reporter
 
   codeclimate-upload:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - attach_workspace:
           at: tmp
@@ -237,24 +239,24 @@ jobs:
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - checkout
       - load-dependencies
       - run:
           name: "Rubocop"
           command: |
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rubocop --parallel
+            BUNDLE_WITHOUT=development BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/rubocop --parallel
 
   typecheck:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - checkout
       - load-dependencies
       - run:
           name: "Sorbet Typecheck"
           command: |
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/srb tc
+            BUNDLE_WITHOUT=development BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/srb tc
 
 workflows:
   build:
