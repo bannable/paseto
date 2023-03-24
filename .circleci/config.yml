@@ -44,13 +44,18 @@ commands:
           appraisal: << parameters.appraisal >>
       - restore_cache:
           keys:
-            - gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - gem-cache-v11-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
       - run:
           name: "Configure Bundler"
           command : |
             #!/usr/bin/env bash
+            
+            export BUNDLE_DEPLOYMENT=1
+            export BUNDLE_WITHOUT=development
+            export BUNDLE_PATH="$PWD/vendor/bundle"
+            export BUNDLE_GEMFILE="$PWD/$GEMFILE" 
 
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install --gemfile="$PWD/$GEMFILE"
+            bundle check || bundle install
           environment:
             GEMFILE: gemfiles/<< parameters.appraisal >>.gemfile
 
@@ -96,10 +101,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - &gem-cache gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
-            - gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
-            - gem-cache-v10-<< parameters.version >>-{{ arch }}
-            - gem-cache-v10-<< parameters.version >>
+            - &gem-cache gem-cache-v11-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - gem-cache-v11-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
+            - gem-cache-v11-<< parameters.version >>-{{ arch }}
+            - gem-cache-v11-<< parameters.version >>
       - install-bundler:
           appraisal: rbnacl
       - run:
@@ -107,14 +112,24 @@ jobs:
           command : |
             #!/usr/bin/env bash
 
-            BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install
-            BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle clean --force
+            export BUNDLE_DEPLOYMENT=1
+            export BUNDLE_WITHOUT=development
+            export BUNDLE_PATH="$PWD/vendor/bundle"
 
-            for f in `ls gemfiles/*.gemfile`; do BUNDLE_DEPLOYMENT=1 BUNDLE_NO_PRUNE=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" BUNDLE_GEMFILE=$f bundle install; done
+            bundle install
+            bundle clean --force
+
+            export BUNDLE_NO_PRUNE=1
+
+            for f in `ls gemfiles/*.gemfile`
+            do
+              export BUNDLE_GEMFILE=$f
+              bundle check || bundle install
+            done
       - save_cache:
           key: *gem-cache
           paths:
-            - ./vendor/bundle
+            - ./vendor/
 
   specs:
     parameters:
