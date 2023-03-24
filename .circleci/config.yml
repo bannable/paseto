@@ -8,16 +8,16 @@ shared_env: &shared_env
   SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: true
 
 executors:
-  ruby-other:
-    parameters:
-      version:
-        type: string
-        default: "3.2"
-    docker:
-      - image: cimg/ruby:<< parameters.version >>
-    environment:
-      <<: *shared_env
-    resource_class: medium+
+  # ruby-other:
+  #   parameters:
+  #     version:
+  #       type: string
+  #       default: "3.2"
+  #   docker:
+  #     - image: cimg/ruby:<< parameters.version >>
+  #   environment:
+  #     <<: *shared_env
+  #   resource_class: medium+
   ruby-specs:
     parameters:
       version:
@@ -31,22 +31,31 @@ executors:
 
 commands:
   load-dependencies:
-    description: "Load gems into workspace and configure bundler"
+    description: "Load gems from cache and configure bundler"
     parameters:
       appraisal:
         type: string
         default: standalone
+      version:
+        type: string
+        default: "3.2"
     steps:
       - install-bundler:
           appraisal: << parameters.appraisal >>
-      - attach_workspace:
-          at: vendor
+      - restore_cache:
+          keys:
+            - gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
       - run:
           name: "Configure Bundler"
           command : |
             #!/usr/bin/env bash
+            
+            export BUNDLE_DEPLOYMENT=1
+            export BUNDLE_WITHOUT=development
+            export BUNDLE_PATH=$PWD/vendor/bundle
+            export BUNDLE_GEMFILE=$PWD/$GEMFILE
 
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install --gemfile="$PWD/$GEMFILE"
+            bundle check || bundle install
           environment:
             GEMFILE: gemfiles/<< parameters.appraisal >>.gemfile
 
@@ -86,13 +95,16 @@ jobs:
         type: string
         default: "3.2"
     executor:
-      name: ruby-other
+      name: ruby-specs
       version: << parameters.version >>
     steps:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - &gem-cache gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
+            - gem-cache-v12-<< parameters.version >>-{{ arch }}
+            - gem-cache-v12-<< parameters.version >>
       - install-bundler:
           appraisal: rbnacl
       - run:
@@ -100,17 +112,26 @@ jobs:
           command : |
             #!/usr/bin/env bash
 
-            BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install
+            export BUNDLE_DEPLOYMENT=1
+            export BUNDLE_WITHOUT=development
+            export BUNDLE_PATH=$PWD/vendor/bundle
 
-            for f in `ls gemfiles/*.gemfile`; do BUNDLE_DEPLOYMENT=1 BUNDLE_NO_PRUNE=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" BUNDLE_GEMFILE=$f bundle install; done
+            bundle install
+
+            export BUNDLE_NO_PRUNE=1
+
+            for f in `ls gemfiles/*.gemfile`
+            do
+              export BUNDLE_GEMFILE=$f
+              echo "Installing gems for $f"
+              bundle check || bundle install
+            done
+            ls -l vendor/bundle/
       - save_cache:
-          key: gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+          key: *gem-cache
           paths:
-            - ./vendor/bundle
-      - persist_to_workspace:
-          root: vendor
-          paths:
-            - bundle/
+            - ./vendor/
+            - ~/.bundle
 
   specs:
     parameters:
@@ -130,6 +151,7 @@ jobs:
           at: tmp
       - load-dependencies:
           appraisal: << parameters.appraisal >>
+          version: << parameters.version >>
       - run:
           name: Run specs
           command: |
@@ -149,7 +171,7 @@ jobs:
             IFS="$o_ifs"
 
             set -x
-            BUNDLE_GEMFILE="$PWD/$GEMFILE" BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
+            BUNDLE_GEMFILE=$PWD/$GEMFILE BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/rspec "${spec_files[@]}" --profile 10 --order random --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec
             set +x
             ./tmp/cc-test-reporter format-coverage --output tmp/codeclimate.$CIRCLE_JOB-$CIRCLE_NODE_INDEX.json
           environment:
@@ -162,7 +184,7 @@ jobs:
             - codeclimate.*.json
 
   codeclimate-setup:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - run:
           name: Download latest cc-test-reporter signature
@@ -177,7 +199,7 @@ jobs:
             SUM=$(curl -s -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64.sha256)
             echo $SUM | sed 's:test-reporter-latest-linux-amd64:./tmp/cc-test-reporter:' > ./tmp/cc-test-reporter.sha256
       - restore_cache:
-          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+          key: &cc-testreporter cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
       - run:
           name: Maybe Download cc-test-reporter
           command: |
@@ -192,7 +214,7 @@ jobs:
             chmod +x ./tmp/cc-test-reporter
             ./tmp/cc-test-reporter before-build
       - save_cache:
-          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+          key: *cc-testreporter
           paths:
             - ./tmp/cc-test-reporter
       - persist_to_workspace:
@@ -201,7 +223,7 @@ jobs:
             - cc-test-reporter
 
   codeclimate-upload:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - attach_workspace:
           at: tmp
@@ -216,24 +238,24 @@ jobs:
             ./tmp/cc-test-reporter upload-coverage --input tmp/codeclimate.total.json
 
   rubocop:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - checkout
       - load-dependencies
       - run:
           name: "Rubocop"
           command: |
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/rubocop --parallel
+            BUNDLE_WITHOUT=development BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/rubocop --parallel
 
   typecheck:
-    executor: ruby-other
+    executor: ruby-specs
     steps:
       - checkout
       - load-dependencies
       - run:
           name: "Sorbet Typecheck"
           command: |
-            BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle exec bin/srb tc
+            BUNDLE_WITHOUT=development BUNDLE_PATH=$PWD/vendor/bundle bundle exec bin/srb tc
 
 workflows:
   build:
