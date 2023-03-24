@@ -31,16 +31,20 @@ executors:
 
 commands:
   load-dependencies:
-    description: "Load gems into workspace and configure bundler"
+    description: "Load gems from cache and configure bundler"
     parameters:
       appraisal:
         type: string
         default: standalone
+      version:
+        type: string
+        default: "3.2"
     steps:
       - install-bundler:
           appraisal: << parameters.appraisal >>
-      - attach_workspace:
-          at: vendor
+      - restore_cache:
+          keys:
+            - gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
       - run:
           name: "Configure Bundler"
           command : |
@@ -92,7 +96,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - &gem-cache gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - gem-cache-v10-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
+            - gem-cache-v10-<< parameters.version >>-{{ arch }}
+            - gem-cache-v10-<< parameters.version >>
       - install-bundler:
           appraisal: rbnacl
       - run:
@@ -101,16 +108,13 @@ jobs:
             #!/usr/bin/env bash
 
             BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle install
+            BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" bundle clean --force
 
             for f in `ls gemfiles/*.gemfile`; do BUNDLE_DEPLOYMENT=1 BUNDLE_NO_PRUNE=1 BUNDLE_WITHOUT=development BUNDLE_PATH="$PWD/vendor/bundle" BUNDLE_GEMFILE=$f bundle install; done
       - save_cache:
-          key: gem-cache-v9-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+          key: *gem-cache
           paths:
             - ./vendor/bundle
-      - persist_to_workspace:
-          root: vendor
-          paths:
-            - bundle/
 
   specs:
     parameters:
@@ -130,6 +134,7 @@ jobs:
           at: tmp
       - load-dependencies:
           appraisal: << parameters.appraisal >>
+          version: << parameters.version >>
       - run:
           name: Run specs
           command: |
@@ -177,7 +182,7 @@ jobs:
             SUM=$(curl -s -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64.sha256)
             echo $SUM | sed 's:test-reporter-latest-linux-amd64:./tmp/cc-test-reporter:' > ./tmp/cc-test-reporter.sha256
       - restore_cache:
-          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+          key: &cc-testreporter cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
       - run:
           name: Maybe Download cc-test-reporter
           command: |
@@ -192,7 +197,7 @@ jobs:
             chmod +x ./tmp/cc-test-reporter
             ./tmp/cc-test-reporter before-build
       - save_cache:
-          key: cc-testreporter-v0-{{ arch }}-{{ checksum "tmp/cc-test-reporter.sha256" }}
+          key: *cc-testreporter
           paths:
             - ./tmp/cc-test-reporter
       - persist_to_workspace:
