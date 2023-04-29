@@ -81,7 +81,7 @@ GEM
     sorbet-static (0.5.10796-x86_64-linux)
     timecop (0.9.6)
     unicode-display_width (2.4.2)
-    zeitwerk (2.6.7)
+    zeitwerk (2.6.8)
 
 PLATFORMS
   x86_64-linux
