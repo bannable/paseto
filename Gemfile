@@ -12,7 +12,7 @@ group :development do
   gem 'bundler', '~> 2'
   gem 'debug', '>= 1.0'
   gem 'parlour'
-  gem 'tapioca', '~> 0.11.6'
+  gem 'tapioca', '~> 0.11.7'
 end
 
 gem 'oj'
