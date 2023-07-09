@@ -12,7 +12,7 @@ module Paseto
       include Interface::Version
 
       sig(:final) { override.params(key: String, nonce: String, payload: String).returns(String) }
-      def self.crypt(key:, nonce:, payload:)
+      def crypt(key:, nonce:, payload:)
         cipher = OpenSSL::Cipher.new('aes-256-ctr')
         cipher.key = key
         cipher.iv = nonce
@@ -20,22 +20,22 @@ module Paseto
       end
 
       sig(:final) { override.params(data: String, digest_size: Integer).returns(String) }
-      def self.digest(data, digest_size:)
+      def digest(data, digest_size: 48)
         T.must(OpenSSL::Digest.digest('SHA384', data).byteslice(0, digest_size))
       end
 
       sig(:final) { override.returns(Integer) }
-      def self.digest_bytes
+      def digest_bytes
         48
       end
 
       sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
-      def self.hmac(data, key:, digest_size:)
+      def hmac(data, key:, digest_size: 48)
         T.must(OpenSSL::HMAC.digest('SHA384', key, data).byteslice(0, digest_size))
       end
 
       sig(:final) { override.returns(T.class_of(Operations::ID::IDv3)) }
-      def self.id
+      def id
         Operations::ID::IDv3
       end
 
@@ -47,7 +47,7 @@ module Paseto
           parameters: Integer
         ).returns(String)
       end
-      def self.kdf(password, salt:, length:, **parameters)
+      def kdf(password, salt:, length:, **parameters)
         OpenSSL::KDF.pbkdf2_hmac(
           password,
           salt: salt,
@@ -58,42 +58,42 @@ module Paseto
       end
 
       sig(:final) { override.returns(String) }
-      def self.paserk_version
+      def paserk_version
         'k3'
       end
 
       sig(:final) { override.returns(String) }
-      def self.pbkd_local_header
+      def pbkd_local_header
         'k3.local-pw'
       end
 
       sig(:final) { override.returns(String) }
-      def self.pbkd_secret_header
+      def pbkd_secret_header
         'k3.secret-pw'
       end
 
       sig(:final) { override.params(password: String).returns(Operations::PBKD::PBKDv3) }
-      def self.pbkw(password)
+      def pbkw(password)
         Operations::PBKD::PBKDv3.new(password)
       end
 
       sig(:final) { override.params(key: SymmetricKey).returns(Wrappers::PIE::PieV3) }
-      def self.pie(key)
+      def pie(key)
         Wrappers::PIE::PieV3.new(key)
       end
 
       sig(:final) { override.params(key: AsymmetricKey).returns(Operations::PKE::PKEv3) }
-      def self.pke(key)
+      def pke(key)
         Operations::PKE::PKEv3.new(key)
       end
 
       sig(:final) { override.params(size: Integer).returns(String) }
-      def self.random(size)
+      def random(size)
         SecureRandom.random_bytes(size)
       end
 
       sig(:final) { override.returns(String) }
-      def self.version
+      def version
         'v3'
       end
     end
