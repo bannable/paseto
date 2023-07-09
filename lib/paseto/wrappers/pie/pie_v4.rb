@@ -25,7 +25,7 @@ module Paseto
         sig { params(wrapping_key: SymmetricKey).void }
         def initialize(wrapping_key)
           @local_header = T.let('k4.local-wrap.pie.', String)
-          @protocol = T.let(Protocol::Version4.new, Protocol::Version4)
+          @protocol = T.let(Protocol::Version4.instance, Protocol::Version4)
           @secret_header = T.let('k4.secret-wrap.pie.', String)
           @wrapping_key = wrapping_key
         end

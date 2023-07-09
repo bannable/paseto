@@ -6,7 +6,7 @@
     password = '<%= password %>'
     options = <%= options.transform_keys(&:to_sym) %>
     paserk = '<%= paserk %>'
-    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.new, password)
+    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version3.instance, password)
 
     <%- if expect_fail -%>
     <%- if options['iterations'] -%>

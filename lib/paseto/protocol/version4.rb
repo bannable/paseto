@@ -7,6 +7,7 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
+      include Singleton
       include Interface::Version
 
       sig(:final) { override.params(key: String, nonce: String, payload: String).returns(String) }

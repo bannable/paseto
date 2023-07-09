@@ -21,7 +21,7 @@ module Paseto
           raise LucidityError unless sealing_key.is_a? V3::Public
 
           @header = T.let('k3.seal.', String)
-          @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+          @protocol = T.let(Protocol::Version3.instance, Protocol::Version3)
           @sealing_key = T.let(sealing_key, V3::Public)
           @pk = T.let(@sealing_key.public_bytes, String)
         end

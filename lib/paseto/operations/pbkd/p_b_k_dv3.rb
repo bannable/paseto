@@ -16,7 +16,7 @@ module Paseto
         sig { params(password: String).void }
         def initialize(password)
           @password = password
-          @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+          @protocol = T.let(Protocol::Version3.instance, Protocol::Version3)
         end
 
         sig do

@@ -21,7 +21,7 @@ module Paseto
           raise LucidityError unless sealing_key.is_a? V4::Public
 
           @header = T.let('k4.seal.', String)
-          @protocol = T.let(Protocol::Version4.new, Protocol::Version4)
+          @protocol = T.let(Protocol::Version4.instance, Protocol::Version4)
           @sealing_key = T.let(sealing_key, V4::Public)
           @pk = T.let(@sealing_key.x25519_public_key, RbNaCl::PublicKey)
           @pk_bytes = T.let(@pk.to_bytes, String)

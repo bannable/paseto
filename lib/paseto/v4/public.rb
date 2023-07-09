@@ -44,7 +44,7 @@ module Paseto
         @key = T.let(key, T.any(RbNaCl::SigningKey, RbNaCl::VerifyKey))
 
         @private = T.let(@key.is_a?(RbNaCl::SigningKey), T::Boolean)
-        @protocol = T.let(Protocol::Version4.new, Paseto::Protocol::Version4)
+        @protocol = T.let(Protocol::Version4.instance, Paseto::Protocol::Version4)
 
         super
       end

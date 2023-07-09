@@ -12,7 +12,7 @@ module Paseto
 
         sig { override.returns(Protocol::Version4) }
         def self.protocol
-          Protocol::Version4.new
+          Protocol::Version4.instance
         end
       end
     end
