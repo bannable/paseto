@@ -7,21 +7,7 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
-      include Kernel
-
       abstract!
-
-      module ClassMethods
-        extend T::Sig
-        extend T::Helpers
-
-        interface!
-
-        sig { abstract.returns(Interface::Version) }
-        def protocol; end
-      end
-
-      mixes_in_class_methods(ClassMethods)
 
       sig do
         abstract.params(
@@ -63,10 +49,8 @@ module Paseto
         protocol.paserk_version
       end
 
-      sig(:final) { returns(Interface::Version) }
-      def protocol
-        self.class.protocol
-      end
+      sig { abstract.returns(Interface::Version) }
+      def protocol; end
 
       sig { abstract.returns(String) }
       def random_nonce; end

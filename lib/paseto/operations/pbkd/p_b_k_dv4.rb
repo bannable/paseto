@@ -11,13 +11,12 @@ module Paseto
         include Interface::PBKD
 
         sig { override.returns(Protocol::Version4) }
-        def self.protocol
-          Protocol::Version4.new
-        end
+        attr_reader :protocol
 
         sig { params(password: String).void }
         def initialize(password)
           @password = password
+          @protocol = T.let(Protocol::Version4.new, Protocol::Version4)
         end
 
         sig do
