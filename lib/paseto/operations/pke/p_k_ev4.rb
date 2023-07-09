@@ -10,44 +10,18 @@ module Paseto
 
         include Interface::PKE
 
-        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
-        def self.epk_bytes_from_esk(esk)
-          esk.public_key.to_bytes
-        end
-
-        sig(:final) { override.returns(RbNaCl::PrivateKey) }
-        def self.generate_ephemeral_key
-          RbNaCl::PrivateKey.generate
-        end
-
-        sig(:final) { override.returns(String) }
-        def self.header
-          'k4.seal.'
-        end
+        sig { override.returns(String) }
+        attr_reader :header
 
         sig { override.returns(Protocol::Version4) }
-        def self.protocol
-          Protocol::Version4.new
-        end
-
-        sig { override.params(encoded_data: String).returns([String, RbNaCl::PublicKey, String]) }
-        def self.split(encoded_data)
-          data = Util.decode64(encoded_data)
-
-          t = T.must(data.slice(0, 32))
-
-          epk_bytes = T.must(data.slice(32, 32))
-          epk = RbNaCl::PublicKey.new(epk_bytes)
-
-          edk = T.must(data.slice(64, 32))
-
-          [t, epk, edk]
-        end
+        attr_reader :protocol
 
         sig { params(sealing_key: AsymmetricKey).void }
         def initialize(sealing_key)
           raise LucidityError unless sealing_key.is_a? V4::Public
 
+          @header = T.let('k4.seal.', String)
+          @protocol = T.let(Protocol::Version4.new, Protocol::Version4)
           @sealing_key = T.let(sealing_key, V4::Public)
           @pk = T.let(@sealing_key.x25519_public_key, RbNaCl::PublicKey)
           @pk_bytes = T.let(@pk.to_bytes, String)
@@ -78,6 +52,30 @@ module Paseto
         sig { override.params(message: String, ek: String, n: String).returns(String) }
         def encrypt(message:, ek:, n:)
           protocol.crypt(payload: message, key: ek, nonce: n)
+        end
+
+        sig { override.params(esk: RbNaCl::PrivateKey).returns(String) }
+        def epk_bytes_from_esk(esk)
+          esk.public_key.to_bytes
+        end
+
+        sig(:final) { override.returns(RbNaCl::PrivateKey) }
+        def generate_ephemeral_key
+          RbNaCl::PrivateKey.generate
+        end
+
+        sig { override.params(encoded_data: String).returns([String, RbNaCl::PublicKey, String]) }
+        def split(encoded_data)
+          data = Util.decode64(encoded_data)
+
+          t = T.must(data.slice(0, 32))
+
+          epk_bytes = T.must(data.slice(32, 32))
+          epk = RbNaCl::PublicKey.new(epk_bytes)
+
+          edk = T.must(data.slice(64, 32))
+
+          [t, epk, edk]
         end
 
         sig { override.params(ak: String, epk: RbNaCl::PublicKey, edk: String).returns(String) }

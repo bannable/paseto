@@ -10,28 +10,24 @@ module Paseto
 
         include Interface::PKE
 
-        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
-        def self.epk_bytes_from_esk(esk)
-          esk.public_key.to_octet_string(:compressed)
-        end
-
-        sig(:final) { override.returns(OpenSSL::PKey::EC) }
-        def self.generate_ephemeral_key
-          OpenSSL::PKey::EC.generate('secp384r1')
-        end
-
-        sig(:final) { override.returns(String) }
-        def self.header
-          'k3.seal.'
-        end
-
         sig { override.returns(Protocol::Version3) }
-        def self.protocol
-          Protocol::Version3.new
+        attr_reader :protocol
+
+        sig { override.returns(String) }
+        attr_reader :header
+
+        sig { params(sealing_key: AsymmetricKey).void }
+        def initialize(sealing_key)
+          raise LucidityError unless sealing_key.is_a? V3::Public
+
+          @header = T.let('k3.seal.', String)
+          @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+          @sealing_key = T.let(sealing_key, V3::Public)
+          @pk = T.let(@sealing_key.public_bytes, String)
         end
 
         sig { override.params(encoded_data: String).returns([String, OpenSSL::PKey::EC::Point, String]) }
-        def self.split(encoded_data)
+        def split(encoded_data)
           data = Util.decode64(encoded_data)
 
           t = T.must(data.slice(0, 48))
@@ -42,14 +38,6 @@ module Paseto
           edk = T.must(data.slice(97, 32))
 
           [t, epk, edk]
-        end
-
-        sig { params(sealing_key: AsymmetricKey).void }
-        def initialize(sealing_key)
-          raise LucidityError unless sealing_key.is_a? V3::Public
-
-          @sealing_key = T.let(sealing_key, V3::Public)
-          @pk = T.let(@sealing_key.public_bytes, String)
         end
 
         sig { override.params(message: String, ek: String, n: String).returns(SymmetricKey) }
@@ -79,6 +67,16 @@ module Paseto
         sig { override.params(message: String, ek: String, n: String).returns(String) }
         def encrypt(message:, ek:, n:)
           protocol.crypt(payload: message, key: ek, nonce: n)
+        end
+
+        sig { override.params(esk: OpenSSL::PKey::EC).returns(String) }
+        def epk_bytes_from_esk(esk)
+          esk.public_key.to_octet_string(:compressed)
+        end
+
+        sig(:final) { override.returns(OpenSSL::PKey::EC) }
+        def generate_ephemeral_key
+          OpenSSL::PKey::EC.generate('secp384r1')
         end
 
         sig { override.params(ak: String, epk: OpenSSL::PKey::EC::Point, edk: String).returns(String) }
