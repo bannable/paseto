@@ -13,33 +13,20 @@ module Paseto
         DOMAIN_SEPARATOR_AUTH = "\x81"
         DOMAIN_SEPARATOR_ENCRYPT = "\x80"
 
-        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
-        def self.decode_and_split(data)
-          b = Util.decode64(data)
-          {
-            t: T.must(b.byteslice(0, 32)),
-            n: T.must(b.byteslice(32, 32)),
-            c: T.must(b.byteslice(64..))
-          }
-        end
-
         sig { override.returns(Protocol::Version4) }
-        def self.protocol
-          Protocol::Version4.new
-        end
+        attr_reader :protocol
 
         sig { override.returns(String) }
-        def local_header
-          'k4.local-wrap.pie.'
-        end
+        attr_reader :local_header
 
         sig { override.returns(String) }
-        def secret_header
-          'k4.secret-wrap.pie.'
-        end
+        attr_reader :secret_header
 
         sig { params(wrapping_key: SymmetricKey).void }
         def initialize(wrapping_key)
+          @local_header = T.let('k4.local-wrap.pie.', String)
+          @protocol = T.let(Protocol::Version4.new, Protocol::Version4)
+          @secret_header = T.let('k4.secret-wrap.pie.', String)
           @wrapping_key = wrapping_key
         end
 
@@ -51,6 +38,16 @@ module Paseto
         sig { override.params(payload: String, auth_key: String).returns(String) }
         def authentication_tag(payload:, auth_key:)
           protocol.hmac(payload, key: auth_key, digest_size: 32)
+        end
+
+        sig { override.params(data: String).returns({ t: String, n: String, c: String }) }
+        def decode_and_split(data)
+          b = Util.decode64(data)
+          {
+            t: T.must(b.byteslice(0, 32)),
+            n: T.must(b.byteslice(32, 32)),
+            c: T.must(b.byteslice(64..))
+          }
         end
 
         sig { override.returns(String) }
