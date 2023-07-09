@@ -1,4 +1,5 @@
 # Paseto
+
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-community-brightgreen.svg)](https://rubystyle.guide) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/bannable/paseto/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/bannable/paseto/tree/main) [![Maintainability](https://api.codeclimate.com/v1/badges/0bc8fcc6751880b68a9c/maintainability)](https://codeclimate.com/github/bannable/paseto/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/0bc8fcc6751880b68a9c/test_coverage)](https://codeclimate.com/github/bannable/paseto/test_coverage)
 
 This is an implementation of the [PASETO token protocol](https://github.com/paseto-standard/paseto-spec), written in Ruby, which supports versions [v3](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-3-nist-modern) and [v4](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-sodium-modern). This library passes all [official test vectors](https://github.com/paseto-standard/test-vectors) for supported versions and purposes.
@@ -11,14 +12,15 @@ Additionally, the library uses [Sorbet](https://sorbet.org) to enforce types at 
 
 **Optional for v4.local tokens support**: Handling v4.local tokens requires [`RbNaCl`](https://github.com/RubyCrypto/rbnacl) with `libsodium 1.0.0` or newer.
 
-You can find instructions for obtaining libsodium at https://libsodium.org.
+You can find instructions for obtaining libsodium at [libsodium.org](https://libsodium.org).
 
 If you do not intend to create or parse `v4.local` tokens, feel free to skip this dependency.
 
-### Using Bundler:
+### Using Bundler
 
 Add the following to your Gemfile:
-```
+
+```ruby
 gem 'ruby-paseto'
 # and optionally:
 gem 'rbnacl', '~> 7.1.1'
@@ -29,26 +31,26 @@ Then, run `bundle install` and `require 'paseto'`.
 ## Supported PASETO versions
 
 `paseto` supports these PASETO versions and purposes:
-| purpose  |  v4  |  v3  |
+| purpose | v4 | v3 |
 | ---------| ---- | ---- |
-| `local`  |  ✅  |  ✅  |
-| `public` |  ✅  |  ✅  |
+| `local` | ✅ | ✅ |
+| `public` | ✅ | ✅ |
 
 ## Support for PASERK types
 
-|               |  v4  |  v3  |
-| ------------- | ---- | ---- |
-| [`lid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/lid.md)         |  ✅  |  ✅  |
-| [`sid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/sid.md)         |  ✅  |  ✅  |
-| [`pid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/pid.md)         |  ✅  |  ✅  |
-| [`local`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local.md)       |  ✅  |  ✅  |
-| [`secret`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret.md)      |  ✅  |  ✅  |
-| [`public`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/public.md)      |  ✅  |  ✅  |
-| [`seal`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/seal.md)        |  ✅  |  ✅  |
-| [`local-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-wrap.md)  |  ✅  |  ✅  |
-| [`secret-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-wrap.md) |  ✅  |  ✅  |
-| [`local-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-pw.md)    |  ✅  |  ✅  |
-| [`secret-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-pw.md)   |  ✅  |  ✅  |
+|                                                                                                                               | v4  | v3  |
+| ----------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| [`lid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/lid.md)                 | ✅  | ✅  |
+| [`sid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/sid.md)                 | ✅  | ✅  |
+| [`pid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/pid.md)                 | ✅  | ✅  |
+| [`local`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local.md)             | ✅  | ✅  |
+| [`secret`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret.md)           | ✅  | ✅  |
+| [`public`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/public.md)           | ✅  | ✅  |
+| [`seal`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/seal.md)               | ✅  | ✅  |
+| [`local-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-wrap.md)   | ✅  | ✅  |
+| [`secret-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-wrap.md) | ✅  | ✅  |
+| [`local-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-pw.md)       | ✅  | ✅  |
+| [`secret-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-pw.md)     | ✅  | ✅  |
 
 ## Implementation Guideline compliance
 
@@ -167,6 +169,7 @@ signer.pid            # => "k4.pid.5g4..." (PASERK Type pid)
 verifier.pid          # => same as above!
 verifier.id           # => same as above
 ```
+
 ## PASETO/PASERK v4, Sodium Modern
 
 [Description](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-nist-modern) and [Specification](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version4.md).
@@ -310,8 +313,8 @@ key == secret_key
 
 ### Version 4, Argon2id Parameters
 
-| param | allowed values | default |
-| :--------: | :---------: | :-----: |
+|   param    |  allowed values   |    default     |
+| :--------: | :---------------: | :------------: |
 | `opslimit` | Symbol \| Integer | `:interactive` |
 | `memlimit` | Symbol \| Integer | `:interactive` |
 
@@ -319,12 +322,11 @@ Allowed symbol values are `:interactive`, `:moderate` and `:sensitive` as descri
 
 You most likely do not want to use the `:interactive` default in production. See [libsodium's documentation](https://libsodium.gitbook.io/doc/~/revisions/-LL5wcLSbESuQhMZUBZo/password_hashing/the_argon2i_function#guidelines-for-choosing-the-parameters) for parameter guidance.
 
-
 ### Version 3, PBKDF2 Parameters
 
-| param | allowed values | default |
-| :--------: | :---------: | :-----: |
-| `iterations` | Integer | `100_000` |
+|    param     | allowed values |  default  |
+| :----------: | :------------: | :-------: |
+| `iterations` |    Integer     | `100_000` |
 
 As with the Version 4 parameters above, you most likely do not want to use the default value and should pick an `iterations` value with time objectives similar to the argon2 guidance.
 
@@ -339,6 +341,7 @@ Verification behavior can be controlled by passing a kwarg for the setting to `d
 ## Default Configuration
 
 See the appropriate section below for more information on configuring each `verify_foo`.
+
 ```ruby
 Paseto.configure do |config|
   # Controls the behavior of footer deserialization in Result objects.
@@ -359,9 +362,9 @@ end
 
 ## Audience Claim
 
-| claim type | config type | default |
-| :--------: | :---------: | :-----: |
-| String | False \| String \| Array[String] | `false` |
+| claim type |           config type            | default |
+| :--------: | :------------------------------: | :-----: |
+|   String   | False \| String \| Array[String] | `false` |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -379,7 +382,7 @@ crypt.decode(payload, verify_aud: audience) # => { 'aud' => ... }
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
-| DateTime | Boolean | `true` |
+|  DateTime  |   Boolean   | `true`  |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -396,7 +399,7 @@ crypt.decode(payload, verify_exp: false) # { 'exp' => ... }
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
-| DateTime | Boolean | `true` |
+|  DateTime  |   Boolean   | `true`  |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -411,9 +414,9 @@ crypt.decode(payload, verify_iat: false) # { 'iat' => ... }
 
 ### Issuer Claim
 
-| claim type | config type | default |
-| :--------: | :---------: | :-----: |
-| String     | Boolean \| String \| Regexp \| Proc | `false` |
+| claim type |             config type             | default |
+| :--------: | :---------------------------------: | :-----: |
+|   String   | Boolean \| String \| Regexp \| Proc | `false` |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -440,7 +443,7 @@ crypt.decode(payload, verify_issuer: true) # { 'iss' => ... }
 
 | claim type | config type | default |
 | :--------: | :---------: | :-----: |
-| DateTime | Boolean | `true` |
+|  DateTime  |   Boolean   | `true`  |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -454,9 +457,9 @@ crypt.decode(payload, verify_nbf: false) # => { 'nbf' => ... }
 
 ### Subject Claim
 
-| claim type | config type | default |
-| :--------: | :---------: | :-----: |
-| String | False \| String | `false` |
+| claim type |   config type   | default |
+| :--------: | :-------------: | :-----: |
+|   String   | False \| String | `false` |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -469,9 +472,9 @@ crypt.decode(payload, verify_sub: 'example.org') # => Paseto::InvalidSubject
 
 ### Token Identifier Claim
 
-| claim type | config type | default |
-| :--------: | :---------: | :-----: |
-| String | Boolean \| String \| Proc | `false` |
+| claim type |        config type        | default |
+| :--------: | :-----------------------: | :-----: |
+|   String   | Boolean \| String \| Proc | `false` |
 
 ```ruby
 crypt = Paseto::V4::Local.generate
@@ -512,7 +515,7 @@ You can learn more over at the `sorbet` [documentation](https://sorbet.org/docs/
 
 The tests are written with rspec. [Appraisal](https://github.com/thoughtbot/appraisal) is used to ensure compatibility with 3rd party dependencies providing cryptographic features.
 
-```
+```sh
 bundle install
 appraisal install
 # in parallel
@@ -524,19 +527,21 @@ appraisal rake specs
 ### Updating RBI Files
 
 To check that RBI files for gems are up-to-date:
-```
+
+```sh
 appraisal rbnacl bin/tapioca gems --verify
 ```
 
 To update RBI files for gems:
-```
+
+```sh
 appraisal rbnacl bin/tapioca gems
 appraisal rbnacl bin/tapioca annotations
 ```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/bannable/paseto.
+Bug reports and pull requests are welcome on [GitHub](https://github.com/bannable/paseto).
 
 This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](CODE_OF_CONDUCT.md).
 
