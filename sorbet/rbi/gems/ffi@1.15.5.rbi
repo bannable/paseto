@@ -361,7 +361,7 @@ end
 # CallableReleaser is a {Releaser} used when an {AutoPointer} is defined with a
 # Proc or a Method.
 #
-# source://ffi//lib/ffi/autopointer.rb#173
+# source://ffi//lib/ffi/autopointer.rb#168
 class FFI::AutoPointer::CallableReleaser < ::FFI::AutoPointer::Releaser
   # Release +ptr+ by using Proc or Method defined at +ptr+
   # {AutoPointer#initialize initialization}.
@@ -377,7 +377,7 @@ end
 # without Proc or Method. In this case, the pointer to release must be of
 # a class derived from AutoPointer with a {release} class method.
 #
-# source://ffi//lib/ffi/autopointer.rb#160
+# source://ffi//lib/ffi/autopointer.rb#157
 class FFI::AutoPointer::DefaultReleaser < ::FFI::AutoPointer::Releaser
   # Release +ptr+ using the {release} class method of its class.
   #

@@ -1244,9 +1244,6 @@ module RSpec::Expectations::Version; end
 # source://rspec-expectations//lib/rspec/expectations/version.rb#5
 RSpec::Expectations::Version::STRING = T.let(T.unsafe(nil), String)
 
-# source://rspec-core/3.12.1/lib/rspec/core.rb#187
-RSpec::MODULES_TO_AUTOLOAD = T.let(T.unsafe(nil), Hash)
-
 # RSpec::Matchers provides a number of useful matchers we use to define
 # expectations. Any object that implements the [matcher protocol](Matchers/MatcherProtocol)
 # can be used as a matcher.
@@ -8101,6 +8098,3 @@ class RSpec::Matchers::MatcherDelegator
   # source://rspec-expectations//lib/rspec/matchers/matcher_delegator.rb#18
   def respond_to_missing?(name, include_all = T.unsafe(nil)); end
 end
-
-# source://rspec-core/3.12.1/lib/rspec/core/shared_context.rb#54
-RSpec::SharedContext = RSpec::Core::SharedContext

@@ -67,8 +67,6 @@ class OpenSSL::BN
   def pretty_print(q); end
 end
 
-OpenSSL::BN::CONSTTIME = T.let(T.unsafe(nil), Integer)
-
 # OpenSSL IO buffering mix-in module.
 #
 # This module allows an OpenSSL::SSL::SSLSocket to behave like an IO.
@@ -919,8 +917,6 @@ class OpenSSL::PKey::EC < ::OpenSSL::PKey::PKey
   def dsa_verify_asn1(data, sig); end
 end
 
-OpenSSL::PKey::EC::EXPLICIT_CURVE = T.let(T.unsafe(nil), Integer)
-
 class OpenSSL::PKey::EC::Point
   # :call-seq:
   #    point.to_bn([conversion_form]) -> OpenSSL::BN
@@ -1068,26 +1064,6 @@ module OpenSSL::SSL
     def verify_wildcard(domain_component, san_component); end
   end
 end
-
-OpenSSL::SSL::OP_ALLOW_CLIENT_RENEGOTIATION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_ALLOW_NO_DHE_KEX = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_CLEANSE_PLAINTEXT = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_CRYPTOPRO_TLSEXT_BUG = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_DISABLE_TLSEXT_CA_NAMES = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_ENABLE_KTLS = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_ENABLE_MIDDLEBOX_COMPAT = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_IGNORE_UNEXPECTED_EOF = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_LEGACY_SERVER_CONNECT = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_NO_ANTI_REPLAY = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_NO_ENCRYPT_THEN_MAC = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_NO_RENEGOTIATION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_NO_TLSv1_3 = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_PRIORITIZE_CHACHA = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_SAFARI_ECDHE_ECDSA_BUG = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::OP_TLSEXT_PADDING = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::SSL2_VERSION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::SSL3_VERSION = T.let(T.unsafe(nil), Integer)
 
 class OpenSSL::SSL::SSLContext
   # call-seq:
@@ -1439,10 +1415,6 @@ module OpenSSL::SSL::SocketForwarder
   def setsockopt(level, optname, optval); end
 end
 
-OpenSSL::SSL::TLS1_1_VERSION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::TLS1_2_VERSION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::TLS1_3_VERSION = T.let(T.unsafe(nil), Integer)
-OpenSSL::SSL::TLS1_VERSION = T.let(T.unsafe(nil), Integer)
 module OpenSSL::Timestamp; end
 
 class OpenSSL::Timestamp::Factory
@@ -1490,12 +1462,6 @@ class OpenSSL::Timestamp::Response
   def verify(*_arg0); end
 end
 
-OpenSSL::Timestamp::Response::GRANTED = T.let(T.unsafe(nil), Integer)
-OpenSSL::Timestamp::Response::GRANTED_WITH_MODS = T.let(T.unsafe(nil), Integer)
-OpenSSL::Timestamp::Response::REJECTION = T.let(T.unsafe(nil), Integer)
-OpenSSL::Timestamp::Response::REVOCATION_NOTIFICATION = T.let(T.unsafe(nil), Integer)
-OpenSSL::Timestamp::Response::REVOCATION_WARNING = T.let(T.unsafe(nil), Integer)
-OpenSSL::Timestamp::Response::WAITING = T.let(T.unsafe(nil), Integer)
 class OpenSSL::Timestamp::TimestampError < ::OpenSSL::OpenSSLError; end
 
 class OpenSSL::Timestamp::TokenInfo

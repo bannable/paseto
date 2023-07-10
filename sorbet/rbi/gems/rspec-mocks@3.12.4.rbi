@@ -78,9 +78,6 @@ module RSpec
   end
 end
 
-# source://rspec-core/3.12.1/lib/rspec/core.rb#187
-RSpec::MODULES_TO_AUTOLOAD = T.let(T.unsafe(nil), Hash)
-
 # Contains top-level utility methods. While this contains a few
 # public methods, these are not generally meant to be called from
 # a test or example. They exist primarily for integration with
@@ -5306,6 +5303,3 @@ module RSpec::Mocks::Version; end
 #
 # source://rspec-mocks//lib/rspec/mocks/version.rb#6
 RSpec::Mocks::Version::STRING = T.let(T.unsafe(nil), String)
-
-# source://rspec-core/3.12.1/lib/rspec/core/shared_context.rb#54
-RSpec::SharedContext = RSpec::Core::SharedContext
