@@ -67,7 +67,7 @@ GEM
     regexp_parser (2.8.1)
     reline (0.3.3)
       io-console (~> 0.5)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -107,7 +107,7 @@ GEM
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
-    rubocop-sorbet (0.7.0)
+    rubocop-sorbet (0.7.3)
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
@@ -169,7 +169,7 @@ DEPENDENCIES
   rubocop (~> 1.54.2)
   rubocop-performance (~> 1.18.0)
   rubocop-rspec (~> 2.22.0)
-  rubocop-sorbet (~> 0.7.0)
+  rubocop-sorbet (~> 0.7.3)
   ruby-paseto!
   simplecov (~> 0)
   simplecov_json_formatter
