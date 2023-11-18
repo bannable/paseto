@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+- Minimum ruby version 3.0 -> 3.1
+- Remove support for OpenSSL 1.1.1
+- Remove support for ruby/openssl 3.0.x
+- Refactor how version protocols are implemented to greatly improve sorbet coverage
+
 ## [0.1.2]
 
 - Fixed versioning in 0.1.1 changelog
