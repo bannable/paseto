@@ -28,7 +28,7 @@ module Paseto
 
       sig(:final) { params(ikm: String).void }
       def initialize(ikm:)
-        @protocol = T.let(Protocol::Version3.new, Paseto::Protocol::Version3)
+        @protocol = T.let(Protocol::Version3.instance, Paseto::Protocol::Version3)
 
         super(ikm)
       end

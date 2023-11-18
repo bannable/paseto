@@ -50,7 +50,7 @@ module Paseto
         raise LucidityError unless @key.group.curve_name == 'secp384r1'
         raise InvalidKeyPair unless custom_check_key
 
-        @protocol = T.let(Protocol::Version3.new, Protocol::Version3)
+        @protocol = T.let(Protocol::Version3.instance, Protocol::Version3)
 
         super
       rescue OpenSSL::PKey::ECError => e

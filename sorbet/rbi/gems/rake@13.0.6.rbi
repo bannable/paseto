@@ -662,6 +662,9 @@ module Rake::DSL
   def ln_sf(*args, **options, &block); end
 
   # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_sr(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
   def makedirs(*args, **options, &block); end
 
   # source://rake//lib/rake/file_utils_ext.rb#34
@@ -859,7 +862,7 @@ end
 # not re-triggered if any of its dependencies are newer, nor does trigger
 # any rebuilds of tasks that depend on it whenever it is updated.
 #
-# source://rake//lib/rake/file_creation_task.rb#13
+# source://rake//lib/rake/file_creation_task.rb#12
 class Rake::FileCreationTask < ::Rake::FileTask
   # Is this file task needed?  Yes if it doesn't exist.
   #
@@ -1656,6 +1659,9 @@ module Rake::FileUtilsExt
   def ln_sf(*args, **options, &block); end
 
   # source://rake//lib/rake/file_utils_ext.rb#34
+  def ln_sr(*args, **options, &block); end
+
+  # source://rake//lib/rake/file_utils_ext.rb#34
   def makedirs(*args, **options, &block); end
 
   # source://rake//lib/rake/file_utils_ext.rb#34
@@ -2163,9 +2169,6 @@ class Rake::PseudoStatus
   # source://rake//lib/rake/pseudo_status.rb#13
   def to_i; end
 end
-
-# source://rdoc/6.4.0/rdoc/task.rb#326
-Rake::RDocTask = RDoc::Task
 
 # Error indicating a recursion overflow error in task selection.
 #

@@ -38,9 +38,6 @@ class Date
   end
 end
 
-# source://date/3.2.2/date.rb#7
-Date::VERSION = T.let(T.unsafe(nil), String)
-
 # source://timecop//lib/timecop/time_extensions.rb#113
 class DateTime < ::Date
   class << self

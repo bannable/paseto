@@ -49,7 +49,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     password = '636f727265637420686f727365206261747465727920737461706c66'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.secret-pw.1n54ImYiJUSDhTn7vzBI4QAAAAAQAAAAAAAAAwAAAAFBZythnpR02Zza64_y9DuKHeyZVEP_vZx0Y721aIry1rZc70cR08Jb2rgV4pcqR9in25TvA4pV7L4kT3r-0b-5a8Z7wk35D0zOnPLEJloAHf2XEYGleFReV2-tiV1T79G6OhlATgd-bJbXjRqlEOCsk_-pRdSsCeE'
-    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
+    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.instance, password)
 
     expect do
       Paseto::Paserk.from_paserk(paserk: paserk, password: password)
@@ -66,7 +66,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k4.secret-pw.AH54ImYiJUSDhTn7vzBI4QAAAAAQAAAAAAAAAwAAAAFBZythnpR02Zza64_y9DuKHeyZVEP_vZx0Y721aIry1rZc70cR08Jb2rgV4pcqR9in25TvA4pV7L4kT3r-0b-5a8Z7wk35D0zOnPLEJloAHf2XEYGleFReV2-tiV1T79G6OhlATgd-bJbXjRqlEOCsk_-pRdSsCeE'
-    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
+    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.instance, password)
 
     expect do
       Paseto::Paserk.from_paserk(paserk: paserk, password: password)
@@ -81,7 +81,7 @@ RSpec.describe "PASERK k4.secret-pw Test Vectors" do
     password = '636f727265637420686f727365206261747465727920737461706c65'
     options = {:memlimit=>268435456, :opslimit=>3}
     paserk = 'k3.secret-pw.LajP_XFziwwUW8t0xppL3ecIgaOzfSEx-5-UQG36jJ8AACcQUeD46ydUwIkMOqkXWFvacyf_eaH1BTMlJsdCy6ZhemmaFMZTclOD9LrOwCVnmhlCDQEePilxQEfvPsRM5cL_yxx1bWL0wjS4GAQABQiCvGyQTi_LGlbMnYuiZfxWgpqNJpAI6jx71m6s3f6wZIg68Q'
-    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.new, password)
+    pbkw = Paseto::Operations::PBKW.new(Paseto::Protocol::Version4.instance, password)
 
     expect { pbkw.decode(paserk) }.to raise_error(Paseto::LucidityError)
 

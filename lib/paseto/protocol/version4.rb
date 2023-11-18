@@ -7,30 +7,31 @@ module Paseto
       extend T::Sig
       extend T::Helpers
 
+      include Singleton
       include Interface::Version
 
       sig(:final) { override.params(key: String, nonce: String, payload: String).returns(String) }
-      def self.crypt(key:, nonce:, payload:)
+      def crypt(key:, nonce:, payload:)
         Paseto::Sodium::Stream::XChaCha20Xor.new(key).encrypt(nonce, payload)
       end
 
       sig(:final) { override.params(data: String, digest_size: Integer).returns(String) }
-      def self.digest(data, digest_size:)
+      def digest(data, digest_size: 32)
         RbNaCl::Hash.blake2b(data, digest_size: digest_size)
       end
 
       sig(:final) { override.returns(Integer) }
-      def self.digest_bytes
+      def digest_bytes
         32
       end
 
       sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
-      def self.hmac(data, key:, digest_size: 32)
+      def hmac(data, key:, digest_size: 32)
         RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
       end
 
       sig(:final) { override.returns(T.class_of(Operations::ID::IDv4)) }
-      def self.id
+      def id
         Operations::ID::IDv4
       end
 
@@ -42,7 +43,7 @@ module Paseto
           parameters: T.any(Symbol, Integer)
         ).returns(String)
       end
-      def self.kdf(password, salt:, length:, **parameters)
+      def kdf(password, salt:, length:, **parameters)
         memlimit = RbNaCl::PasswordHash::Argon2.memlimit_value(parameters[:memlimit])
         opslimit = RbNaCl::PasswordHash::Argon2.opslimit_value(parameters[:opslimit])
 
@@ -56,42 +57,42 @@ module Paseto
       end
 
       sig(:final) { override.returns(String) }
-      def self.paserk_version
+      def paserk_version
         'k4'
       end
 
       sig(:final) { override.returns(String) }
-      def self.pbkd_local_header
+      def pbkd_local_header
         'k4.local-pw'
       end
 
       sig(:final) { override.returns(String) }
-      def self.pbkd_secret_header
+      def pbkd_secret_header
         'k4.secret-pw'
       end
 
       sig(:final) { override.params(password: String).returns(Operations::PBKD::PBKDv4) }
-      def self.pbkw(password)
+      def pbkw(password)
         Operations::PBKD::PBKDv4.new(password)
       end
 
       sig(:final) { override.params(key: SymmetricKey).returns(Wrappers::PIE::PieV4) }
-      def self.pie(key)
+      def pie(key)
         Wrappers::PIE::PieV4.new(key)
       end
 
       sig(:final) { override.params(key: AsymmetricKey).returns(Operations::PKE::PKEv4) }
-      def self.pke(key)
+      def pke(key)
         Operations::PKE::PKEv4.new(key)
       end
 
       sig(:final) { override.params(size: Integer).returns(String) }
-      def self.random(size)
+      def random(size)
         RbNaCl::Random.random_bytes(size)
       end
 
       sig(:final) { override.returns(String) }
-      def self.version
+      def version
         'v4'
       end
     end

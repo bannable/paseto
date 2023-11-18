@@ -2640,7 +2640,7 @@ class RbNaCl::SimpleBox
   # source://rbnacl//lib/rbnacl/simple_box.rb#80
   def encrypt(message); end
 
-  # source://forwardable/1.3.2/forwardable.rb#229
+  # source://forwardable/1.3.3/forwardable.rb#231
   def nonce_bytes(*args, **_arg1, &block); end
 
   # Decrypts the ciphertext with a random nonce
@@ -2655,7 +2655,7 @@ class RbNaCl::SimpleBox
   # source://rbnacl//lib/rbnacl/simple_box.rb#97
   def open(enciphered_message); end
 
-  # source://forwardable/1.3.2/forwardable.rb#229
+  # source://forwardable/1.3.3/forwardable.rb#231
   def primitive(*args, **_arg1, &block); end
 
   private

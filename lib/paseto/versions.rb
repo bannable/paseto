@@ -17,8 +17,8 @@ module Paseto
     sig { returns(Interface::Version) }
     def instance
       case self
-      when V3Version, V3Str, K3Str then Protocol::Version3.new
-      when V4Version, V4Str, K4Str then Protocol::Version4.new
+      when V3Version, V3Str, K3Str then Protocol::Version3.instance
+      when V4Version, V4Str, K4Str then Protocol::Version4.instance
       end
     end
   end

@@ -253,7 +253,7 @@ Docile::BacktraceFilter::FILTER_PATTERN = T.let(T.unsafe(nil), Regexp)
 # @api private
 # @see Docile.dsl_eval_immutable
 #
-# source://docile//lib/docile/chaining_fallback_context_proxy.rb#19
+# source://docile//lib/docile/chaining_fallback_context_proxy.rb#17
 class Docile::ChainingFallbackContextProxy < ::Docile::FallbackContextProxy
   # Proxy methods as in {FallbackContextProxy#method_missing}, replacing
   # `receiver` with the returned value.
