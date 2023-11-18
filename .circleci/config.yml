@@ -8,16 +8,6 @@ shared_env: &shared_env
   SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: true
 
 executors:
-  # ruby-other:
-  #   parameters:
-  #     version:
-  #       type: string
-  #       default: "3.2"
-  #   docker:
-  #     - image: cimg/ruby:<< parameters.version >>
-  #   environment:
-  #     <<: *shared_env
-  #   resource_class: medium+
   ruby-specs:
     parameters:
       version:
@@ -281,7 +271,6 @@ workflows:
               appraisal:
                 - standalone
                 - rbnacl
-                - openssl_3.0
           requires:
             - codeclimate-setup
             - install-dependencies-<< matrix.version >>
