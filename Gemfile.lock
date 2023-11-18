@@ -38,7 +38,7 @@ GEM
     language_server-protocol (3.17.0.3)
     multi_json (1.15.0)
     netrc (0.11.0)
-    oj (3.15.0)
+    oj (3.16.1)
     openssl (3.1.0)
     parallel (1.23.0)
     parallel_tests (4.2.1)
