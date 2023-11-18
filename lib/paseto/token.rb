@@ -34,7 +34,7 @@ module Paseto
       payload = Util.decode64(payload)
       Util.decode64(footer)
           .then { |f| serializer.deserialize(f, options) }
-          .then { |f| new(version: version, purpose: purpose, payload: payload, footer: f) }
+          .then { |f| new(version:, purpose:, payload:, footer: f) }
     end
 
     sig { returns(Paseto::Interface::Serializer) }
@@ -79,7 +79,7 @@ module Paseto
     def decode!(key, implicit_assertion: '', **options)
       return @result.claims if @result
 
-      key.decode(@str, implicit_assertion: implicit_assertion, **options)
+      key.decode(@str, implicit_assertion:, **options)
          .then { |result| @result = T.let(result, T.nilable(Result)) }
          .then(&:claims)
     end

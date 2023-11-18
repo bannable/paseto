@@ -12,13 +12,13 @@ module Paseto
       def self.from_rs(bytes, part_len)
         r = OpenSSL::BN.new(T.must(bytes[0, part_len]), 2)
         s = OpenSSL::BN.new(T.must(bytes[-part_len, part_len]), 2)
-        new(signature: ECDSASigValue.new(r: r, s: s))
+        new(signature: ECDSASigValue.new(r:, s:))
       end
 
       sig { params(sig: String).returns(ECDSASignature) }
       def self.from_asn1(sig)
         r, s = OpenSSL::ASN1.decode(sig).value.map(&:value)
-        new(signature: ECDSASigValue.new(r: r, s: s))
+        new(signature: ECDSASigValue.new(r:, s:))
       end
 
       sig { returns(OpenSSL::ASN1::Sequence) }

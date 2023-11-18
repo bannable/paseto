@@ -42,7 +42,7 @@ module Paseto
         sig { override.params(salt: String, params: T::Hash[Symbol, Integer]).returns(String) }
         def pre_key(salt:, params:)
           iterations = T.must(params[:iterations])
-          protocol.kdf(@password, salt: salt, length: 32, iterations: iterations)
+          protocol.kdf(@password, salt:, length: 32, iterations:)
         end
 
         sig { override.returns(String) }
@@ -75,7 +75,7 @@ module Paseto
             nonce: T.must(data.byteslice(36, 16)),
             edk: T.must(data.byteslice(52, edk_len)),
             tag: T.must(data.byteslice(-48, 48)),
-            params: { iterations: iterations }
+            params: { iterations: }
           }
         end
       end

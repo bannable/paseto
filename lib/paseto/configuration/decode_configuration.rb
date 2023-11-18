@@ -54,13 +54,13 @@ module Paseto
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def to_h
         {
-          verify_exp: verify_exp,
-          verify_nbf: verify_nbf,
-          verify_iss: verify_iss,
-          verify_iat: verify_iat,
-          verify_jti: verify_jti,
-          verify_aud: verify_aud,
-          verify_sub: verify_sub
+          verify_exp:,
+          verify_nbf:,
+          verify_iss:,
+          verify_iat:,
+          verify_jti:,
+          verify_aud:,
+          verify_sub:
         }
       end
     end

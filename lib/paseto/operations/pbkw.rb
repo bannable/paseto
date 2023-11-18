@@ -30,11 +30,11 @@ module Paseto
         salt = @coder.random_salt
         nonce = @coder.random_nonce
 
-        pre_key = @coder.pre_key(salt: salt, params: opts)
+        pre_key = @coder.pre_key(salt:, params: opts)
 
-        edk = @coder.crypt(payload: key.to_bytes, key: pre_key, nonce: nonce)
+        edk = @coder.crypt(payload: key.to_bytes, key: pre_key, nonce:)
 
-        message, t = @coder.authenticate(header: h, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: opts)
+        message, t = @coder.authenticate(header: h, pre_key:, salt:, nonce:, edk:, params: opts)
 
         data = Util.encode64("#{message}#{t}")
         "#{h}.#{data}"
@@ -49,12 +49,12 @@ module Paseto
 
         @coder.decode(data) => {salt:, nonce:, edk:, tag:, params:}
 
-        pre_key = @coder.pre_key(salt: salt, params: params)
+        pre_key = @coder.pre_key(salt:, params:)
 
-        _, t2 = @coder.authenticate(header: header, pre_key: pre_key, salt: salt, nonce: nonce, edk: edk, params: params)
+        _, t2 = @coder.authenticate(header:, pre_key:, salt:, nonce:, edk:, params:)
         raise InvalidAuthenticator unless Util.constant_compare(t2, tag)
 
-        ptk = @coder.crypt(payload: edk, key: pre_key, nonce: nonce)
+        ptk = @coder.crypt(payload: edk, key: pre_key, nonce:)
         PaserkTypes.deserialize(header).generate(ptk)
       end
 

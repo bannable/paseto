@@ -4,7 +4,7 @@
 
 RSpec.describe Paseto::Paserk do
   subject(:key) do
-    described_class.from_paserk(paserk: paserk, wrapping_key: wrapping_key, password: password, unsealing_key: unsealing_key)
+    described_class.from_paserk(paserk:, wrapping_key:, password:, unsealing_key:)
   end
 
   let(:wrapping_key) { nil }
@@ -25,7 +25,7 @@ RSpec.describe Paseto::Paserk do
 
       # Not covered by PASERK test vectors as no nonce is provided
       it 'wraps correctly' do
-        expect(wrapping_key.wrap(key, nonce: nonce)).to eq(paserk)
+        expect(wrapping_key.wrap(key, nonce:)).to eq(paserk)
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe Paseto::Paserk do
 
       # Not covered by PASERK test vectors as no nonce is provided
       it 'wraps correctly' do
-        expect(wrapping_key.wrap(key, nonce: nonce)).to eq(paserk)
+        expect(wrapping_key.wrap(key, nonce:)).to eq(paserk)
       end
     end
 

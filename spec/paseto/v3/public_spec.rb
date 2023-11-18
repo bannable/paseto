@@ -100,7 +100,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#pkbd' do
-    subject(:pbkd) { key.pbkd(password: password, options: options) }
+    subject(:pbkd) { key.pbkd(password:, options:) }
 
     let(:options) { { iterations: 100 } }
     let(:password) { 'test' }
@@ -155,7 +155,7 @@ RSpec.describe Paseto::V3::Public do
   end
 
   describe '#verify' do
-    subject(:verify) { key.verify(token: token, implicit_assertion: 'test') }
+    subject(:verify) { key.verify(token:, implicit_assertion: 'test') }
 
     let(:token) do
       Paseto::Token.parse(

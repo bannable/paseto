@@ -58,7 +58,7 @@ module Paseto
         Util.pre_auth_encode(pae_header, message, footer, implicit_assertion)
             .then { |m2| @key.sign(m2) }
             .then { |sig| "#{message}#{sig}" }
-            .then { |payload| Token.new(payload: payload, purpose: purpose, version: version, footer: footer) }
+            .then { |payload| Token.new(payload:, purpose:, version:, footer:) }
       end
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.

@@ -29,7 +29,7 @@ module Paseto
         return unless (aud = options[:verify_aud])
 
         given = payload['aud']
-        raise InvalidAudience, "Invalid audience. Expected #{aud}, got #{given || '<none>'}" if ([*aud] & [*given]).empty?
+        raise InvalidAudience, "Invalid audience. Expected #{aud}, got #{given || '<none>'}" unless [*aud].intersect?([*given])
       end
     end
 

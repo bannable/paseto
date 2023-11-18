@@ -22,9 +22,9 @@ module Paseto
         nonce ||= @coder.random_nonce
         header = pie_header(key)
 
-        c = @coder.crypt(nonce: nonce, payload: key.to_bytes)
+        c = @coder.crypt(nonce:, payload: key.to_bytes)
 
-        ak = @coder.authentication_key(nonce: nonce)
+        ak = @coder.authentication_key(nonce:)
         t = @coder.authentication_tag(payload: "#{header}#{nonce}#{c}", auth_key: ak)
 
         [header, Util.encode64("#{t}#{nonce}#{c}")].join

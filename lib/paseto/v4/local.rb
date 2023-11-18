@@ -31,10 +31,10 @@ module Paseto
       # Derive an encryption key, nonce, and authentication key from an input nonce.
       sig(:final) { override.params(nonce: String).returns([String, String, String]) }
       def calc_keys(nonce)
-        tmp = protocol.hmac("paseto-encryption-key#{nonce}", key: key, digest_size: 56)
+        tmp = protocol.hmac("paseto-encryption-key#{nonce}", key:, digest_size: 56)
         ek = T.must(tmp[0, 32])
         n2 = T.must(tmp[-24, 24])
-        ak = protocol.hmac("paseto-auth-key-for-aead#{nonce}", key: key, digest_size: 32)
+        ak = protocol.hmac("paseto-auth-key-for-aead#{nonce}", key:, digest_size: 32)
         [ek, n2, ak]
       end
 

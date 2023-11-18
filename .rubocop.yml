@@ -77,3 +77,6 @@ Style/Documentation:
 Style/MutableConstant:
   Exclude:
     - 'spec/generate_vectors.rb'
+
+Naming/BlockForwarding:
+  EnforcedStyle: 'explicit'

@@ -39,7 +39,7 @@ module Paseto
 
     sig { params(key: Interface::Key, wrapping_key: SymmetricKey, nonce: T.nilable(String)).returns(String) }
     def self.wrap(key:, wrapping_key:, nonce: nil)
-      Operations::Wrap.wrap(key, wrapping_key: wrapping_key, nonce: nonce)
+      Operations::Wrap.wrap(key, wrapping_key:, nonce:)
     end
 
     sig { params(key: Interface::Key, password: String, options: T::Hash[Symbol, T.any(Integer, Symbol)]).returns(String) }

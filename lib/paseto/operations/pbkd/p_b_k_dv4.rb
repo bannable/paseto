@@ -48,7 +48,7 @@ module Paseto
         def pre_key(salt:, params:)
           opslimit = T.must(params[:opslimit])
           memlimit = T.must(params[:memlimit])
-          protocol.kdf(@password, salt: salt, length: 32, opslimit: opslimit, memlimit: memlimit)
+          protocol.kdf(@password, salt:, length: 32, opslimit:, memlimit:)
         end
 
         sig { override.returns(String) }

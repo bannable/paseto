@@ -61,7 +61,7 @@ module Paseto
           ek = T.must(x[0, 32])
           n2 = T.must(x[32..])
 
-          protocol.crypt(key: ek, nonce: n2, payload: payload)
+          protocol.crypt(key: ek, nonce: n2, payload:)
         end
       end
     end

@@ -58,7 +58,7 @@ module Paseto
         ).returns(Result)
       end
       def decode(payload, implicit_assertion: '', **options)
-        decode!(payload, **T.unsafe(implicit_assertion: implicit_assertion, **options))
+        decode!(payload, **T.unsafe(implicit_assertion:, **options))
           .then { |result| Verify.verify(result, options) }
       end
 
@@ -83,7 +83,7 @@ module Paseto
       def encode(payload, footer: '', implicit_assertion: '', **options)
         footer = MultiJson.dump(footer, mode: :object) if footer.is_a?(Hash)
         default_claims.merge(payload)
-                      .then { |claims| encode!(claims, footer: footer, implicit_assertion: implicit_assertion, **options) }
+                      .then { |claims| encode!(claims, footer:, implicit_assertion:, **options) }
       end
 
       sig(:final) { params(other: T.untyped).returns(T::Boolean) }

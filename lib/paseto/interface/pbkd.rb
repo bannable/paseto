@@ -25,7 +25,7 @@ module Paseto
       def crypt(payload:, key:, nonce:)
         ek = protocol.digest("#{Operations::PBKW::DOMAIN_SEPARATOR_ENCRYPT}#{key}", digest_size: 32)
 
-        protocol.crypt(key: ek, nonce: nonce, payload: payload)
+        protocol.crypt(key: ek, nonce:, payload:)
       end
 
       sig do

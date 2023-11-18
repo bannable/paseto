@@ -16,7 +16,7 @@ RSpec.describe Paseto::V3::Local do
   include_examples 'SymmetricKey'
 
   describe '#encrypt' do
-    subject(:token) { key.encrypt(message: message, n: nonce, implicit_assertion: 'test') }
+    subject(:token) { key.encrypt(message:, n: nonce, implicit_assertion: 'test') }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
 
@@ -28,7 +28,7 @@ RSpec.describe Paseto::V3::Local do
   end
 
   describe '#decrypt' do
-    subject(:plaintext) { key.decrypt(token: token, implicit_assertion: 'test') }
+    subject(:plaintext) { key.decrypt(token:, implicit_assertion: 'test') }
 
     let(:token) { Paseto::Token.parse(token_str) }
 
@@ -65,7 +65,7 @@ RSpec.describe Paseto::V3::Local do
   end
 
   describe '#pkbd' do
-    subject(:pbkd) { key.pbkd(password: password, options: options) }
+    subject(:pbkd) { key.pbkd(password:, options:) }
 
     let(:options) { { iterations: 100 } }
     let(:password) { 'test' }

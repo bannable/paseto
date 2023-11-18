@@ -34,7 +34,7 @@ module Paseto
       Util.pre_auth_encode(pae_header, n, c, footer, implicit_assertion)
           .then { |pre_auth| protocol.hmac(pre_auth, key: ak) }
           .then { |t| "#{n}#{c}#{t}" }
-          .then { |payload| Token.new(payload: payload, version: version, purpose: purpose, footer: footer) }
+          .then { |payload| Token.new(payload:, version:, purpose:, footer:) }
     end
 
     # Verify and decrypt an encrypted Token, with an optional string `implicit_assertion`, and return the plaintext.
@@ -68,7 +68,7 @@ module Paseto
     def encode!(payload, footer: '', implicit_assertion: '', **options)
       n = T.cast(options.delete(:nonce), T.nilable(String))
       MultiJson.dump(payload, options)
-               .then { |message| encrypt(message: message, footer: footer, implicit_assertion: implicit_assertion, n: n) }
+               .then { |message| encrypt(message:, footer:, implicit_assertion:, n:) }
                .then(&:to_s)
     end
 
@@ -82,9 +82,9 @@ module Paseto
     def decode!(payload, implicit_assertion: '', **options)
       token = Token.parse(payload)
 
-      decrypt(token: token, implicit_assertion: implicit_assertion)
+      decrypt(token:, implicit_assertion:)
         .then { |json| MultiJson.load(json, **options) }
-        .then { |claims| Result.new(claims: claims, footer: token.footer) }
+        .then { |claims| Result.new(claims:, footer: token.footer) }
     end
 
     sig(:final) { override.returns(String) }
@@ -103,10 +103,10 @@ module Paseto
     def to_bytes = key
 
     sig(:final) { params(paserk: String).returns(Interface::Key) }
-    def unwrap(paserk) = Paserk.from_paserk(paserk: paserk, wrapping_key: self)
+    def unwrap(paserk) = Paserk.from_paserk(paserk:, wrapping_key: self)
 
     sig(:final) { params(key: Interface::Key, nonce: T.nilable(String)).returns(String) }
-    def wrap(key, nonce: nil) = Paserk.wrap(key: key, wrapping_key: self, nonce: nonce)
+    def wrap(key, nonce: nil) = Paserk.wrap(key:, wrapping_key: self, nonce:)
 
     private
 
