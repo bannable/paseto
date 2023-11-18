@@ -34,7 +34,7 @@ commands:
           appraisal: << parameters.appraisal >>
       - restore_cache:
           keys:
-            - gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - gem-cache-v13-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
       - run:
           name: "Configure Bundler"
           command : |
@@ -91,7 +91,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - &gem-cache gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}-{{ checksum "gemfiles/openssl_3.0.gemfile.lock" }}
+            - &gem-cache gem-cache-v13-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
             - gem-cache-v12-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
             - gem-cache-v12-<< parameters.version >>-{{ arch }}
             - gem-cache-v12-<< parameters.version >>
@@ -255,7 +255,6 @@ workflows:
           matrix:
             parameters:
               version:
-                - "3.0"
                 - "3.1"
                 - "3.2"
       - typecheck:
@@ -265,7 +264,6 @@ workflows:
           matrix:
             parameters:
               version:
-                - "3.0"
                 - "3.1"
                 - "3.2"
               appraisal:
