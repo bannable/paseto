@@ -4,4 +4,8 @@
 
 # typed: false
 
-module SimpleCov::Formatter::JSONFormatter; end
+module RuboCop::AST::NodePattern::Macros; end
+module RuboCop::Cop::AutoCorrector; end
+class RuboCop::Cop::Base; end
+module RuboCop::Cop::ConfigurableEnforcedStyle; end
+module RuboCop::Cop::RangeHelp; end
