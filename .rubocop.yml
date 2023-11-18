@@ -4,7 +4,7 @@ require:
   - rubocop-sorbet
 
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.1
   NewCops: enable
   SuggestExtensions: false
   Exclude:
@@ -77,3 +77,6 @@ Style/Documentation:
 Style/MutableConstant:
   Exclude:
     - 'spec/generate_vectors.rb'
+
+Naming/BlockForwarding:
+  EnforcedStyle: 'explicit'

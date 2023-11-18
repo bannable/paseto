@@ -58,7 +58,7 @@ module Paseto
         Util.pre_auth_encode(pae_header, message, footer, implicit_assertion)
             .then { |m2| @key.sign(m2) }
             .then { |sig| "#{message}#{sig}" }
-            .then { |payload| Token.new(payload: payload, purpose: purpose, version: version, footer: footer) }
+            .then { |payload| Token.new(payload:, purpose:, version:, footer:) }
       end
 
       # Verify the signature of `token`, with an optional binding `implicit_assertion`. `token` must be a `v4.public`` type Token.
@@ -152,10 +152,7 @@ module Paseto
       def ossl_ed25519_private_key?(key)
         raise LucidityError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
 
-        return key.to_text.start_with?('ED25519 Private-Key') if Util.openssl?(3)
-        return key.to_text != "<INVALID PRIVATE KEY>\n" if Util.openssl?(1, 1, 1)
-
-        false
+        key.to_text.start_with?('ED25519 Private-Key')
       end
 
       sig(:final) { returns(RbNaCl::VerifyKey) }

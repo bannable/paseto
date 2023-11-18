@@ -22,12 +22,12 @@ module Paseto
 
         xk = @sealing_key.ecdh(esk)
 
-        @coder.derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
+        @coder.derive_ek_n(xk:, epk:) => {ek:, n:}
 
-        edk = @coder.encrypt(message: key.to_bytes, ek: ek, n: n)
+        edk = @coder.encrypt(message: key.to_bytes, ek:, n:)
 
-        ak = @coder.derive_ak(xk: xk, epk: epk)
-        t = @coder.tag(ak: ak, epk: epk, edk: edk)
+        ak = @coder.derive_ak(xk:, epk:)
+        t = @coder.tag(ak:, epk:, edk:)
 
         epk_bytes = @coder.epk_bytes_from_esk(esk)
         data = Util.encode64("#{t}#{epk_bytes}#{edk}")
@@ -44,13 +44,13 @@ module Paseto
 
         xk = @sealing_key.ecdh(epk)
 
-        ak = @coder.derive_ak(xk: xk, epk: epk)
-        t2 = @coder.tag(ak: ak, epk: epk, edk: edk)
+        ak = @coder.derive_ak(xk:, epk:)
+        t2 = @coder.tag(ak:, epk:, edk:)
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        @coder.derive_ek_n(xk: xk, epk: epk) => {ek:, n:}
+        @coder.derive_ek_n(xk:, epk:) => {ek:, n:}
 
-        @coder.decrypt(message: edk, ek: ek, n: n)
+        @coder.decrypt(message: edk, ek:, n:)
       end
     end
   end

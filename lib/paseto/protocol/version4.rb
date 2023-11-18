@@ -17,7 +17,7 @@ module Paseto
 
       sig(:final) { override.params(data: String, digest_size: Integer).returns(String) }
       def digest(data, digest_size: 32)
-        RbNaCl::Hash.blake2b(data, digest_size: digest_size)
+        RbNaCl::Hash.blake2b(data, digest_size:)
       end
 
       sig(:final) { override.returns(Integer) }
@@ -27,7 +27,7 @@ module Paseto
 
       sig(:final) { override.params(data: String, key: String, digest_size: Integer).returns(String) }
       def hmac(data, key:, digest_size: 32)
-        RbNaCl::Hash.blake2b(data, key: key, digest_size: digest_size)
+        RbNaCl::Hash.blake2b(data, key:, digest_size:)
       end
 
       sig(:final) { override.returns(T.class_of(Operations::ID::IDv4)) }

@@ -50,8 +50,8 @@ module Paseto
       def kdf(password, salt:, length:, **parameters)
         OpenSSL::KDF.pbkdf2_hmac(
           password,
-          salt: salt,
-          length: length,
+          salt:,
+          length:,
           iterations: T.must(parameters[:iterations]),
           hash: 'SHA384'
         )

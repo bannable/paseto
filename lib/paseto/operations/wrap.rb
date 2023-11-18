@@ -22,7 +22,7 @@ module Paseto
 
       sig { params(key: Interface::Key, wrapping_key: SymmetricKey, nonce: T.nilable(String)).returns(String) }
       def self.wrap(key, wrapping_key:, nonce: nil)
-        Wrappers::PIE.new(wrapping_key).encode(key, nonce: nonce)
+        Wrappers::PIE.new(wrapping_key).encode(key, nonce:)
       end
     end
   end

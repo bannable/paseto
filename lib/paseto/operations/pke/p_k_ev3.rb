@@ -55,7 +55,7 @@ module Paseto
           ek = T.must(x[0, 32])
           n = T.must(x[32, 16])
 
-          { ek: ek, n: n }
+          { ek:, n: }
         end
 
         sig { override.params(xk: String, epk: OpenSSL::PKey::EC::Point).returns(String) }

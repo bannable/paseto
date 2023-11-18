@@ -18,7 +18,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
   include_examples 'SymmetricKey'
 
   describe '#encrypt' do
-    subject(:token) { key.encrypt(message: message, n: nonce) }
+    subject(:token) { key.encrypt(message:, n: nonce) }
 
     let(:nonce) { Paseto::Util.decode_hex(%(0000000000000000000000000000000000000000000000000000000000000000)) }
 
@@ -30,7 +30,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
   end
 
   describe '#decrypt' do
-    subject(:plaintext) { key.decrypt(token: token) }
+    subject(:plaintext) { key.decrypt(token:) }
 
     let(:token) { Paseto::Token.parse(token_str) }
 
@@ -88,7 +88,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
   end
 
   describe '#pkbd' do
-    subject(:pbkd) { key.pbkd(password: password, options: options) }
+    subject(:pbkd) { key.pbkd(password:, options:) }
 
     let(:options) { { memlimit: 8_192, opslimit: 1 } }
     let(:password) { 'test' }

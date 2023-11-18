@@ -41,7 +41,7 @@ module Paseto
           )
           n = protocol.digest("#{epk.to_bytes}#{@pk_bytes}", digest_size: 24)
 
-          { ek: ek, n: n }
+          { ek:, n: }
         end
 
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns(String) }

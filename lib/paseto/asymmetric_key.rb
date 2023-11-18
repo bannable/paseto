@@ -60,7 +60,7 @@ module Paseto
     end
     def encode!(payload, footer: '', implicit_assertion: '', **options)
       MultiJson.dump(payload, options)
-               .then { |json| sign(message: json, footer: footer, implicit_assertion: implicit_assertion) }
+               .then { |json| sign(message: json, footer:, implicit_assertion:) }
                .then(&:to_s)
     end
 
@@ -74,9 +74,9 @@ module Paseto
     def decode!(payload, implicit_assertion: '', **options)
       token = Token.parse(payload)
 
-      verify(token: token, implicit_assertion: implicit_assertion)
+      verify(token:, implicit_assertion:)
         .then { |json| MultiJson.load(json, **options) }
-        .then { |claims| Result.new(claims: claims, footer: token.footer) }
+        .then { |claims| Result.new(claims:, footer: token.footer) }
     end
 
     sig(:final) { override.returns(String) }
@@ -95,6 +95,6 @@ module Paseto
     def seal(other) = Paserk.seal(sealing_key: self, key: other)
 
     sig(:final) { params(paserk: String).returns(SymmetricKey) }
-    def unseal(paserk) = Paserk.from_paserk(paserk: paserk, unsealing_key: self)
+    def unseal(paserk) = Paserk.from_paserk(paserk:, unsealing_key: self)
   end
 end

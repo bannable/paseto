@@ -68,7 +68,7 @@ module Paseto
             .then { |data| @key.sign_raw(nil, data) }
             .then { |sig_asn| ASN1::ECDSASignature.from_asn1(sig_asn) }
             .then { |ecdsa_sig| ecdsa_sig.to_rs(SIGNATURE_PART_LEN) }
-            .then { |sig| Token.new(payload: "#{message}#{sig}", purpose: purpose, version: version, footer: footer) }
+            .then { |sig| Token.new(payload: "#{message}#{sig}", purpose:, version:, footer:) }
       rescue Encoding::CompatibilityError
         raise ParseError, 'invalid message encoding, must be UTF-8'
       end

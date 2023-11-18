@@ -79,7 +79,7 @@ RSpec.shared_examples 'Key' do
 
     context 'with JSON serializer options' do
       let(:footer) { { 'time' => Time.now } }
-      let(:coder) { key.encode(payload, footer: footer, implicit_assertion: 'test', mode: :object) }
+      let(:coder) { key.encode(payload, footer:, implicit_assertion: 'test', mode: :object) }
       let(:token) { Paseto::Token.parse(coder) }
 
       it 'respects the serializer options' do
@@ -128,7 +128,7 @@ RSpec.shared_examples 'Key' do
         subject(:decoder) { key.decode!(payload, implicit_assertion: 'test', mode: :object) }
 
         let(:footer) { { 'time' => Time.now } }
-        let(:payload) { key.encode(plain, footer: footer, implicit_assertion: 'test', mode: :object) }
+        let(:payload) { key.encode(plain, footer:, implicit_assertion: 'test', mode: :object) }
         let(:token) { Paseto::Token.parse(payload) }
 
         it 'succeeds' do
