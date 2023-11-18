@@ -152,10 +152,7 @@ module Paseto
       def ossl_ed25519_private_key?(key)
         raise LucidityError, "expected Ed25519 key, got #{key.oid}" unless key.oid == 'ED25519'
 
-        return key.to_text.start_with?('ED25519 Private-Key') if Util.openssl?(3)
-        return key.to_text != "<INVALID PRIVATE KEY>\n" if Util.openssl?(1, 1, 1)
-
-        false
+        key.to_text.start_with?('ED25519 Private-Key')
       end
 
       sig(:final) { returns(RbNaCl::VerifyKey) }
