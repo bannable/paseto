@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   DESCRIPTION
   spec.homepage = 'https://github.com/bannable/paseto'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.0.0'
+  spec.required_ruby_version = '>= 3.1.0'
 
   spec.metadata = {
     'bug_tracker_uri' => 'https://github.com/bannable/paseto/issues',
@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'multi_json', '~> 1.15.0'
-  spec.add_runtime_dependency 'openssl', '~> 3', '>= 3.0.2'
+  spec.add_runtime_dependency 'openssl', '~> 3.1'
   spec.add_runtime_dependency 'sorbet-runtime'
   spec.add_runtime_dependency 'zeitwerk'
 
