@@ -20,9 +20,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"rebornix.Ruby",
+				"Shopify.ruby-lsp",
 				"sorbet.sorbet-vscode-extension",
-				"castwide.solargraph",
 				"yzhang.markdown-all-in-one",
 				"eamodio.gitlens",
 				"KoichiSasada.vscode-rdbg"
@@ -36,7 +35,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	"onCreateCommand": "gem install solargraph --no-document",
 	"postCreateCommand": "bin/setup",
 
 	"remoteUser": "vscode"
