@@ -137,28 +137,6 @@ RSpec.describe 'Paseto::V4::Public', :sodium do
       it 'raises an error' do
         expect { token }.to raise_error(ArgumentError, 'no private key available')
       end
-
-      # rubocop:disable RSpec/NestedGroups
-
-      context 'with openssl/libcrypto 3.0.0 - 3.0.7' do
-        it 'raises an error', :openssl_3_buggy do
-          expect { token }.to raise_error(ArgumentError, 'no private key available')
-        end
-      end
-
-      context 'with openssl/libcrypto 1.1.1' do
-        it 'raises an error', :openssl_1_1_1 do
-          expect { token }.to raise_error(ArgumentError, 'no private key available')
-        end
-      end
-
-      context 'with openssl/libcrypto 3.0.8+' do
-        it 'raises an error', :openssl_3_0_8 do
-          expect { token }.to raise_error(ArgumentError, 'no private key available')
-        end
-      end
-
-      # rubocop:enable RSpec/NestedGroups
     end
   end
 
