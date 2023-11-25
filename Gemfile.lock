@@ -54,7 +54,7 @@ GEM
     prettier_print (1.2.1)
     racc (1.7.3)
     rainbow (3.1.1)
-    rake (13.0.6)
+    rake (13.1.0)
     rbi (0.0.17)
       ast
       parser (>= 3.0.0)
