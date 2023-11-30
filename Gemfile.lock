@@ -141,7 +141,7 @@ GEM
       thor (>= 1.2.0)
       yard-sorbet
     thor (1.2.2)
-    timecop (0.9.6)
+    timecop (0.9.8)
     unicode-display_width (2.5.0)
     unparser (0.6.8)
       diff-lcs (~> 1.3)
