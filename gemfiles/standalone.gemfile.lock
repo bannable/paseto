@@ -102,8 +102,8 @@ DEPENDENCIES
   rspec (~> 3)
   rspec_junit_formatter
   rubocop (~> 1.57)
-  rubocop-performance (~> 1.18)
-  rubocop-rspec (~> 2.22)
+  rubocop-performance (~> 1.19)
+  rubocop-rspec (~> 2.25)
   rubocop-sorbet (~> 0.7)
   ruby-paseto!
   simplecov (~> 0)
