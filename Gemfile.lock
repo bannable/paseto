@@ -34,14 +34,14 @@ GEM
     irb (1.10.1)
       rdoc
       reline (>= 0.3.8)
-    json (2.7.0)
+    json (2.7.1)
     kwalify (0.7.2)
     language_server-protocol (3.17.0.3)
     multi_json (1.15.0)
     netrc (0.11.0)
     oj (3.16.1)
     openssl (3.2.0)
-    parallel (1.23.0)
+    parallel (1.24.0)
     parallel_tests (4.3.0)
       parallel
     parlour (8.1.0)
@@ -68,7 +68,7 @@ GEM
       kwalify (~> 0.7.0)
       parser (~> 3.2.0)
       rainbow (>= 2.0, < 4.0)
-    regexp_parser (2.8.2)
+    regexp_parser (2.8.3)
     reline (0.4.1)
       io-console (~> 0.5)
     rexml (3.2.6)
@@ -87,7 +87,7 @@ GEM
     rspec-support (3.12.0)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (1.58.0)
+    rubocop (1.59.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -167,7 +167,7 @@ DEPENDENCIES
   reek
   rspec (~> 3)
   rspec_junit_formatter
-  rubocop (~> 1.58)
+  rubocop (~> 1.59)
   rubocop-performance (~> 1.19)
   rubocop-rspec (~> 2.25)
   rubocop-sorbet (~> 0.7)
