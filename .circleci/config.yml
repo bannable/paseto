@@ -34,7 +34,7 @@ commands:
           appraisal: << parameters.appraisal >>
       - restore_cache:
           keys:
-            - gem-cache-v14-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile" }}-{{ checksum "gemfiles/rbnacl.gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
+            - gem-cache-v15-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile.lock" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
       - run:
           name: "Configure Bundler"
           command : |
@@ -91,11 +91,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - &gem-cache gem-cache-v14-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile" }}-{{ checksum "gemfiles/rbnacl.gemfile" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
-            - gem-cache-v14-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}-{{ checksum "gemfiles/standalone.gemfile" }}-{{ checksum "gemfiles/rbnacl.gemfile" }}
-            - gem-cache-v14-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile" }}
-            - gem-cache-v14-<< parameters.version >>-{{ arch }}
-            - gem-cache-v14-<< parameters.version >>
+            - &gem-cache gem-cache-v15-<< parameters.version >>-{{ arch }}-{{ checksum "Gemfile.lock" }}-{{ checksum "gemfiles/standalone.gemfile.lock" }}-{{ checksum "gemfiles/rbnacl.gemfile.lock" }}
       - install-bundler:
           appraisal: rbnacl
       - run:
