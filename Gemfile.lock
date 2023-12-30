@@ -106,9 +106,9 @@ GEM
       rubocop (~> 1.41)
     rubocop-factory_bot (2.24.0)
       rubocop (~> 1.33)
-    rubocop-performance (1.19.1)
-      rubocop (>= 1.7.0, < 2.0)
-      rubocop-ast (>= 0.4.0)
+    rubocop-performance (1.20.1)
+      rubocop (>= 1.48.1, < 2.0)
+      rubocop-ast (>= 1.30.0, < 2.0)
     rubocop-rspec (2.25.0)
       rubocop (~> 1.40)
       rubocop-capybara (~> 2.17)
@@ -170,7 +170,7 @@ DEPENDENCIES
   rspec (~> 3)
   rspec_junit_formatter
   rubocop (~> 1.59)
-  rubocop-performance (~> 1.19)
+  rubocop-performance (~> 1.20)
   rubocop-rspec (~> 2.25)
   rubocop-sorbet (~> 0.7)
   ruby-paseto!
