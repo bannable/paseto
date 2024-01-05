@@ -24,7 +24,7 @@ GEM
     bigdecimal (3.1.5)
     commander (4.6.0)
       highline (~> 2.0.0)
-    debug (1.9.0)
+    debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.5.0)
@@ -32,7 +32,7 @@ GEM
     erubi (1.12.0)
     highline (2.0.3)
     io-console (0.7.1)
-    irb (1.10.1)
+    irb (1.11.0)
       rdoc
       reline (>= 0.3.8)
     json (2.7.1)
@@ -56,7 +56,7 @@ GEM
       racc
     prettier_print (1.2.1)
     prism (0.18.0)
-    psych (5.1.1.1)
+    psych (5.1.2)
       stringio
     racc (1.7.3)
     rainbow (3.1.1)
