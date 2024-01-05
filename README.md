@@ -334,7 +334,7 @@ As with the Version 4 parameters above, you most likely do not want to use the d
 
 PASETO [reserves some claim names](https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/04-Claims.md) for particular use in the protocol, and this gem supports verification of all reserved claims.
 
-In the default configuration, the follow claims are verified when present: `exp`, `nbf` and `iat`
+In the default configuration, the following claims are verified when present: `exp`, `nbf` and `iat`
 
 Verification behavior can be controlled by passing a kwarg for the setting to `decode` calls, or through library-level configuration.
 
