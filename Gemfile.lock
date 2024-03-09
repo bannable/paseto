@@ -141,7 +141,7 @@ GEM
       rubocop (~> 1.40)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
-    rubocop-sorbet (0.7.6)
+    rubocop-sorbet (0.7.8)
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
