@@ -83,6 +83,9 @@ module Paseto
     def pbkw_header = protocol.pbkd_secret_header
 
     sig(:final) { override.returns(String) }
+    def pie_header = "#{paserk_version}.secret-wrap.pie."
+
+    sig(:final) { override.returns(String) }
     def purpose = 'public'
 
     sig(:final) { returns(Interface::PKE) }

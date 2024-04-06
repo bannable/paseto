@@ -93,6 +93,9 @@ module Paseto
     sig(:final) { override.returns(String) }
     def pbkw_header = protocol.pbkd_local_header
 
+    sig(:final) { override.returns(String) }
+    def pie_header = "#{paserk_version}.local-wrap.pie."
+
     sig(:final) { returns(Interface::PIE) }
     def pie = protocol.pie(self)
 
