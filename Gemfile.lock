@@ -21,10 +21,10 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
-    bigdecimal (3.1.5)
+    bigdecimal (3.1.7)
     commander (4.6.0)
       highline (~> 2.0.0)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -78,7 +78,7 @@ GEM
       parser
       rainbow (~> 3.0)
       sorbet-runtime (>= 0.5)
-    parser (3.2.2.4)
+    parser (3.3.0.5)
       ast (~> 2.4.1)
       racc
     prettier_print (1.2.1)
@@ -93,9 +93,9 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     rdoc (6.6.3.1)
       psych (>= 4.0.0)
-    reek (6.2.0)
+    reek (6.3.0)
       dry-schema (~> 1.13.0)
-      parser (~> 3.2.0)
+      parser (~> 3.3.0)
       rainbow (>= 2.0, < 4.0)
       rexml (~> 3.1)
     regexp_parser (2.9.0)
@@ -184,7 +184,7 @@ GEM
     yard-sorbet (0.8.1)
       sorbet-runtime (>= 0.5)
       yard (>= 0.9)
-    zeitwerk (2.6.12)
+    zeitwerk (2.6.13)
 
 PLATFORMS
   x86_64-linux
