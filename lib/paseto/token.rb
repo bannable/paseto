@@ -60,13 +60,14 @@ module Paseto
                    .then { |data| "#{version}.#{purpose}.#{data}" }
                    .then(&:freeze)
 
-      @version =     T.let(version.freeze,             String)
-      @purpose =     T.let(purpose.freeze,             String)
-      @raw_payload = T.let(payload.freeze,             String)
-      @type =        T.let(validate_header,            T.class_of(Interface::Key))
-      @footer =      T.let(footer,                     T.any(String, T::Hash[String, T.untyped]))
-      @raw_footer =  T.let(raw_footer,                 String)
-      @str =         T.let(paseto,                     String)
+      @version     = T.let(version.freeze,  String)
+      @purpose     = T.let(purpose.freeze,  String)
+      @raw_payload = T.let(payload.freeze,  String)
+      @type        = T.let(validate_header, T.class_of(Interface::Key))
+      @footer      = T.let(footer,          T.any(String, T::Hash[String, T.untyped]))
+      @raw_footer  = T.let(raw_footer,      String)
+      @str         = T.let(paseto,          String)
+      @result      = T.let(nil,             T.nilable(Result))
     end
 
     sig do
@@ -80,7 +81,7 @@ module Paseto
       return @result.claims if @result
 
       key.decode(@str, implicit_assertion:, **options)
-         .then { |result| @result = T.let(result, T.nilable(Result)) }
+         .then { |result| @result = result }
          .then(&:claims)
     end
 
