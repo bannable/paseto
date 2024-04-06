@@ -35,11 +35,12 @@ module Paseto
 
         sig { override.params(xk: String, epk: RbNaCl::PublicKey).returns({ ek: String, n: String }) }
         def derive_ek_n(xk:, epk:)
+          epk_bytes = epk.to_bytes
           ek = protocol.digest(
-            "#{DOMAIN_SEPARATOR_ENCRYPT}#{header}#{xk}#{epk.to_bytes}#{@pk_bytes}",
+            "#{DOMAIN_SEPARATOR_ENCRYPT}#{header}#{xk}#{epk_bytes}#{@pk_bytes}",
             digest_size: 32
           )
-          n = protocol.digest("#{epk.to_bytes}#{@pk_bytes}", digest_size: 24)
+          n = protocol.digest("#{epk_bytes}#{@pk_bytes}", digest_size: 24)
 
           { ek:, n: }
         end

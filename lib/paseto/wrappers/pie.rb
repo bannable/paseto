@@ -20,7 +20,7 @@ module Paseto
         raise LucidityError unless key.version == @wrapping_key.version
 
         nonce ||= @coder.random_nonce
-        header = pie_header(key)
+        header = key.pie_header
 
         c = @coder.crypt(nonce:, payload: key.to_bytes)
 

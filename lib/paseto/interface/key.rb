@@ -41,6 +41,9 @@ module Paseto
       sig { abstract.returns(String) }
       def pbkw_header; end
 
+      sig { abstract.returns(String) }
+      def pie_header; end
+
       sig { abstract.returns(Version) }
       def protocol; end
 

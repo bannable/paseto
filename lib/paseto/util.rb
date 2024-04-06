@@ -76,7 +76,7 @@ module Paseto
     # Moving the sig out of the conditional triggers a bug in rubocop-sorbet
 
     # Use a faster comparison when RbNaCl is available
-    if Paseto.rbnacl?
+    if Paseto::HAS_RBNACL
       sig { params(a: String, b: String).returns(T::Boolean) }
       def self.constant_compare(a, b)
         h_a = RbNaCl::Hash.blake2b(a)

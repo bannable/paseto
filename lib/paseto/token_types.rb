@@ -17,9 +17,9 @@ module Paseto
       case self
       in V3Local then V3::Local
       in V3Public then V3::Public
-      in V4Local if Paseto.rbnacl?
+      in V4Local if Paseto::HAS_RBNACL
         V4::Local
-      in V4Public if Paseto.rbnacl?
+      in V4Public if Paseto::HAS_RBNACL
         V4::Public
       else
         nil

@@ -42,6 +42,8 @@ module Paseto
   extend T::Sig
   extend Configuration
 
+  HAS_RBNACL = T.let(!defined?(RbNaCl).nil?, T::Boolean)
+
   class Error < StandardError; end
 
   class AlgorithmError < Error; end
@@ -89,11 +91,6 @@ module Paseto
   class ParseError < Error; end
   # Tried to work with a V4 token without RbNaCl loaded
   class UnsupportedToken < ParseError; end
-
-  sig { returns(T::Boolean) }
-  def self.rbnacl?
-    !!defined?(RbNaCl)
-  end
 end
 
 loader.eager_load

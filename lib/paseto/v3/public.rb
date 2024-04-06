@@ -80,9 +80,10 @@ module Paseto
         raise LucidityError unless header == token.header
 
         payload = token.raw_payload
-        raise ParseError, 'message too short' if payload.bytesize < SIGNATURE_BYTE_LEN
+        signature_end = payload.bytesize - SIGNATURE_BYTE_LEN
+        raise ParseError, 'message too short' if signature_end <= 0
 
-        m = T.must(payload.slice(0, payload.bytesize - SIGNATURE_BYTE_LEN))
+        m = T.must(payload.slice(0, signature_end))
 
         s = T.must(payload.slice(-SIGNATURE_BYTE_LEN, SIGNATURE_BYTE_LEN))
              .then { |bytes| ASN1::ECDSASignature.from_rs(bytes, SIGNATURE_PART_LEN).to_der }

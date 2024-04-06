@@ -46,6 +46,8 @@ plugins:
   reek:
     enabled: true
     channel: beta
+    config:
+      target_ruby_version: "3.1"
 
 exclude_patterns:
 - "config/"
