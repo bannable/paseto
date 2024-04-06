@@ -12,7 +12,7 @@ executors:
     parameters:
       version:
         type: string
-        default: "3.2"
+        default: "3.3"
     docker:
       - image: cimg/ruby:<< parameters.version >>
     environment:
@@ -28,7 +28,7 @@ commands:
         default: standalone
       version:
         type: string
-        default: "3.2"
+        default: "3.3"
     steps:
       - install-bundler:
           appraisal: << parameters.appraisal >>
@@ -83,7 +83,7 @@ jobs:
     parameters:
       version:
         type: string
-        default: "3.2"
+        default: "3.3"
     executor:
       name: ruby-specs
       version: << parameters.version >>
@@ -124,7 +124,7 @@ jobs:
     parameters:
       version:
         type: string
-        default: "3.2"
+        default: "3.3"
       appraisal:
         type: string
         default: standalone
@@ -257,7 +257,7 @@ workflows:
                 - "3.3"
       - typecheck:
           requires:
-            - install-dependencies-3.2
+            - install-dependencies-3.3
       - specs:
           matrix:
             parameters:
@@ -273,7 +273,7 @@ workflows:
             - install-dependencies-<< matrix.version >>
       - rubocop:
           requires:
-            - install-dependencies-3.2
+            - install-dependencies-3.3
       - codeclimate-upload:
           requires:
             - specs
