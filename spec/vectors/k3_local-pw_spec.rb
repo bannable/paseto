@@ -56,7 +56,7 @@ RSpec.describe "PASERK k3.local-pw Test Vectors" do
       Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
 
-    if Paseto.rbnacl?
+    if Paseto::HAS_RBNACL
       expect do
         pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
       end.to raise_error(Paseto::LucidityError)
@@ -73,7 +73,7 @@ RSpec.describe "PASERK k3.local-pw Test Vectors" do
       Paseto::Paserk.from_paserk(paserk: paserk, password: password)
     end.to raise_error(Paseto::InvalidAuthenticator)
 
-    if Paseto.rbnacl?
+    if Paseto::HAS_RBNACL
       expect do
         pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
       end.to raise_error(Paseto::LucidityError)
@@ -90,7 +90,7 @@ RSpec.describe "PASERK k3.local-pw Test Vectors" do
       pbkw.decode(paserk)
     end.to raise_error(Paseto::LucidityError)
 
-    if Paseto.rbnacl?
+    if Paseto::HAS_RBNACL
       expect do
         pbkw.encode(Paseto::V4::Local.new(ikm: 0.chr * 32), options)
       end.to raise_error(Paseto::LucidityError)

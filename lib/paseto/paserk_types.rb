@@ -32,9 +32,9 @@ module Paseto
         V3::Public.from_scalar_bytes(input)
       in K3Public
         V3::Public.from_public_bytes(input)
-      in K4LocalWrap | K4LocalPBKW | K4Local if Paseto.rbnacl? && input.bytesize == 32
+      in K4LocalWrap | K4LocalPBKW | K4Local if Paseto::HAS_RBNACL && input.bytesize == 32
         V4::Local.new(ikm: input)
-      in K4SecretWrap | K4SecretPBKW | K4Secret if Paseto.rbnacl? && input.bytesize == 64
+      in K4SecretWrap | K4SecretPBKW | K4Secret if Paseto::HAS_RBNACL && input.bytesize == 64
         V4::Public.from_keypair(input)
       in K4Public
         V4::Public.from_public_bytes(input)

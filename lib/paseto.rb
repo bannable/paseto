@@ -42,6 +42,8 @@ module Paseto
   extend T::Sig
   extend Configuration
 
+  HAS_RBNACL = T.let(!defined?(RbNaCl).nil?, T::Boolean)
+
   class Error < StandardError; end
 
   class AlgorithmError < Error; end
