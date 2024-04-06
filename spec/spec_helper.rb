@@ -34,4 +34,5 @@ RSpec.configure do |config|
   end
 
   config.filter_run_excluding :sodium unless Paseto.rbnacl?
+  config.filter_run_excluding :buggy_utf8_encoding unless Gem::ruby_version >= '3.4.0' || (Gem::ruby_version < '3.3.0')
 end

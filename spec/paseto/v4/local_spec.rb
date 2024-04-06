@@ -40,7 +40,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
       expect(plaintext.encoding).to eq(Encoding::UTF_8)
     end
 
-    context 'when the payload is not UTF-8 encoded' do
+    context 'when the payload is not UTF-8 encoded', :buggy_utf8_encoding do
       # Encodes \xC0, which is never valid in UTF8
       let(:token_str) { 'v4.local.KX7ip5lRyRQUWoFSmE5I6RhliAjEpjjYQlp1akSOytT6_NzaxjXSWGYR3hUlpHaRaFItH438zF7CIWx1Z9DLwvg' }
 
