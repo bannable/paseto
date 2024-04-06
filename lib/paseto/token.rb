@@ -116,12 +116,13 @@ module Paseto
 
     sig { returns(T.class_of(Interface::Key)) }
     def validate_header
-      type = TokenTypes.deserialize(header).key_klass
-      return type if type
+      type = begin
+        TokenTypes.deserialize(header).key_klass
+      rescue KeyError
+        nil
+      end
 
-      raise UnsupportedToken, header
-    rescue KeyError
-      raise UnsupportedToken, header
+      type or raise UnsupportedToken, header
     end
   end
 end
