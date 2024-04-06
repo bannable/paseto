@@ -37,8 +37,7 @@ module Paseto
       sig { params(paserk: String).returns(Interface::Key) }
       def unseal(paserk)
         paserk.split('.') => [version, type, encoded_data]
-        raise LucidityError unless version == @sealing_key.paserk_version
-        raise LucidityError unless type == 'seal'
+        raise LucidityError unless version == @sealing_key.paserk_version && type == 'seal'
 
         t, epk, edk = @coder.split(encoded_data)
 

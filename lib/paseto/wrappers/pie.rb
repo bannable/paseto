@@ -52,20 +52,6 @@ module Paseto
 
         PaserkTypes.deserialize("#{version}.#{type}").generate(ptk)
       end
-
-      private
-
-      sig { params(key: Interface::Key).returns(String) }
-      def pie_header(key)
-        case key
-        when SymmetricKey then @coder.local_header
-        when AsymmetricKey then @coder.secret_header
-        else
-          # :nocov:
-          raise ArgumentError, 'not a valid type of key'
-          # :nocov:
-        end
-      end
     end
   end
 end
