@@ -92,14 +92,6 @@ class OpenSSL::PKey::PKey
   def to_text; end
 end
 
-module OpenSSL
-  sig { params(a: String, b: String).returns(T::Boolean) }
-  def self.secure_compare(a, b); end
-
-  sig { params(a: String, b: String).returns(T::Boolean) }
-  def self.fixed_length_secure_compare(a, b); end
-end
-
 class OpenSSL::Digest
   sig { params(name: String, data: String).returns(String) }
   def self.digest(name, data); end
