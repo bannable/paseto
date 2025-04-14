@@ -51,7 +51,7 @@ RSpec.describe 'Paseto::V4::Local', :sodium do
 
     context 'when payload contains \xF0 character (emoji)' do
       let(:message) { '{"data":"🦊"}' } # Fox emoji (contains \xF0\x9F\xA6\x8A)
-      let(:token_str) { key.encrypt(message: message).to_s }
+      let(:token_str) { key.encrypt(message:).to_s }
 
       it 'returns a UTF-8 encoded string' do
         expect(plaintext.encoding).to eq(Encoding::UTF_8)
