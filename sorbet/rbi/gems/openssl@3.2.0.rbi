@@ -16,8 +16,6 @@ class Integer < ::Numeric
   def to_bn; end
 end
 
-Integer::GMP_VERSION = T.let(T.unsafe(nil), String)
-
 module OpenSSL
   private
 
@@ -31,7 +29,7 @@ module OpenSSL
   #   Digest("Foo")
   #   # => NameError: wrong constant name Foo
   #
-  # source://openssl//openssl/digest.rb#67
+  # source://openssl//openssl/digest.rb#63
   def Digest(name); end
 
   class << self
@@ -45,7 +43,7 @@ module OpenSSL
     #   Digest("Foo")
     #   # => NameError: wrong constant name Foo
     #
-    # source://openssl//openssl/digest.rb#67
+    # source://openssl//openssl/digest.rb#63
     def Digest(name); end
 
     # call-seq:
@@ -84,12 +82,12 @@ module OpenSSL::Buffering
   # Writes _s_ to the stream.  _s_ will be converted to a String using
   # +.to_s+ method.
   #
-  # source://openssl//openssl/buffering.rb#422
+  # source://openssl//openssl/buffering.rb#419
   def <<(s); end
 
   # Closes the SSLSocket and flushes any unwritten data.
   #
-  # source://openssl//openssl/buffering.rb#483
+  # source://openssl//openssl/buffering.rb#480
   def close; end
 
   # Executes the block for every line in the stream where lines are separated
@@ -97,12 +95,12 @@ module OpenSSL::Buffering
   #
   # See also #gets
   #
-  # source://openssl//openssl/buffering.rb#259
+  # source://openssl//openssl/buffering.rb#256
   def each(eol = T.unsafe(nil)); end
 
   # Calls the given block once for each byte in the stream.
   #
-  # source://openssl//openssl/buffering.rb#300
+  # source://openssl//openssl/buffering.rb#297
   def each_byte; end
 
   # Executes the block for every line in the stream where lines are separated
@@ -110,7 +108,7 @@ module OpenSSL::Buffering
   #
   # See also #gets
   #
-  # source://openssl//openssl/buffering.rb#259
+  # source://openssl//openssl/buffering.rb#256
   def each_line(eol = T.unsafe(nil)); end
 
   # Returns true if the stream is at file which means there is no more data to
@@ -118,7 +116,7 @@ module OpenSSL::Buffering
   #
   # @return [Boolean]
   #
-  # source://openssl//openssl/buffering.rb#331
+  # source://openssl//openssl/buffering.rb#328
   def eof; end
 
   # Returns true if the stream is at file which means there is no more data to
@@ -126,12 +124,12 @@ module OpenSSL::Buffering
   #
   # @return [Boolean]
   #
-  # source://openssl//openssl/buffering.rb#331
+  # source://openssl//openssl/buffering.rb#328
   def eof?; end
 
   # Flushes buffered data to the SSLSocket.
   #
-  # source://openssl//openssl/buffering.rb#471
+  # source://openssl//openssl/buffering.rb#468
   def flush; end
 
   # call-seq:
@@ -139,13 +137,13 @@ module OpenSSL::Buffering
   #
   # Get the next 8bit byte from `ssl`.  Returns `nil` on EOF
   #
-  # source://openssl//openssl/buffering.rb#108
+  # source://openssl//openssl/buffering.rb#106
   def getbyte; end
 
   # Reads one character from the stream.  Returns nil if called at end of
   # file.
   #
-  # source://openssl//openssl/buffering.rb#293
+  # source://openssl//openssl/buffering.rb#290
   def getc; end
 
   # Reads the next "line" from the stream.  Lines are separated by _eol_.  If
@@ -158,14 +156,14 @@ module OpenSSL::Buffering
   #
   # Unlike IO#gets the separator must be provided if a limit is provided.
   #
-  # source://openssl//openssl/buffering.rb#235
+  # source://openssl//openssl/buffering.rb#232
   def gets(eol = T.unsafe(nil), limit = T.unsafe(nil)); end
 
   # Writes _args_ to the stream.
   #
   # See IO#print for full details.
   #
-  # source://openssl//openssl/buffering.rb#450
+  # source://openssl//openssl/buffering.rb#447
   def print(*args); end
 
   # Formats and writes to the stream converting parameters under control of
@@ -173,14 +171,14 @@ module OpenSSL::Buffering
   #
   # See Kernel#sprintf for format string details.
   #
-  # source://openssl//openssl/buffering.rb#463
+  # source://openssl//openssl/buffering.rb#460
   def printf(s, *args); end
 
   # Writes _args_ to the stream along with a record separator.
   #
   # See IO#puts for full details.
   #
-  # source://openssl//openssl/buffering.rb#432
+  # source://openssl//openssl/buffering.rb#429
   def puts(*args); end
 
   # Reads _size_ bytes from the stream.  If _buf_ is provided it must
@@ -188,7 +186,7 @@ module OpenSSL::Buffering
   #
   # See IO#read for full details.
   #
-  # source://openssl//openssl/buffering.rb#119
+  # source://openssl//openssl/buffering.rb#116
   def read(size = T.unsafe(nil), buf = T.unsafe(nil)); end
 
   # Reads at most _maxlen_ bytes in the non-blocking manner.
@@ -224,7 +222,7 @@ module OpenSSL::Buffering
   # return the symbol +:wait_writable+ or +:wait_readable+ instead. At EOF,
   # it will return +nil+ instead of raising EOFError.
   #
-  # source://openssl//openssl/buffering.rb#204
+  # source://openssl//openssl/buffering.rb#201
   def read_nonblock(maxlen, buf = T.unsafe(nil), exception: T.unsafe(nil)); end
 
   # Reads a one-character string from the stream.  Raises an EOFError at end
@@ -232,7 +230,7 @@ module OpenSSL::Buffering
   #
   # @raise [EOFError]
   #
-  # source://openssl//openssl/buffering.rb#310
+  # source://openssl//openssl/buffering.rb#307
   def readchar; end
 
   # Reads a line from the stream which is separated by _eol_.
@@ -241,14 +239,14 @@ module OpenSSL::Buffering
   #
   # @raise [EOFError]
   #
-  # source://openssl//openssl/buffering.rb#284
+  # source://openssl//openssl/buffering.rb#281
   def readline(eol = T.unsafe(nil)); end
 
   # Reads lines from the stream which are separated by _eol_.
   #
   # See also #gets
   #
-  # source://openssl//openssl/buffering.rb#271
+  # source://openssl//openssl/buffering.rb#268
   def readlines(eol = T.unsafe(nil)); end
 
   # Reads at most _maxlen_ bytes from the stream.  If _buf_ is provided it
@@ -256,7 +254,7 @@ module OpenSSL::Buffering
   #
   # See IO#readpartial for full details.
   #
-  # source://openssl//openssl/buffering.rb#146
+  # source://openssl//openssl/buffering.rb#143
   def readpartial(maxlen, buf = T.unsafe(nil)); end
 
   # The "sync mode" of the SSLSocket.
@@ -280,13 +278,13 @@ module OpenSSL::Buffering
   #
   # Has no effect on unbuffered reads (such as #sysread).
   #
-  # source://openssl//openssl/buffering.rb#323
+  # source://openssl//openssl/buffering.rb#320
   def ungetc(c); end
 
   # Writes _s_ to the stream.  If the argument is not a String it will be
   # converted using +.to_s+ method.  Returns the number of bytes written.
   #
-  # source://openssl//openssl/buffering.rb#369
+  # source://openssl//openssl/buffering.rb#366
   def write(*s); end
 
   # Writes _s_ in the non-blocking manner.
@@ -325,7 +323,7 @@ module OpenSSL::Buffering
   # that write_nonblock should not raise an IO::Wait*able exception, but
   # return the symbol +:wait_writable+ or +:wait_readable+ instead.
   #
-  # source://openssl//openssl/buffering.rb#413
+  # source://openssl//openssl/buffering.rb#410
   def write_nonblock(s, exception: T.unsafe(nil)); end
 
   private
@@ -338,7 +336,7 @@ module OpenSSL::Buffering
   # Writes _s_ to the buffer.  When the buffer is full or #sync is true the
   # buffer is flushed to the underlying socket.
   #
-  # source://openssl//openssl/buffering.rb#346
+  # source://openssl//openssl/buffering.rb#343
   def do_write(s); end
 
   # Fills the buffer from the underlying SSLSocket
@@ -458,15 +456,11 @@ class OpenSSL::Digest < ::Digest::Class
     # Return the hash value computed with _name_ Digest. _name_ is either the
     # long name or short name of a supported digest algorithm.
     #
-    # === Examples
+    # === Example
     #
     #   OpenSSL::Digest.digest("SHA256", "abc")
     #
-    # which is equivalent to:
-    #
-    #   OpenSSL::Digest.digest('SHA256', "abc")
-    #
-    # source://openssl//openssl/digest.rb#29
+    # source://openssl//openssl/digest.rb#25
     def digest(name, data); end
   end
 end
@@ -478,105 +472,105 @@ end
 class OpenSSL::Digest::Digest < ::OpenSSL::Digest; end
 
 class OpenSSL::Digest::MD4 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::MD5 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::RIPEMD160 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::SHA1 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::SHA224 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::SHA256 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::SHA384 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
 
 class OpenSSL::Digest::SHA512 < ::OpenSSL::Digest
-  # source://openssl//openssl/digest.rb#35
+  # source://openssl//openssl/digest.rb#31
   def initialize(data = T.unsafe(nil)); end
 
   class << self
-    # source://openssl//openssl/digest.rb#41
+    # source://openssl//openssl/digest.rb#37
     def digest(data); end
 
-    # source://openssl//openssl/digest.rb#42
+    # source://openssl//openssl/digest.rb#38
     def hexdigest(data); end
   end
 end
@@ -1041,6 +1035,19 @@ class OpenSSL::PKey::RSA < ::OpenSSL::PKey::PKey
   end
 end
 
+class OpenSSL::Provider
+  def inspect; end
+  def name; end
+  def unload; end
+
+  class << self
+    def load(_arg0); end
+    def provider_names; end
+  end
+end
+
+class OpenSSL::Provider::ProviderError < ::OpenSSL::OpenSSLError; end
+
 module OpenSSL::SSL
   private
 
@@ -1199,11 +1206,11 @@ class OpenSSL::SSL::SSLContext
   def tmp_dh_callback=(_arg0); end
 end
 
-# source://openssl//openssl/ssl.rb#37
-OpenSSL::SSL::SSLContext::DEFAULT_2048 = T.let(T.unsafe(nil), OpenSSL::PKey::DH)
-
 # source://openssl//openssl/ssl.rb#49
 OpenSSL::SSL::SSLContext::DEFAULT_TMP_DH_CALLBACK = T.let(T.unsafe(nil), Proc)
+
+# source://openssl//openssl/ssl.rb#37
+OpenSSL::SSL::SSLContext::DH_ffdhe2048 = T.let(T.unsafe(nil), OpenSSL::PKey::DH)
 
 # The list of available SSL/TLS methods. This constant is only provided
 # for backwards compatibility.
