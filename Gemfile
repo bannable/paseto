@@ -5,9 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  # https://github.com/thoughtbot/appraisal/pull/205
-  # Move back into the gemspec after Thoughtbot releases a fixed version
-  gem 'appraisal', '~> 2', github: 'thoughtbot/appraisal', ref: 'b200e636903700098bef25f4f51dbc4c46e4c04c'
+  gem 'appraisal', '~> 2.5'
 
   gem 'bundler', '~> 2'
   gem 'debug', '>= 1.0'
