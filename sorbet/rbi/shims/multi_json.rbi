@@ -16,4 +16,6 @@ module MultiJson
     ).returns(String)
   end
   def self.dump(obj, options = {}); end
+
+  class ParseError < StandardError; end
 end
