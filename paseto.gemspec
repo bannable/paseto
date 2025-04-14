@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'multi_json', '~> 1.15.0'
-  spec.add_dependency 'openssl', '~> 3.1'
+  spec.add_dependency 'openssl', '~> 3.3'
   spec.add_dependency 'sorbet-runtime'
   spec.add_dependency 'zeitwerk'
 
