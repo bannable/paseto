@@ -54,7 +54,7 @@ module Oj
     #
     # @param mimic_paths [Array] additional paths to add to the Ruby loaded features.
     #
-    # source://oj//lib/oj/mimic.rb#82
+    # source://oj//lib/oj/mimic.rb#84
     def mimic_loaded(mimic_paths = T.unsafe(nil)); end
 
     def object_load(*_arg0); end
@@ -149,7 +149,7 @@ class Oj::CStack; end
 # differences. These are the options that setup the custom mode to be like
 # the compat mode.
 #
-# source://oj//lib/oj/mimic.rb#14
+# source://oj//lib/oj/mimic.rb#16
 Oj::CUSTOM_MIMIC_JSON_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 class Oj::Cache; end
@@ -229,14 +229,14 @@ class Oj::LoadError < ::Oj::Error; end
 # but in mimic we use a C struct to store defaults. This class creates a view
 # onto that struct.
 #
-# source://oj//lib/oj/mimic.rb#59
+# source://oj//lib/oj/mimic.rb#61
 class Oj::MimicDumpOption < ::Hash
   # @return [MimicDumpOption] a new instance of MimicDumpOption
   #
-  # source://oj//lib/oj/mimic.rb#60
+  # source://oj//lib/oj/mimic.rb#62
   def initialize; end
 
-  # source://oj//lib/oj/mimic.rb#70
+  # source://oj//lib/oj/mimic.rb#72
   def []=(key, value); end
 end
 
@@ -577,18 +577,18 @@ Oj::VERSION = T.let(T.unsafe(nil), String)
 
 # More monkey patches.
 #
-# source://oj//lib/oj/mimic.rb#284
+# source://oj//lib/oj/mimic.rb#286
 class String
   include ::Comparable
 
-  # source://oj//lib/oj/mimic.rb#291
+  # source://oj//lib/oj/mimic.rb#293
   def to_json_raw(*_arg0); end
 
-  # source://oj//lib/oj/mimic.rb#285
+  # source://oj//lib/oj/mimic.rb#287
   def to_json_raw_object; end
 
   class << self
-    # source://oj//lib/oj/mimic.rb#294
+    # source://oj//lib/oj/mimic.rb#296
     def json_create(obj); end
   end
 end

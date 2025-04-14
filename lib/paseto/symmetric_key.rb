@@ -41,7 +41,7 @@ module Paseto
     # If `token` includes a footer, it is treated as authenticated data to be verified but not returned.
     # `token` must be a `v4.local` type Token.
     sig(:final) { params(token: Token, implicit_assertion: String).returns(String) }
-    def decrypt(token:, implicit_assertion: '')
+    def decrypt(token:, implicit_assertion: '') # rubocop:disable Metrics/AbcSize
       raise LucidityError unless header == token.header
 
       n, c, t = split_payload(token.raw_payload)

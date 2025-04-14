@@ -31,26 +31,26 @@ Then, run `bundle install` and `require 'paseto'`.
 ## Supported PASETO versions
 
 `paseto` supports these PASETO versions and purposes:
-| purpose | v4 | v3 |
-| ---------| ---- | ---- |
-| `local` | ✅ | ✅ |
-| `public` | ✅ | ✅ |
+| purpose  | v4  | v3  |
+| -------- | --- | --- |
+| `local`  | ✅   | ✅   |
+| `public` | ✅   | ✅   |
 
 ## Support for PASERK types
 
 |                                                                                                                               | v4  | v3  |
 | ----------------------------------------------------------------------------------------------------------------------------- | --- | --- |
-| [`lid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/lid.md)                 | ✅  | ✅  |
-| [`sid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/sid.md)                 | ✅  | ✅  |
-| [`pid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/pid.md)                 | ✅  | ✅  |
-| [`local`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local.md)             | ✅  | ✅  |
-| [`secret`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret.md)           | ✅  | ✅  |
-| [`public`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/public.md)           | ✅  | ✅  |
-| [`seal`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/seal.md)               | ✅  | ✅  |
-| [`local-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-wrap.md)   | ✅  | ✅  |
-| [`secret-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-wrap.md) | ✅  | ✅  |
-| [`local-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-pw.md)       | ✅  | ✅  |
-| [`secret-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-pw.md)     | ✅  | ✅  |
+| [`lid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/lid.md)                 | ✅   | ✅   |
+| [`sid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/sid.md)                 | ✅   | ✅   |
+| [`pid`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/pid.md)                 | ✅   | ✅   |
+| [`local`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local.md)             | ✅   | ✅   |
+| [`secret`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret.md)           | ✅   | ✅   |
+| [`public`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/public.md)           | ✅   | ✅   |
+| [`seal`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/seal.md)               | ✅   | ✅   |
+| [`local-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-wrap.md)   | ✅   | ✅   |
+| [`secret-wrap`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-wrap.md) | ✅   | ✅   |
+| [`local-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/local-pw.md)       | ✅   | ✅   |
+| [`secret-pw`](https://github.com/paseto-standard/paserk/blob/8cc4934687a3c9235387d005fb79eec33f43166d/types/secret-pw.md)     | ✅   | ✅   |
 
 ## Implementation Guideline compliance
 
@@ -482,17 +482,17 @@ hash = { data: 'data' }
 payload = crypt.encode(hash)
 
 # Require presence
-crypt.decode(payload, verify_jti: true)) # => Paseto::InvalidTokenIdentifier
+crypt.decode(payload, verify_jti: true) # => Paseto::InvalidTokenIdentifier
 
 # Require exact value
 hash[:jti] = 'foo'
 payload = crypt.encode(payload: hash)
-crypt.decode(payload, verify_jti: 'foo')) # { 'data' => ... }
-crypt.decode(payload, verify_jti: 'bar')) # Paseto::InvalidTokenIdentifier
+crypt.decode(payload, verify_jti: 'foo') # { 'data' => ... }
+crypt.decode(payload, verify_jti: 'bar') # Paseto::InvalidTokenIdentifier
 
 # Or something more complex
 jti_proc = ->(jti) { jti == 'bar'}
-crypt.decode(payload, verify_jti: jti_proc)) # Paseto::InvalidTokenIdentifier
+crypt.decode(payload, verify_jti: jti_proc) # Paseto::InvalidTokenIdentifier
 ```
 
 ## Development
