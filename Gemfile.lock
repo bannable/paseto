@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-paseto (0.1.2)
+    ruby-paseto (0.2.0)
       multi_json (~> 1.15.0)
       openssl (~> 3.3)
       sorbet-runtime
