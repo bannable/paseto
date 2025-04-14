@@ -52,9 +52,12 @@ module Paseto
       t2 = protocol.hmac(pre_auth, key: ak)
       raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-      protocol.crypt(payload: c, key: ek, nonce: n2).encode(Encoding::UTF_8)
-    rescue Encoding::UndefinedConversionError
-      raise ParseError, 'invalid payload encoding'
+      decrypted = protocol.crypt(payload: c, key: ek, nonce: n2)
+      decrypted.force_encoding('UTF-8')
+
+      raise ParseError, 'invalid payload encoding' unless decrypted.valid_encoding?
+
+      decrypted
     end
 
     sig(:final) do
