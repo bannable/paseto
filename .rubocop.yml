@@ -1,7 +1,7 @@
-require:
-  - rubocop-performance
-  - rubocop-rspec
+plugins:
   - rubocop-sorbet
+  - rubocop-rspec
+  - rubocop-performance
 
 AllCops:
   TargetRubyVersion: 3.1
