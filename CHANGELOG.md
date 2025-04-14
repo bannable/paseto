@@ -5,6 +5,7 @@
 - Remove support for ruby/openssl 3.0.x
 - Refactor how version protocols are implemented to greatly improve sorbet coverage
 - `Paseto.rbnacl?` is replaced by `Paseto::HAS_RBNACL`
+- Fix decoding of multibyte characters in payloads, #216 thanks to @pelted @levicole
 
 ## [0.1.2]
 
