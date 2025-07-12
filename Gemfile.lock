@@ -14,11 +14,11 @@ GEM
       bundler
       rake
       thor (>= 0.14.0)
-    ast (2.4.2)
+    ast (2.4.3)
     benchmark (0.4.0)
     bigdecimal (3.1.7)
-    commander (4.6.0)
-      highline (~> 2.0.0)
+    commander (5.0.0)
+      highline (~> 3.0.0)
     concurrent-ruby (1.2.3)
     debug (1.9.2)
       irb (~> 1.10)
@@ -53,7 +53,7 @@ GEM
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
     erubi (1.13.1)
-    highline (2.0.3)
+    highline (3.0.1)
     io-console (0.7.2)
     irb (1.12.0)
       rdoc
@@ -70,8 +70,8 @@ GEM
     parallel (1.24.0)
     parallel_tests (4.5.2)
       parallel
-    parlour (8.1.0)
-      commander (~> 4.5)
+    parlour (9.1.2)
+      commander (~> 5.0)
       parser
       rainbow (~> 3.0)
       sorbet-runtime (>= 0.5)
@@ -81,7 +81,7 @@ GEM
     prism (1.4.0)
     psych (5.1.2)
       stringio
-    racc (1.7.3)
+    racc (1.8.1)
     rainbow (3.1.1)
     rake (13.1.0)
     rbi (0.3.2)
