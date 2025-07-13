@@ -16,7 +16,7 @@ end
 gem 'oj'
 gem 'parallel_tests'
 gem 'rake', '~> 13'
-gem 'reek'
+gem 'reek', '>= 6.4.0'
 gem 'rspec', '~> 3'
 gem 'rspec_junit_formatter'
 gem 'rubocop', '~> 1.75', require: false
