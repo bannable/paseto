@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"Shopify.ruby-lsp",
+			"sorbet.sorbet-vscode-extension",
+			"yzhang.markdown-all-in-one",
+			"eamodio.gitlens",
+			"KoichiSasada.vscode-rdbg",
+			"anthropic.claude-code"
+		]
+	}
+}

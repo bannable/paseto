@@ -32,11 +32,12 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject do |f|
       f.match(/^(?:bin|spec|coverage|tmp|devcontainers|gemfiles)/) || # Irrelevant directories
         f.match(/^\.+/) || # Anything starting with .
-        f.match(/^(Gemfile|Gemfile\.lock|Rakefile|Appraisals)$/) # Irrelevant files
+        f.match(/^(Gemfile|Gemfile\.lock|Rakefile)$/) # Irrelevant files
     end
   end
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'base64'
   spec.add_dependency 'multi_json', '~> 1.17'
   spec.add_dependency 'openssl', '~> 3.3'
   spec.add_dependency 'sorbet-runtime'

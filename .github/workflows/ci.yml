@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  BUNDLE_WITHOUT: development
+  SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: "true"
+
+jobs:
+  specs:
+    name: RSpec (Ruby ${{ matrix.ruby }}, ${{ matrix.gemfile }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.2", "3.3", "3.4"]
+        gemfile: [standalone, rbnacl]
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Install libsodium
+        if: matrix.gemfile == 'rbnacl'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libsodium23
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run specs
+        run: bundle exec rspec --profile 10 --order random --format progress
+
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/standalone.gemfile
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec rubocop --parallel
+
+  typecheck:
+    name: Sorbet
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/standalone.gemfile
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec srb tc

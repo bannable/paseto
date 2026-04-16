@@ -1,6 +1,6 @@
 # Paseto
 
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-community-brightgreen.svg)](https://rubystyle.guide) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/bannable/paseto/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/bannable/paseto/tree/main) [![Maintainability](https://api.codeclimate.com/v1/badges/0bc8fcc6751880b68a9c/maintainability)](https://codeclimate.com/github/bannable/paseto/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/0bc8fcc6751880b68a9c/test_coverage)](https://codeclimate.com/github/bannable/paseto/test_coverage)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-community-brightgreen.svg)](https://rubystyle.guide) [![CI](https://github.com/bannable/paseto/actions/workflows/ci.yml/badge.svg)](https://github.com/bannable/paseto/actions/workflows/ci.yml)
 
 This is an implementation of the [PASETO token protocol](https://github.com/paseto-standard/paseto-spec), written in Ruby, which supports versions [v3](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-3-nist-modern) and [v4](https://github.com/paseto-standard/paseto-spec/tree/master/docs/01-Protocol-Versions#version-4-sodium-modern). This library passes all [official test vectors](https://github.com/paseto-standard/test-vectors) for supported versions and purposes.
 
@@ -497,9 +497,7 @@ crypt.decode(payload, verify_jti: jti_proc) # Paseto::InvalidTokenIdentifier
 
 ## Development
 
-This repository includes a [VSCode DevContainer](.devcontainer) configuration which automatically includes extensions for both Sorbet and Solargraph, and configures a docker image with libsodium.
-
-After checking out the repo, run `bin/setup` to install dependencies. If you are using the provided DevContainer, this happens automatically after the container image is first created.
+After checking out the repo, run `bin/setup` to install dependencies.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
@@ -513,15 +511,19 @@ You can learn more over at the `sorbet` [documentation](https://sorbet.org/docs/
 
 ### Running Tests
 
-The tests are written with rspec. [Appraisal](https://github.com/thoughtbot/appraisal) is used to ensure compatibility with 3rd party dependencies providing cryptographic features.
+The tests are written with rspec. Two gemfile variants are maintained in `gemfiles/` for testing with different cryptographic backends:
+
+- `standalone.gemfile` — OpenSSL-only (v3 support)
+- `rbnacl.gemfile` — includes rbnacl with libsodium (v4 support)
 
 ```sh
-bundle install
-appraisal install
-# in parallel
-appraisal rake
-# or not
-appraisal rake specs
+bin/setup
+
+# Run standalone tests (v3, OpenSSL-only)
+bundle exec rspec
+
+# Run rbnacl tests (v4, requires libsodium)
+BUNDLE_GEMFILE=gemfiles/rbnacl.gemfile bundle exec rspec
 ```
 
 ### Updating RBI Files
@@ -529,14 +531,14 @@ appraisal rake specs
 To check that RBI files for gems are up-to-date:
 
 ```sh
-appraisal rbnacl bin/tapioca gems --verify
+BUNDLE_GEMFILE=gemfiles/rbnacl.gemfile bundle exec bin/tapioca gems --verify
 ```
 
 To update RBI files for gems:
 
 ```sh
-appraisal rbnacl bin/tapioca gems
-appraisal rbnacl bin/tapioca annotations
+BUNDLE_GEMFILE=gemfiles/rbnacl.gemfile bundle exec bin/tapioca gems
+BUNDLE_GEMFILE=gemfiles/rbnacl.gemfile bundle exec bin/tapioca annotations
 ```
 
 ## Contributing
