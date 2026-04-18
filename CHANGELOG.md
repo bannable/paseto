@@ -1,8 +1,9 @@
 ## [Unreleased]
 
 - Fix UTF-8 validation on v4.local decryption; invalid byte sequences in the decrypted payload could pass `valid_encoding?` on Ruby 3.4+ due to a stale coderange on the libsodium buffer
-- Support OpenSSL 4.x (gem dependency widened to `>= 3.3, < 5`)
-- Drop the `base64` dependency; the gem now uses core `Array#pack('m0')` / `String#unpack1('m0')` directly, so it no longer requires the bundled-gem-removed-in-3.4 `base64`
+- Support OpenSSL 4.x
+- Drop the `base64` dependency
+- Replace old CI infrastructure with GitHub Actions
 
 ## [0.2.0]
 
