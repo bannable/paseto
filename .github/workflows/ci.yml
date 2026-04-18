@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4", "4.0.0", "4.0.1", "4.0.2"]
+        ruby: ["3.3", "3.4", "4.0.2"]
         gemfile: [standalone, rbnacl]
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4", "4.0.0", "4.0.1", "4.0.2"]
+        ruby: ["3.3", "3.4", "4.0.2"]
         gemfile: [standalone, rbnacl]
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
