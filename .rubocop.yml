@@ -80,3 +80,9 @@ Style/MutableConstant:
 
 Naming/BlockForwarding:
   EnforcedStyle: 'explicit'
+
+RSpec/IncludeExamples:
+  Enabled: false
+
+Style/ArrayIntersectWithSingleElement:
+  Enabled: false
