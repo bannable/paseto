@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 env:
   BUNDLE_WITHOUT: development
   SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: "true"
