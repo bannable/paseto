@@ -4,7 +4,7 @@ PATH
     ruby-paseto (0.2.0)
       base64
       multi_json (~> 1.17)
-      openssl (~> 3.3)
+      openssl (>= 3.3, < 5)
       sorbet-runtime
       zeitwerk
 
@@ -64,7 +64,7 @@ GEM
     netrc (0.11.0)
     oj (3.16.3)
       bigdecimal (>= 3.0)
-    openssl (3.3.0)
+    openssl (4.0.1)
     parallel (1.24.0)
     parallel_tests (4.5.2)
       parallel

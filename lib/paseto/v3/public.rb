@@ -53,7 +53,7 @@ module Paseto
         @protocol = T.let(Protocol::Version3.instance, Protocol::Version3)
 
         super
-      rescue OpenSSL::PKey::ECError => e
+      rescue OpenSSL::PKey::PKeyError => e
         raise CryptoError, e.message
       end
 

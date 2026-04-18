@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'base64'
   spec.add_dependency 'multi_json', '~> 1.17'
-  spec.add_dependency 'openssl', '~> 3.3'
+  spec.add_dependency 'openssl', '>= 3.3', '< 5'
   spec.add_dependency 'sorbet-runtime'
   spec.add_dependency 'zeitwerk'
 end
