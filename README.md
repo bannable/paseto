@@ -31,6 +31,7 @@ Then, run `bundle install` and `require 'paseto'`.
 ## Supported PASETO versions
 
 `paseto` supports these PASETO versions and purposes:
+
 | purpose  | v4  | v3  |
 | -------- | --- | --- |
 | `local`  | ✅   | ✅   |
