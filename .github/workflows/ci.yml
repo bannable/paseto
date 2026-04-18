@@ -111,6 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: gemfiles/standalone.gemfile
+      BUNDLE_WITHOUT: ""
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
