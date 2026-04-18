@@ -6,11 +6,13 @@
 version: 2
 updates:
   - package-ecosystem: "bundler"
+    directories:
+      - "**/*"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "friday"
-      time: "23:00"
+      time: "17:00"
       timezone: "America/Los_Angeles"
     assignees:
       - "bannable"
@@ -19,7 +21,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "friday"
-      time: "23:00"
+      time: "17:00"
       timezone: "America/Los_Angeles"
     assignees:
       - "bannable"
