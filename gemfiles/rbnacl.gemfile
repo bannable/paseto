@@ -20,6 +20,8 @@ gem "rbnacl", "~> 7.1"
 
 group :development do
   gem "bundler", "~> 2"
+  gem "parlour", "~> 9"
+  gem "tapioca", "~> 0.19"
 end
 
 gemspec path: "../"

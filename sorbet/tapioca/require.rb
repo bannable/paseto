@@ -6,7 +6,11 @@ require 'fileutils'
 require 'json'
 require 'multi_json'
 require 'openssl'
-require 'rbnacl'
+begin
+  require 'rbnacl'
+rescue LoadError
+  nil
+end
 require 'securerandom'
 require 'simplecov'
 require 'sorbet-runtime'

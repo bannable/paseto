@@ -83,11 +83,6 @@ module Paseto
         def tag(ak:, epk:, edk:)
           protocol.hmac("#{header}#{epk.to_bytes}#{edk}", key: ak, digest_size: 32)
         end
-
-        private
-
-        sig { override.returns(Paseto::V4::Public) }
-        attr_reader :sealing_key
       end
     end
   end

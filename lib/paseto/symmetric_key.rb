@@ -9,7 +9,10 @@ module Paseto
     abstract!
 
     sig(:final) { returns(String) }
-    attr_reader :key, :lid, :paserk
+    attr_reader :key, :lid
+
+    sig(:final) { override.returns(String) }
+    attr_reader :paserk
 
     sig { params(ikm: String).void }
     def initialize(ikm)
