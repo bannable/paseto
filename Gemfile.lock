@@ -68,7 +68,7 @@ GEM
     openssl (4.0.1)
     ostruct (0.6.3)
     parallel (2.0.1)
-    parallel_tests (4.5.2)
+    parallel_tests (5.7.0)
       parallel
     parlour (9.1.2)
       commander (~> 5.0)
