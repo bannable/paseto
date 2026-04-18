@@ -42,6 +42,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'openssl', '~> 3.3'
   spec.add_dependency 'sorbet-runtime'
   spec.add_dependency 'zeitwerk'
-
-  spec.metadata['rubygems_mfa_required'] = 'true'
 end
