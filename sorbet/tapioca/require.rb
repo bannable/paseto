@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require 'base64'
 require 'fileutils'
 require 'json'
 require 'multi_json'

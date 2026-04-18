@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     ruby-paseto (0.2.0)
-      base64
       multi_json (~> 1.17)
       openssl (>= 3.3, < 5)
       sorbet-runtime
@@ -12,7 +11,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
-    base64 (0.3.0)
     benchmark (0.5.0)
     bigdecimal (4.1.1)
     commander (5.0.0)

@@ -84,7 +84,7 @@ module Paseto
     def self.der_to_public_pem(der)
       <<~PEM
         -----BEGIN PUBLIC KEY-----
-        #{Base64.strict_encode64(der)}
+        #{[der].pack('m0')}
         -----END PUBLIC KEY-----
       PEM
     end
@@ -93,7 +93,7 @@ module Paseto
     def self.der_to_private_pem(der)
       <<~PEM
         -----BEGIN PRIVATE KEY-----
-        #{Base64.strict_encode64(der)}
+        #{[der].pack('m0')}
         -----END PRIVATE KEY-----
       PEM
     end

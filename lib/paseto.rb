@@ -2,7 +2,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require 'base64'
 require 'multi_json'
 require 'openssl'
 begin
