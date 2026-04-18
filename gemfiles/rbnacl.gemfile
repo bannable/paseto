@@ -16,7 +16,7 @@ gem "simplecov", "~> 0"
 gem "simplecov_json_formatter"
 gem "sorbet", "~> 0"
 gem "timecop", "~> 0"
-gem "rbnacl", "~> 7.1.1"
+gem "rbnacl", "~> 7.1"
 
 group :development do
   gem "bundler", "~> 2"
