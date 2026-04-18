@@ -8,16 +8,17 @@ module Paseto
 
     sig { params(str: String).returns(String) }
     def self.encode64(str)
-      Base64.urlsafe_encode64(str, padding: false)
+      [str].pack('m0').tr('+/', '-_').delete('=')
     end
 
     sig { params(str: String).returns(String) }
     def self.decode64(str)
-      # Ruby's Base64 library does not care about whether or not padding is present,
-      # but the PASETO test vectors do.
+      # PASETO test vectors require unpadded input; reject any that is padded.
       return '' if str.include?('=')
 
-      Base64.urlsafe_decode64(str).b
+      padded = str.tr('-_', '+/')
+      padded += '=' * (-padded.bytesize % 4)
+      padded.unpack1('m0').b
     rescue ArgumentError
       ''
     end

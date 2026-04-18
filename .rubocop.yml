@@ -4,7 +4,7 @@ plugins:
   - rubocop-performance
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.3
   NewCops: enable
   SuggestExtensions: false
   Exclude:
@@ -80,3 +80,9 @@ Style/MutableConstant:
 
 Naming/BlockForwarding:
   EnforcedStyle: 'explicit'
+
+RSpec/IncludeExamples:
+  Enabled: false
+
+Style/ArrayIntersectWithSingleElement:
+  Enabled: false

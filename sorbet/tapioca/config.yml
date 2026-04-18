@@ -6,7 +6,6 @@ gem:
   # doc: true
   # workers: 5
   exclude:
-  - appraisal
   - parallel_tests
   - parlour
   - parser

@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   DESCRIPTION
   spec.homepage = 'https://github.com/bannable/paseto'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.1.0'
+  spec.required_ruby_version = '>= 3.3.0'
 
   spec.metadata = {
     'bug_tracker_uri' => 'https://github.com/bannable/paseto/issues',
@@ -30,17 +30,15 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject do |f|
-      f.match(/^(?:bin|spec|coverage|tmp|devcontainers|gemfiles)/) || # Irrelevant directories
+      f.match(/^(?:bin|spec|coverage|tmp|gemfiles)/) || # Irrelevant directories
         f.match(/^\.+/) || # Anything starting with .
-        f.match(/^(Gemfile|Gemfile\.lock|Rakefile|Appraisals)$/) # Irrelevant files
+        f.match(/^(Gemfile|Gemfile\.lock|Rakefile)$/) # Irrelevant files
     end
   end
   spec.require_paths = ['lib']
 
   spec.add_dependency 'multi_json', '~> 1.17'
-  spec.add_dependency 'openssl', '~> 3.3'
+  spec.add_dependency 'openssl', '>= 3.3', '< 5'
   spec.add_dependency 'sorbet-runtime'
   spec.add_dependency 'zeitwerk'
-
-  spec.metadata['rubygems_mfa_required'] = 'true'
 end

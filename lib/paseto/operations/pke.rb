@@ -22,7 +22,7 @@ module Paseto
 
         xk = @sealing_key.ecdh(esk)
 
-        @coder.derive_ek_n(xk:, epk:) => {ek:, n:}
+        @coder.derive_ek_n(xk:, epk:) => { ek:, n: }
 
         edk = @coder.encrypt(message: key.to_bytes, ek:, n:)
 
@@ -47,7 +47,7 @@ module Paseto
         t2 = @coder.tag(ak:, epk:, edk:)
         raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
-        @coder.derive_ek_n(xk:, epk:) => {ek:, n:}
+        @coder.derive_ek_n(xk:, epk:) => { ek:, n: }
 
         @coder.decrypt(message: edk, ek:, n:)
       end

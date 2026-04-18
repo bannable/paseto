@@ -37,9 +37,6 @@ module Paseto
       sig { abstract.returns(String) }
       def header; end
 
-      sig { abstract.returns(AsymmetricKey) }
-      def sealing_key; end
-
       sig { abstract.params(encoded_data: String).returns([String, T.untyped, String]) }
       def split(encoded_data); end
 

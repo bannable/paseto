@@ -9,7 +9,10 @@ module Paseto
     abstract!
 
     sig(:final) { returns(String) }
-    attr_reader :key, :lid, :paserk
+    attr_reader :key, :lid
+
+    sig(:final) { override.returns(String) }
+    attr_reader :paserk
 
     sig { params(ikm: String).void }
     def initialize(ikm)
@@ -53,7 +56,10 @@ module Paseto
       raise InvalidAuthenticator unless Util.constant_compare(t, t2)
 
       decrypted = protocol.crypt(payload: c, key: ek, nonce: n2)
-      decrypted.force_encoding('UTF-8')
+      # String.new forces a fresh coderange scan; force_encoding would preserve the
+      # stale CR_7BIT/CR_VALID cached on the ASCII-8BIT libsodium buffer and make
+      # valid_encoding? return a false positive for invalid UTF-8 on Ruby 3.4+.
+      decrypted = String.new(decrypted, encoding: Encoding::UTF_8)
 
       raise ParseError, 'invalid payload encoding' unless decrypted.valid_encoding?
 

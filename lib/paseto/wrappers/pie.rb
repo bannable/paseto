@@ -40,7 +40,7 @@ module Paseto
         header = "#{version}.#{type}.pie."
 
         # :nocov:
-        @coder.decode_and_split(data) => {t:, n:, c:}
+        @coder.decode_and_split(data) => { t:, n:, c: }
         # :nocov:
 
         ak = @coder.authentication_key(nonce: n)

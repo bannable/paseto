@@ -47,7 +47,7 @@ module Paseto
 
         header = "#{version}.#{type}"
 
-        @coder.decode(data) => {salt:, nonce:, edk:, tag:, params:}
+        @coder.decode(data) => { salt:, nonce:, edk:, tag:, params: }
 
         pre_key = @coder.pre_key(salt:, params:)
 

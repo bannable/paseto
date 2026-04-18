@@ -6,7 +6,7 @@ module Paseto
     extend T::Sig
 
     sig { params(blk: T.proc.params(config: Paseto::Configuration::Box).void).void }
-    def configure(&blk) # rubocop:disable Lint/UnusedMethodArgument
+    def configure(&blk)
       yield(config)
     end
 

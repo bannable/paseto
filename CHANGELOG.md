@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+- Minimum ruby version 3.1 -> 3.3
+- Fix UTF-8 validation on v4.local decryption; invalid byte sequences in the decrypted payload could pass `valid_encoding?` on Ruby 3.4+ due to a stale coderange on the libsodium buffer
+- Support OpenSSL 4.x
+- Drop the `base64` dependency
+- Replace old CI infrastructure with GitHub Actions
+
 ## [0.2.0]
 
 - Minimum ruby version 3.0 -> 3.1

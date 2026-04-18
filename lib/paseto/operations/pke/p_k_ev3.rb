@@ -84,11 +84,6 @@ module Paseto
           epk_bytes = epk.to_octet_string(:compressed)
           protocol.hmac("#{header}#{epk_bytes}#{edk}", key: ak)
         end
-
-        private
-
-        sig { override.returns(Paseto::V3::Public) }
-        attr_reader :sealing_key
       end
     end
   end

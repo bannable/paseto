@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  BUNDLE_WITHOUT: development
+  SORBET_RUNTIME_ENABLE_CHECKING_IN_TESTS: "true"
+
+jobs:
+  specs:
+    name: RSpec (Ruby ${{ matrix.ruby }}, ${{ matrix.gemfile }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3", "3.4", "4.0.2"]
+        gemfile: [standalone, rbnacl]
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Install libsodium
+        if: matrix.gemfile == 'rbnacl'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libsodium23
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run specs
+        run: bundle exec rspec --profile 10 --order random --format progress
+
+  specs-openssl35:
+    name: RSpec (Ruby ${{ matrix.ruby }}, ${{ matrix.gemfile }}, OpenSSL 3.5 LTS)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3", "3.4", "4.0.2"]
+        gemfile: [standalone, rbnacl]
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      OPENSSL_VERSION: "3.5.6"
+      OPENSSL_SHA256: "deae7c80cba99c4b4f940ecadb3c3338b13cb77418409238e57d7f31f2a3b736"
+      OPENSSL_DIR: /opt/openssl35
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Cache OpenSSL ${{ env.OPENSSL_VERSION }}
+        id: cache-openssl
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.OPENSSL_DIR }}
+          key: openssl-${{ env.OPENSSL_VERSION }}-${{ runner.os }}-${{ runner.arch }}
+      - name: Build OpenSSL ${{ env.OPENSSL_VERSION }} from source
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential
+          cd /tmp
+          gh release download "openssl-${OPENSSL_VERSION}" \
+            --repo openssl/openssl \
+            --pattern "openssl-${OPENSSL_VERSION}.tar.gz"
+          echo "${OPENSSL_SHA256}  openssl-${OPENSSL_VERSION}.tar.gz" | sha256sum -c -
+          tar -xzf "openssl-${OPENSSL_VERSION}.tar.gz"
+          cd "openssl-${OPENSSL_VERSION}"
+          ./Configure --prefix="${OPENSSL_DIR}" --openssldir="${OPENSSL_DIR}" shared
+          make -j"$(nproc)"
+          sudo make install_sw
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install libsodium
+        if: matrix.gemfile == 'rbnacl'
+        run: sudo apt-get install -y --no-install-recommends libsodium23
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+        env:
+          RUBY_CONFIGURE_OPTS: --with-openssl-dir=${{ env.OPENSSL_DIR }}
+          LD_LIBRARY_PATH: ${{ env.OPENSSL_DIR }}/lib:${{ env.OPENSSL_DIR }}/lib64
+      - name: Verify linked OpenSSL version
+        run: |
+          ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
+      - name: Run specs
+        run: bundle exec rspec --profile 10 --order random --format progress
+        env:
+          LD_LIBRARY_PATH: ${{ env.OPENSSL_DIR }}/lib:${{ env.OPENSSL_DIR }}/lib64
+
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/standalone.gemfile
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec rubocop --parallel
+
+  typecheck:
+    name: Sorbet
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/standalone.gemfile
+      BUNDLE_WITHOUT: ""
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec srb tc

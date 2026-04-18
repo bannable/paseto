@@ -7,6 +7,7 @@ module Paseto
     module Stream
       class XChaCha20Xor < Paseto::Sodium::Stream::Base
         extend RbNaCl::Sodium
+
         sodium_type :stream
 
         sodium_primitive :xchacha20

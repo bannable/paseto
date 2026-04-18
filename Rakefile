@@ -36,9 +36,9 @@ task :parallel do
     '--combine-stderr'
   ]
 
-  if ENV['APPRAISAL_INITIALIZED']
-    appraisal = File.basename(ENV.fetch('BUNDLE_GEMFILE'), '.gemfile')
-    logpath = "tmp/#{appraisal}_parallel_runtime_rspec.log"
+  if ENV['BUNDLE_GEMFILE']
+    variant = File.basename(ENV.fetch('BUNDLE_GEMFILE'), '.gemfile')
+    logpath = "tmp/#{variant}_parallel_runtime_rspec.log"
   else
     logpath = 'tmp/parallel_runtime_rspec.log'
   end
