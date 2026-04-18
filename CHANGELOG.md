@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Fix UTF-8 validation on v4.local decryption; invalid byte sequences in the decrypted payload could pass `valid_encoding?` on Ruby 3.4+ due to a stale coderange on the libsodium buffer
+
 ## [0.2.0]
 
 - Minimum ruby version 3.0 -> 3.1
