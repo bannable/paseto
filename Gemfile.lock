@@ -91,7 +91,7 @@ GEM
       stringio
     racc (1.8.1)
     rainbow (3.1.1)
-    rake (13.1.0)
+    rake (13.4.2)
     rbi (0.3.10)
       prism (~> 1.0)
       rbs (>= 4.0.1)
