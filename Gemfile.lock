@@ -71,7 +71,7 @@ GEM
       ostruct (>= 0.2)
     openssl (4.0.1)
     ostruct (0.6.3)
-    parallel (2.0.1)
+    parallel (2.1.0)
     parallel_tests (5.7.0)
       parallel
     parlour (9.1.2)
@@ -112,7 +112,7 @@ GEM
     regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
-    require-hooks (0.2.3)
+    require-hooks (0.3.0)
     rexml (3.4.4)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
@@ -154,7 +154,7 @@ GEM
       lint_roller
       rubocop (>= 1.75.2)
     ruby-progressbar (1.13.0)
-    rubydex (0.1.0.beta12-x86_64-linux)
+    rubydex (0.1.0.beta13-x86_64-linux)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -168,7 +168,7 @@ GEM
     sorbet-static-and-runtime (0.6.13160)
       sorbet (= 0.6.13160)
       sorbet-runtime (= 0.6.13160)
-    spoom (1.7.12)
+    spoom (1.7.13)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
       rbi (>= 0.3.3)
@@ -177,7 +177,7 @@ GEM
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
     stringio (3.2.0)
-    tapioca (0.19.0)
+    tapioca (0.19.1)
       benchmark
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
@@ -185,7 +185,7 @@ GEM
       rbi (>= 0.3.7)
       require-hooks (>= 0.2.2)
       rubydex (>= 0.1.0.beta10)
-      sorbet-static-and-runtime (>= 0.5.11087)
+      sorbet-static-and-runtime (>= 0.6.12698)
       spoom (>= 1.7.9)
       thor (>= 1.2.0)
       tsort
