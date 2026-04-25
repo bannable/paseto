@@ -51,7 +51,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (6.0.3)
+    erb (6.0.4)
     erubi (1.13.1)
     highline (3.0.1)
     io-console (0.8.2)
