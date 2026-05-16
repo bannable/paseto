@@ -17,7 +17,7 @@ gem 'rake', '~> 13'
 gem 'reek'
 gem 'rspec', '~> 3'
 gem 'rspec_junit_formatter'
-gem 'rubocop', '~> 1.75', require: false
+gem 'rubocop', '~> 1.86', require: false
 gem 'rubocop-performance', '~> 1.25', require: false
 gem 'rubocop-rspec', '~> 3.5', require: false
 gem 'rubocop-sorbet', '~> 0.10', require: false
